@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Derik — Implantação</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f172a;color:#f1f5f9;font-family:'Inter',system-ui,sans-serif;font-size:14px;min-height:100vh}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:#1e293b}
+  ::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
+
+  .page{max-width:860px;margin:0 auto;padding:24px 20px}
+
+  /* Header */
+  .hdr{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .avatar-init{width:46px;height:46px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px #3b82f633;background:linear-gradient(135deg,#1d4ed8,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff}
+  .hdr-text h1{font-size:21px;font-weight:800;letter-spacing:-.4px}
+  .hdr-text p{color:#64748b;font-size:12px;margin-top:3px}
+
+  /* KPIs */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  .kpi{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+  .kpi-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:12px 0 0 12px}
+  .kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px}
+  .kpi-value{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .kpi-sub{font-size:11px;color:#64748b;margin-top:4px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;margin-bottom:22px;background:#1e293b;border-radius:10px;padding:4px}
+  .tab-btn{flex:1;padding:8px 14px;border-radius:7px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;color:#64748b;background:transparent;font-family:inherit}
+  .tab-btn.active{background:#0f172a;color:#f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  /* Timeline */
+  .timeline{display:flex;flex-direction:column;gap:8px}
+  .tl-item{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:13px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+  .tl-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+  .tl-name{font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:3px}
+  .tl-meta{font-size:11px;color:#64748b}
+  .tl-date{text-align:right;flex-shrink:0}
+  .tl-days{font-size:20px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .tl-days-label{font-size:9px;color:#64748b;text-transform:uppercase;font-weight:600}
+  .tl-date-str{font-size:11px;color:#475569;margin-top:3px}
+
+  /* Queue table */
+  .queue-list{display:flex;flex-direction:column;gap:6px}
+  .queue-item{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px}
+  .queue-pos{width:24px;height:24px;border-radius:50%;background:#0f172a;color:#475569;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .queue-name{flex:1;font-size:12px;font-weight:600;color:#cbd5e1}
+  .queue-est{font-size:11px;color:#64748b;text-align:right;flex-shrink:0}
+
+  /* ERP bars */
+  .erp-list{display:flex;flex-direction:column;gap:6px}
+  .erp-row{display:flex;align-items:center;gap:10px}
+  .erp-name{width:100px;font-size:11px;color:#94a3b8;flex-shrink:0}
+  .erp-bar-wrap{flex:1;background:#0f172a;border-radius:3px;height:20px;overflow:hidden}
+  .erp-bar{height:100%;border-radius:3px;background:#334155;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#94a3b8;min-width:30px}
+  .erp-val{width:35px;text-align:right;font-size:12px;font-weight:700;color:#64748b;flex-shrink:0}
+
+  /* Insight box */
+  .insight{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .insight-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#475569;margin-bottom:6px}
+  .insight-text{font-size:12px;color:#94a3b8;line-height:1.7}
+  .insight-text strong{color:#f1f5f9}
+
+  /* Alert banner */
+  .alert-banner{background:#ef444412;border:1px solid #ef444450;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px}
+  .alert-banner+.alert-banner{margin-top:-8px}
+  .alert-flag{font-size:20px;flex-shrink:0;margin-top:1px}
+  .alert-content{flex:1}
+  .alert-title{font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:2px}
+  .alert-desc{font-size:12px;color:#f87171;line-height:1.5;opacity:.85}
+  .alert-banner.amber{background:#f59e0b12;border-color:#f59e0b50}
+  .alert-banner.amber .alert-title{color:#fcd34d}
+  .alert-banner.amber .alert-desc{color:#fbbf24}
+  .alert-banner.amber a{color:#fbbf24;border-color:#f59e0b40;background:#f59e0b15}
+
+  /* Section title */
+  .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#475569;margin-bottom:10px;margin-top:22px;display:flex;align-items:center;gap:8px}
+
+  /* Loja cards */
+  .loja-list{display:flex;flex-direction:column;gap:10px}
+  .loja-card{background:#1e293b;border-radius:12px;padding:0;overflow:hidden;transition:border-color .15s}
+
+  /* Urgency top bar */
+  .urgency-bar{padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
+
+  /* Card body */
+  .card-body{padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+  .loja-name{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .loja-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .urgency-msg{font-size:12px;line-height:1.6;margin-top:6px;padding:8px 10px;border-radius:7px}
+
+  /* Phase pills */
+  .phase-row{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .phase-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+
+  /* Badge */
+  .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap}
+
+  /* Right side */
+  .loja-right{text-align:right;flex-shrink:0;padding-top:2px}
+  .loja-days{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .loja-days-label{font-size:10px;color:#475569;margin-top:2px}
+  .status-days{font-size:11px;margin-top:6px;padding:4px 8px;border-radius:6px;text-align:center;font-weight:700}
+  .card-link{display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none;border:1px solid #3b82f644;border-radius:6px;padding:3px 8px;background:#3b82f610}
+
+  /* Coming soon */
+  .coming-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+  .coming-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px;border-top:3px solid #3b82f6}
+  .coming-name{font-size:12px;font-weight:700;color:#f1f5f9;margin-bottom:5px}
+  .coming-meta{font-size:11px;color:#64748b}
+
+  /* Checklist */
+  .checklist{display:flex;flex-direction:column;gap:6px}
+  .check-item{display:flex;align-items:center;gap:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
+  .check-item:hover{border-color:#475569}
+  .check-item.done{background:#3b82f610;border-color:#3b82f635}
+  .check-item.done .check-text{color:#475569;text-decoration:line-through}
+  .check-box{width:18px;height:18px;border-radius:5px;border:2px solid #334155;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;transition:all .15s;background:#0f172a;color:transparent}
+  .check-item.done .check-box{background:#3b82f6;border-color:#3b82f6;color:#fff}
+  .check-text{font-size:12px;color:#cbd5e1;line-height:1.4;flex:1}
+
+  /* Ranking */
+  .rank-card{background:linear-gradient(135deg,#0f2318 0%,#1e293b 60%);border:1px solid #3b82f640;border-radius:14px;padding:20px;margin-bottom:0;position:relative;overflow:hidden}
+  .rank-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#3b82f620 0%,transparent 70%)}
+  .rank-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .rank-trophy{font-size:36px;filter:drop-shadow(0 0 8px #f59e0b80)}
+  .rank-title{font-size:17px;font-weight:800;color:#f1f5f9;letter-spacing:-.3px}
+  .rank-sub{font-size:12px;color:#3b82f6;margin-top:2px;font-weight:600}
+  .rank-metrics{display:flex;flex-direction:column;gap:10px}
+  .rank-metric{background:#0f172a55;border-radius:10px;padding:11px 14px;border:1px solid #1e293b}
+  .rank-metric-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#3b82f6;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .rank-bars{display:flex;flex-direction:column;gap:4px}
+  .rank-bar-row{display:flex;align-items:center;gap:8px}
+  .rank-bar-name{width:80px;font-size:11px;flex-shrink:0}
+  .rank-bar-wrap{flex:1;background:#1e293b;border-radius:3px;height:18px;overflow:hidden;position:relative}
+  .rank-bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;transition:width .5s}
+  .rank-bar-val{width:32px;text-align:right;font-size:11px;font-weight:700;flex-shrink:0}
+  .you-tag{display:inline-flex;align-items:center;gap:3px;background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644;border-radius:99px;font-size:9px;font-weight:800;padding:1px 6px;flex-shrink:0}
+
+  /* Empty */
+  .empty{color:#475569;font-size:12px;padding:16px;text-align:center;background:#1e293b;border-radius:8px;border:1px dashed #334155}
+
+  /* Footer */
+  .footer{text-align:center;color:#334155;font-size:11px;margin-top:32px;padding-top:16px;border-top:1px solid #1e293b}
+
+  @media(max-width:580px){
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+    .card-body{grid-template-columns:1fr}
+    .loja-right{text-align:left;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="avatar-init">D</div>
+    <div class="hdr-text">
+      <h1>Painel do Derik</h1>
+      <p>Suas integrações em andamento · Atualizado em 22 de fevereiro de 2026</p>
+    </div>
+  </div>
+
+  <!-- Tabs nav -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('painel', this)">📊 Meu Painel</button>
+    <button class="tab-btn" onclick="switchTab('previsibilidade', this)">📅 Previsibilidade</button>
+  </div>
+
+  <!-- TAB 1: Painel -->
+  <div id="tab-painel" class="tab-pane active">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#3b82f6"></div>
+      <div class="kpi-label">Suas lojas</div>
+      <div class="kpi-value" style="color:#3b82f6">24</div>
+      <div class="kpi-sub">integrações ativas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#334155"></div>
+      <div class="kpi-label">Críticas</div>
+      <div class="kpi-value" style="color:#475569">0</div>
+      <div class="kpi-sub">nenhuma crítica</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#f59e0b"></div>
+      <div class="kpi-label">Ações necessárias</div>
+      <div class="kpi-value" style="color:#f59e0b">18</div>
+      <div class="kpi-sub">18 lojas aguardam sua ação</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#64748b"></div>
+      <div class="kpi-label">Aguardando</div>
+      <div class="kpi-value" style="color:#94a3b8">16</div>
+      <div class="kpi-sub">coletar dados / justificar</div>
+    </div>
+  </div>
+
+  
+
+  
+  <div class="alert-banner amber">
+    <div class="alert-flag">⚠️</div>
+    <div class="alert-content">
+      <div class="alert-title">Supermercado Batista — ficou 43 dias bloqueada pelo lojista</div>
+      <div class="alert-desc">Essa loja teve um histórico longo de bloqueio externo. Mesmo com a integração avançando agora, acompanhe de perto — esse lojista precisou de mais tempo e atenção do que o habitual.</div>
+    </div>
+    <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" style="font-size:10px;text-decoration:none;border-radius:6px;padding:3px 8px;flex-shrink:0;margin-top:2px">ver card ↗</a>
+  </div>
+
+  <!-- Ranking amigável -->
+  <div class="section-title">🏆 Comparativo do time</div>
+  <div class="rank-card">
+    <div class="rank-header">
+      <div class="rank-trophy">🥇</div>
+      <div>
+        <div class="rank-title">Você está em 1º lugar no time!</div>
+        <div class="rank-sub">⭐ Zero lojas bloqueadas — pipeline sem travamentos</div>
+      </div>
+    </div>
+    <div class="rank-metrics">
+
+      <!-- Idade média -->
+      <div class="rank-metric">
+          <div class="rank-metric-title">⏱ Menor tempo médio de pipeline <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
+          <div class="rank-bars">
+            <div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥇 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:78%;background:#3b82f6;color:#fff">43d</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥈 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:78%;background:#3b82f6;color:#fff">43d</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#64748b;font-weight:400">
+                  🥉 Ana Débora
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:100%;background:#334155;color:#94a3b8">55d</div>
+                </div>
+                <div class="rank-bar-val" style="color:#475569">55d</div>
+              </div>
+          </div>
+          <div style="font-size:11px;color:#3b82f6;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
+            ✨ Seu pipeline é <strong>22% mais jovem</strong> que o da Ana Débora e <strong>0% mais jovem</strong> que o do Derik
+          </div>
+        </div>
+
+      <!-- Lojas críticas -->
+      <div class="rank-metric">
+          <div class="rank-metric-title">🔴 Menos lojas críticas (60+ dias) <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
+          <div class="rank-bars">
+            <div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#64748b;font-weight:400">
+                  🥇 Ana Débora
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:60%;background:#334155;color:#94a3b8">6</div>
+                </div>
+                <div class="rank-bar-val" style="color:#475569">6</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥈 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:100%;background:#3b82f6;color:#fff">10</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥉 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:100%;background:#3b82f6;color:#fff">10</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div>
+          </div>
+          
+        </div>
+
+      <!-- Bloqueadas % -->
+      <div class="rank-metric">
+          <div class="rank-metric-title">⚑ Menor % de lojas bloqueadas <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
+          <div class="rank-bars">
+            <div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥇 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:4%;background:#3b82f6;color:#fff">0%</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#f1f5f9;font-weight:700">
+                  🥈 Derik
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:4%;background:#3b82f6;color:#fff">0%</div>
+                </div>
+                <div class="you-tag">você</div>
+              </div><div class="rank-bar-row">
+                <div class="rank-bar-name" style="color:#64748b;font-weight:400">
+                  🥉 Ana Débora
+                </div>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-fill" style="width:100%;background:#334155;color:#94a3b8">35%</div>
+                </div>
+                <div class="rank-bar-val" style="color:#475569">35%</div>
+              </div>
+          </div>
+          <div style="font-size:11px;color:#3b82f6;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
+            ✨ Apenas <strong>0% das suas lojas</strong> estão bloqueadas vs 35% da Ana Débora
+          </div>
+        </div>
+
+    </div>
+  </div>
+
+  <!-- Suas Lojas -->
+  <div class="section-title">🏪 Suas lojas — ordenadas por prioridade</div>
+  <div class="loja-list">
+    
+      <div class="loja-card" style="border:1px solid #f59e0b40">
+        
+        <div class="urgency-bar" style="background:#f59e0b15;color:#f59e0b;border-bottom:1px solid #f59e0b40">
+          <span>⚠ Verificar — 11d em progresso</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Rota da Economia
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              <span class="badge" style="background:#1e293b;color:#64748b;border:1px solid #334155">ERP: novo erp</span>
+            </div>
+            
+            <div class="urgency-msg" style="background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b40">
+              Está em "revisão" há 11 dias. Verifique com o integrador o que está acontecendo — se vai demorar mais ou se há algo que você pode ajudar.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 53d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 34d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">87d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#f59e0b15;color:#f59e0b">11d nesse status</div>
+            <a href="https://app.clickup.com/t/86adhu7rq" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #f59e0b40">
+        
+        <div class="urgency-bar" style="background:#f59e0b15;color:#f59e0b;border-bottom:1px solid #f59e0b40">
+          <span>⚠ Verificar — 10d em progresso</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Atacadão São Roque
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">produtos integrado</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              <span class="badge" style="background:#1e293b;color:#64748b;border:1px solid #334155">ERP: winthor</span>
+            </div>
+            
+            <div class="urgency-msg" style="background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b40">
+              Está em "produtos integrado" há 10 dias. Verifique com o integrador o que está acontecendo — se vai demorar mais ou se há algo que você pode ajudar.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 58d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 11d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">69d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#f59e0b15;color:#f59e0b">10d nesse status</div>
+            <a href="https://app.clickup.com/t/86ady723m" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Empório Pas - Loja 04 - Andradina
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 71d</span>
+              <span class="phase-pill" style="background:#f9741618;color:#f97316;border:1px solid #f9741633">⚑ bloqueada 3d</span>
+              
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">74d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">13d nesse status</div>
+            <a href="https://app.clickup.com/t/86advjux5" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Pas - Loja 2  - Mirandopolis
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 74d</span>
+              
+              
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">74d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">16d nesse status</div>
+            <a href="https://app.clickup.com/t/86advjuq4" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Supermercado Batista
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">todo/dados coletados</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              <span class="badge" style="background:#1e293b;color:#64748b;border:1px solid #334155">ERP: avanço</span>
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 29d</span>
+              <span class="phase-pill" style="background:#f9741618;color:#f97316;border:1px solid #f9741633">⚑ bloqueada 43d</span>
+              
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">72d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">2d nesse status</div>
+            <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Supermercado Real - Ceres
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">25d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">25d nesse status</div>
+            <a href="https://app.clickup.com/t/86aewxgz2" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Supermercado Real - Carmo do Rio Verde
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">20d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">20d nesse status</div>
+            <a href="https://app.clickup.com/t/86af0dc0j" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Supermercado Real - Ceres
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">20d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">25d nesse status</div>
+            <a href="https://app.clickup.com/t/86aewxgz2" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Telefrango Supermercados João XXIII
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">19d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">19d nesse status</div>
+            <a href="https://app.clickup.com/t/86af1php0" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Telefrango Supermercados Redenção
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">19d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">19d nesse status</div>
+            <a href="https://app.clickup.com/t/86af1ph3e" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Supermercado Rodrigues
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">19d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">19d nesse status</div>
+            <a href="https://app.clickup.com/t/86af1hk8h" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Compre Certo - Guaiuba
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">18d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">18d nesse status</div>
+            <a href="https://app.clickup.com/t/86af2yxw7" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Compre Certo - Maranguape
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">18d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">18d nesse status</div>
+            <a href="https://app.clickup.com/t/86af2yx8b" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Compre Certo - Baturité
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">18d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">18d nesse status</div>
+            <a href="https://app.clickup.com/t/86af2ywtw" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Compre Certo - Pacatuba
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">18d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">18d nesse status</div>
+            <a href="https://app.clickup.com/t/86af2wu06" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Compre Certo - Itaitinga
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">18d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">18d nesse status</div>
+            <a href="https://app.clickup.com/t/86af2w531" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Brisa Mini Mercado
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">16d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">16d nesse status</div>
+            <a href="https://app.clickup.com/t/86af560cg" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #3b82f640">
+        
+        <div class="urgency-bar" style="background:#3b82f615;color:#3b82f6;border-bottom:1px solid #3b82f640">
+          <span>📋 Ação necessária</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Telefrango Supermercados Passaré
+              <span class="badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">migração</span>
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+              <span class="badge" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">Aguardando início</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#3b82f615;color:#3b82f6;border:1px solid #3b82f640">
+              Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.
+            </div>
+            
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#94a3b8">13d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#3b82f615;color:#3b82f6">13d nesse status</div>
+            <a href="https://app.clickup.com/t/86af77qd3" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Natural Mix - Loja 5
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 3 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 62d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 13d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">75d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">3d nesse status</div>
+            <a href="https://app.clickup.com/t/86adu1pjf" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Natural Mix - Loja 4 - Tijucas
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 3 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 62d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 13d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">75d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">3d nesse status</div>
+            <a href="https://app.clickup.com/t/86adu1p4y" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Natural Mix - Loja 3 - Campo Grande
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 3 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 62d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 13d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">75d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">3d nesse status</div>
+            <a href="https://app.clickup.com/t/86adu1nwu" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Natural Mix - Loja 2 - Bangu
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 0 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 62d</span>
+              <span class="phase-pill" style="background:#f9741618;color:#f97316;border:1px solid #f9741633">⚑ bloqueada 3d</span>
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 10d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">75d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">0d nesse status</div>
+            <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              Emporio Natural Mix - Loja 1 Madureira
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 3 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 62d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 13d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#ef4444">75d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">3d nesse status</div>
+            <a href="https://app.clickup.com/t/86adu1mzh" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="loja-card" style="border:1px solid #334155">
+        
+        <div class="card-body">
+          <div>
+            <div class="loja-name">
+              O Mundo das Embalagens
+              
+            </div>
+            <div class="loja-meta">
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+              <span class="badge" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">Em integração — ativa</span>
+              <span class="badge" style="background:#1e293b;color:#64748b;border:1px solid #334155">ERP: hipcom</span>
+            </div>
+            
+            <div class="urgency-msg" style="background:#0f172a;color:#64748b;border:1px solid #334155">
+              Em andamento há 2 dias. Tudo dentro do esperado.
+            </div>
+            
+            <div class="phase-row">
+              <span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila 36d</span>
+              
+              <span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa 3d</span>
+            </div>
+          </div>
+          <div class="loja-right">
+            <div class="loja-days" style="color:#f59e0b">39d</div>
+            <div class="loja-days-label">no pipeline</div>
+            <div class="status-days" style="background:#0f172a;color:#3b82f6">2d nesse status</div>
+            <a href="https://app.clickup.com/t/86aeh1jkh" target="_blank" class="card-link">ver card ↗</a>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- Chegando em breve -->
+  <div class="section-title">🔜 Chegando em breve — integrações perto de concluir</div>
+  <p style="font-size:12px;color:#475569;margin-bottom:10px;margin-top:-4px">
+    A equipe está finalizando essas lojas. Podem chegar para você em breve.
+  </p>
+  <div class="coming-grid">
+      
+        <div class="coming-card">
+          <div class="coming-name">Almeida Supermercado</div>
+          <div class="coming-meta" style="margin-bottom:5px">
+            <span style="color:#f59e0b">progresso pedido</span>
+          </div>
+          <div class="coming-meta">0d nesse status · 2d ativo · vivasistemas</div>
+          <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+        </div>
+        <div class="coming-card">
+          <div class="coming-name">RedeMIX - Loja 5</div>
+          <div class="coming-meta" style="margin-bottom:5px">
+            <span style="color:#f59e0b">progresso pedido</span>
+          </div>
+          <div class="coming-meta">2d nesse status · 10d ativo · socin</div>
+          <a href="https://app.clickup.com/t/86aemer60" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+        </div>
+        <div class="coming-card">
+          <div class="coming-name">RedeMIX - Loja 06</div>
+          <div class="coming-meta" style="margin-bottom:5px">
+            <span style="color:#f59e0b">progresso pedido</span>
+          </div>
+          <div class="coming-meta">2d nesse status · 10d ativo · socin</div>
+          <a href="https://app.clickup.com/t/86aemer0r" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+        </div>
+        <div class="coming-card">
+          <div class="coming-name">RedeMIX - Loja 7</div>
+          <div class="coming-meta" style="margin-bottom:5px">
+            <span style="color:#f59e0b">progresso pedido</span>
+          </div>
+          <div class="coming-meta">2d nesse status · 10d ativo · socin</div>
+          <a href="https://app.clickup.com/t/86aemepqc" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+        </div>
+        <div class="coming-card">
+          <div class="coming-name">RedeMIX - Loja 08</div>
+          <div class="coming-meta" style="margin-bottom:5px">
+            <span style="color:#f59e0b">progresso pedido</span>
+          </div>
+          <div class="coming-meta">2d nesse status · 10d ativo · socin</div>
+          <a href="https://app.clickup.com/t/86aemepj1" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+        </div>
+    </div>
+
+  <!-- Checklist -->
+  <div class="section-title">✅ Checklist — o que fazer enquanto aguarda</div>
+  <p style="font-size:12px;color:#475569;margin-bottom:10px;margin-top:-4px">
+    Para cada loja nova, levante esses pontos com antecedência. Progresso salvo no navegador.
+  </p>
+  <div class="checklist" id="checklist">
+    
+    <div class="check-item" id="item-c1" onclick="toggle('c1')">
+      <div class="check-box" id="box-c1">✓</div>
+      <div class="check-text">Confirmar contato principal do lojista (nome, WhatsApp, e-mail)</div>
+    </div>
+    <div class="check-item" id="item-c2" onclick="toggle('c2')">
+      <div class="check-box" id="box-c2">✓</div>
+      <div class="check-text">Verificar se o lojista tem acesso ao painel administrativo</div>
+    </div>
+    <div class="check-item" id="item-c3" onclick="toggle('c3')">
+      <div class="check-box" id="box-c3">✓</div>
+      <div class="check-text">Confirmar ERP e versão em uso</div>
+    </div>
+    <div class="check-item" id="item-c4" onclick="toggle('c4')">
+      <div class="check-box" id="box-c4">✓</div>
+      <div class="check-text">Entender o catálogo: produtos, categorias, variações</div>
+    </div>
+    <div class="check-item" id="item-c5" onclick="toggle('c5')">
+      <div class="check-box" id="box-c5">✓</div>
+      <div class="check-text">Verificar se há promoções ou regras de preço especiais</div>
+    </div>
+    <div class="check-item" id="item-c6" onclick="toggle('c6')">
+      <div class="check-box" id="box-c6">✓</div>
+      <div class="check-text">Checar se o lojista já tem experiência com marketplace</div>
+    </div>
+    <div class="check-item" id="item-c7" onclick="toggle('c7')">
+      <div class="check-box" id="box-c7">✓</div>
+      <div class="check-text">Registrar observações importantes no card da loja</div>
+    </div>
+  </div>
+
+  </div><!-- /tab-painel -->
+
+  <!-- TAB 2: Previsibilidade -->
+  <div id="tab-previsibilidade" class="tab-pane">
+
+    <!-- Insight geral -->
+    <div class="insight">
+      <div class="insight-title">📌 Como funciona essa estimativa</div>
+      <div class="insight-text">
+        As estimativas são baseadas no <strong>tempo médio real</strong> que integrações ativas passaram em cada fase do pipeline.
+        Para cada loja, mostramos quanto tempo falta na fase atual e nas próximas, até a implantação.
+        Não são datas garantidas — bloqueios ou aceleração podem mudar o resultado.
+      </div>
+    </div>
+
+    <!-- Benchmark por fase -->
+    <div class="section-title" style="margin-top:0">📊 Tempo médio por fase</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:160px;font-size:12px;color:#64748b;font-weight:700;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              ⏸ Aguardando
+            </div>
+            <div style="flex:1;background:#0f172a;border-radius:4px;height:22px;overflow:hidden">
+              <div style="height:100%;width:100%;background:#64748b33;border:1px solid #64748b55;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#64748b">
+                37d
+              </div>
+            </div>
+            <div style="width:30px;text-align:right;font-size:10px;color:#94a3b8;flex-shrink:0">66%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:160px;font-size:12px;color:#06b6d4;font-weight:700;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              📦 Integração de Produtos
+            </div>
+            <div style="flex:1;background:#0f172a;border-radius:4px;height:22px;overflow:hidden">
+              <div style="height:100%;width:24%;background:#06b6d433;border:1px solid #06b6d455;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#06b6d4">
+                9d
+              </div>
+            </div>
+            <div style="width:30px;text-align:right;font-size:10px;color:#94a3b8;flex-shrink:0">16%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:160px;font-size:12px;color:#f59e0b;font-weight:700;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              🛒 Integração de Pedidos
+            </div>
+            <div style="flex:1;background:#0f172a;border-radius:4px;height:22px;overflow:hidden">
+              <div style="height:100%;width:14%;background:#f59e0b33;border:1px solid #f59e0b55;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#f59e0b">
+                5d
+              </div>
+            </div>
+            <div style="width:30px;text-align:right;font-size:10px;color:#94a3b8;flex-shrink:0">9%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:160px;font-size:12px;color:#a855f7;font-weight:700;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              🔍 Revisão
+            </div>
+            <div style="flex:1;background:#0f172a;border-radius:4px;height:22px;overflow:hidden">
+              <div style="height:100%;width:14%;background:#a855f733;border:1px solid #a855f755;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#a855f7">
+                5d
+              </div>
+            </div>
+            <div style="width:30px;text-align:right;font-size:10px;color:#94a3b8;flex-shrink:0">9%</div>
+          </div><div style="font-size:11px;color:#94a3b8;padding:6px 0 0 170px">
+          Total típico do início ao fim: <strong style="color:#e2e8f0">56 dias</strong>
+        </div>
+    </div>
+
+    <!-- Suas lojas por previsão de entrega -->
+    <div class="section-title">📍 Suas lojas — ordenadas por menor previsão de entrega</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+    
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#a855f715;border-bottom:1px solid #a855f730">
+          <span style="font-size:12px">🔍</span>
+          <span style="font-size:11px;font-weight:700;color:#a855f7">Revisão / Teste</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#1 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Rota da Economia</div>
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~3 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de fev.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>11d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:100%;background:#a855f7;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          <span style="font-size:11px;color:#a855f7;font-weight:600">🏁 Última fase — próximo passo é implantação!</span>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#a855f715;border-bottom:1px solid #a855f730">
+          <span style="font-size:12px">🔍</span>
+          <span style="font-size:11px;font-weight:700;color:#a855f7">Revisão / Teste</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#2 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Natural Mix - Loja 5</div>
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~3 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de fev.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>3d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:60%;background:#a855f7;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          <span style="font-size:11px;color:#a855f7;font-weight:600">🏁 Última fase — próximo passo é implantação!</span>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#a855f715;border-bottom:1px solid #a855f730">
+          <span style="font-size:12px">🔍</span>
+          <span style="font-size:11px;font-weight:700;color:#a855f7">Revisão / Teste</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#3 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Natural Mix - Loja 3 - Campo Grande</div>
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~3 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de fev.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>3d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:60%;background:#a855f7;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          <span style="font-size:11px;color:#a855f7;font-weight:600">🏁 Última fase — próximo passo é implantação!</span>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#a855f715;border-bottom:1px solid #a855f730">
+          <span style="font-size:12px">🔍</span>
+          <span style="font-size:11px;font-weight:700;color:#a855f7">Revisão / Teste</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#4 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Natural Mix - Loja 1 Madureira</div>
+              <span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~3 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de fev.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>3d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:60%;background:#a855f7;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          <span style="font-size:11px;color:#a855f7;font-weight:600">🏁 Última fase — próximo passo é implantação!</span>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#f59e0b15;border-bottom:1px solid #f59e0b30">
+          <span style="font-size:12px">🛒</span>
+          <span style="font-size:11px;font-weight:700;color:#f59e0b">Integração de Pedidos</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#5 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Natural Mix - Loja 4 - Tijucas</div>
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~8 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~02 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>3d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:60%;background:#f59e0b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#f59e0b15;border-bottom:1px solid #f59e0b30">
+          <span style="font-size:12px">🛒</span>
+          <span style="font-size:11px;font-weight:700;color:#f59e0b">Integração de Pedidos</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#6 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">O Mundo das Embalagens</div>
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~8 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~02 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>2d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:40%;background:#f59e0b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#f59e0b15;border-bottom:1px solid #f59e0b30">
+          <span style="font-size:12px">🛒</span>
+          <span style="font-size:11px;font-weight:700;color:#f59e0b">Integração de Pedidos</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#7 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Natural Mix - Loja 2 - Bangu</div>
+              <span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~10 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~04 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>0d nessa fase — ~5d restantes</span>
+              <span style="color:#64748b">típico: 5d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:0%;background:#f59e0b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#06b6d415;border-bottom:1px solid #06b6d430">
+          <span style="font-size:12px">📦</span>
+          <span style="font-size:11px;font-weight:700;color:#06b6d4">Integração de Produtos</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#8 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Atacadão São Roque</div>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">produtos integrado</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#3b82f6;letter-spacing:-0.5px">~13 dias</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~07 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>10d nessa fase — ~3d restantes</span>
+              <span style="color:#64748b">típico: 9d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:100%;background:#06b6d4;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#9 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Supermercado Batista</div>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">todo/dados coletados</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#f59e0b;letter-spacing:-0.5px">~4 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~22 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>2d nessa fase — ~35d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:5%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#10 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Supermercado Real - Ceres</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~5 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>25d nessa fase — ~12d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:68%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#11 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Supermercado Real - Ceres</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~5 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~25 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>25d nessa fase — ~12d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:68%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#12 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Supermercado Real - Carmo do Rio Verde</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~30 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>20d nessa fase — ~17d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:54%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#13 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Telefrango Supermercados João XXIII</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~31 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>19d nessa fase — ~18d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:51%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#14 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Telefrango Supermercados Redenção</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~31 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>19d nessa fase — ~18d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:51%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#15 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Supermercado Rodrigues</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~31 de mar.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>19d nessa fase — ~18d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:51%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#16 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Compre Certo - Guaiuba</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~01 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>18d nessa fase — ~19d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:49%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#17 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Compre Certo - Maranguape</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~01 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>18d nessa fase — ~19d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:49%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#18 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Compre Certo - Baturité</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~01 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>18d nessa fase — ~19d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:49%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#19 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Compre Certo - Pacatuba</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~01 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>18d nessa fase — ~19d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:49%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#20 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Compre Certo - Itaitinga</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~01 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>18d nessa fase — ~19d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:49%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#21 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Emporio Pas - Loja 2  - Mirandopolis</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~03 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>16d nessa fase — ~21d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:43%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#22 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Brisa Mini Mercado</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~6 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~03 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>16d nessa fase — ~21d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:43%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#23 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Empório Pas - Loja 04 - Andradina</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~7 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~06 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>13d nessa fase — ~24d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:35%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
+        <!-- Fase atual como header do card -->
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#64748b15;border-bottom:1px solid #64748b30">
+          <span style="font-size:12px">⏸</span>
+          <span style="font-size:11px;font-weight:700;color:#64748b">Aguardando / Fila</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto">#24 na fila de entrega</span>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:8px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:4px">Telefrango Supermercados Passaré</div>
+              <span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:20px;font-weight:800;color:#94a3b8;letter-spacing:-0.5px">~7 sem</div>
+              <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">até implantação</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">~06 de abr.</div>
+            </div>
+          </div>
+          <!-- Barra de progresso na fase atual -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
+              <span>13d nessa fase — ~24d restantes</span>
+              <span style="color:#64748b">típico: 37d</span>
+            </div>
+            <div style="background:#0f172a;border-radius:4px;height:7px;overflow:hidden">
+              <div style="height:100%;width:35%;background:#64748b;border-radius:4px"></div>
+            </div>
+          </div>
+          <!-- Próximas fases -->
+          
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
+            <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 +9d</span><span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 +5d</span><span style="font-size:10px;background:#a855f715;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:2px 8px">🔍 +5d</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERP Benchmark -->
+    
+    <div class="section-title">🔧 Histórico de integração por ERP</div>
+    <div class="insight" style="margin-bottom:14px">
+      <div class="insight-text">
+        Tempo médio que integrações ficam no pipeline, agrupado por ERP.
+        ERPs com ciclos mais longos costumam ter maior complexidade ou mais dependências externas.
+        <strong style="color:#f1f5f9">Lojas suas destacadas em verde.</strong>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:11px 14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#94a3b8">rms</span>
+              
+              <span style="margin-left:auto;font-size:11px;color:#64748b">3 integraçãoões ativas</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:100%;background:#334155;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#94a3b8">
+                  98d no pipeline
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          <div style="background:#1e293b;border:1px solid #3b82f644;border-radius:10px;padding:11px 14px;border-left:3px solid #3b82f6">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#3b82f6">novo erp</span>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">sua loja</span>
+              <span style="margin-left:auto;font-size:11px;color:#64748b">1 integração ativa</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:89%;background:#3b82f6;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#fff">
+                  87d no pipeline
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detalhamento por fase -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+              <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~4d</span>
+              <span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 pedido ~19d</span>
+            </div>
+          </div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:11px 14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#94a3b8">vivasistemas</span>
+              
+              <span style="margin-left:auto;font-size:11px;color:#64748b">1 integração ativa</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:83%;background:#334155;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#94a3b8">
+                  81d no pipeline
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detalhamento por fase -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+              <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~2d</span>
+              <span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 pedido ~31d</span>
+            </div>
+          </div>
+          <div style="background:#1e293b;border:1px solid #3b82f644;border-radius:10px;padding:11px 14px;border-left:3px solid #3b82f6">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#3b82f6">avanço</span>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">sua loja</span>
+              <span style="margin-left:auto;font-size:11px;color:#64748b">1 integração ativa</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:73%;background:#3b82f6;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#fff">
+                  72d no pipeline
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          <div style="background:#1e293b;border:1px solid #3b82f644;border-radius:10px;padding:11px 14px;border-left:3px solid #3b82f6">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#3b82f6">winthor</span>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">sua loja</span>
+              <span style="margin-left:auto;font-size:11px;color:#64748b">1 integração ativa</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:70%;background:#3b82f6;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#fff">
+                  69d no pipeline
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detalhamento por fase -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+              <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~11d</span>
+              
+            </div>
+          </div>
+          <div style="background:#1e293b;border:1px solid #3b82f644;border-radius:10px;padding:11px 14px;border-left:3px solid #3b82f6">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#3b82f6">hipcom</span>
+              <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">sua loja</span>
+              <span style="margin-left:auto;font-size:11px;color:#64748b">1 integração ativa</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:40%;background:#3b82f6;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#fff">
+                  39d no pipeline
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detalhamento por fase -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+              <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~1d</span>
+              <span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 pedido ~2d</span>
+            </div>
+          </div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:11px 14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:12px;font-weight:700;color:#94a3b8">socin</span>
+              
+              <span style="margin-left:auto;font-size:11px;color:#64748b">11 integraçãoões ativas</span>
+            </div>
+            <!-- Barra de tempo médio total -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
+              <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
+                <div style="height:100%;width:35%;background:#334155;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:#94a3b8">
+                  34d no pipeline
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detalhamento por fase -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+              <span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~10d</span>
+              <span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 pedido ~2d</span>
+            </div>
+          </div>
+    </div>
+
+  </div><!-- /tab-previsibilidade -->
+
+  <div class="footer">
+    Instabuy · Setor de Integrações · 22 de fevereiro de 2026 · Painel exclusivo Derik
+  </div>
+
+</div>
+<script>
+  // Tab switching
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  const KEYS = ["c1","c2","c3","c4","c5","c6","c7"];
+
+  function load() {
+    KEYS.forEach(id => {
+      if (localStorage.getItem('derik_check_' + id) === '1') apply(id, true);
+    });
+  }
+
+  function toggle(id) {
+    const done = localStorage.getItem('derik_check_' + id) === '1';
+    localStorage.setItem('derik_check_' + id, done ? '0' : '1');
+    apply(id, !done);
+  }
+
+  function apply(id, done) {
+    const item = document.getElementById('item-' + id);
+    const box  = document.getElementById('box-' + id);
+    item.classList.toggle('done', done);
+  }
+
+  load();
+</script>
+</body>
+</html>

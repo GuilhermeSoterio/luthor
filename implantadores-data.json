@@ -1,0 +1,843 @@
+{
+  "generated_at": "2026-02-22T19:44:34.600Z",
+  "implantadores": [
+    {
+      "id": 82096739,
+      "name": "Derik"
+    },
+    {
+      "id": 87975925,
+      "name": "Laissa"
+    },
+    {
+      "id": 106171961,
+      "name": "Ana Débora"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "86afcp5zd",
+      "name": "[INTEGRACAO] Supermercado Aguiar",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 9,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-634",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86afcp5zd"
+    },
+    {
+      "id": "86af908mn",
+      "name": "[INTEGRACAO] R Center - Parque Santa Rosa [MIGRAÇÃO MERCADAPP]",
+      "status": "todo/dados coletados",
+      "isBlocked": false,
+      "daysSinceCreated": 12,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-637",
+      "implantador": "Laissa",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af908mn"
+    },
+    {
+      "id": "86af8yurq",
+      "name": "[INTEGRACAO] R Center - Messejana [MIGRAÇÃO MERCADAPP]",
+      "status": "produtos integrado",
+      "isBlocked": false,
+      "daysSinceCreated": 12,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-636",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af8yurq"
+    },
+    {
+      "id": "86af77qd3",
+      "name": "[INTEGRACAO] Telefrango Supermercados Passaré [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 13,
+      "daysSinceUpdated": 13,
+      "erp": null,
+      "fatherCustomId": "F0H-622",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af77qd3"
+    },
+    {
+      "id": "86af560cg",
+      "name": "[INTEGRACAO] Brisa Mini Mercado",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 16,
+      "daysSinceUpdated": 16,
+      "erp": null,
+      "fatherCustomId": "F0H-621",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af560cg"
+    },
+    {
+      "id": "86af2yxw7",
+      "name": "[INTEGRACAO] Compre Certo - Guaiuba [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-633",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2yxw7"
+    },
+    {
+      "id": "86af2yx8b",
+      "name": "[INTEGRACAO] Compre Certo - Maranguape [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-632",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2yx8b"
+    },
+    {
+      "id": "86af2ywtw",
+      "name": "[INTEGRACAO] Compre Certo - Baturité [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-631",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2ywtw"
+    },
+    {
+      "id": "86af2wu06",
+      "name": "[INTEGRACAO] Compre Certo - Pacatuba [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-630",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2wu06"
+    },
+    {
+      "id": "86af2w531",
+      "name": "[INTEGRACAO] Compre Certo - Itaitinga [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-629",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2w531"
+    },
+    {
+      "id": "86af2vp6k",
+      "name": "[INTEGRACAO] Supermercado Aconchemax ",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 18,
+      "daysSinceUpdated": 18,
+      "erp": null,
+      "fatherCustomId": "F0H-628",
+      "implantador": "Laissa",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af2vp6k"
+    },
+    {
+      "id": "86af28vp4",
+      "name": "[INTEGRACAO] Super Portugal Sobral [MIGRAÇÃO MERCADAPP]",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-627",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af28vp4"
+    },
+    {
+      "id": "86af28vc2",
+      "name": "[INTEGRACAO] Super Portugal Cidade dos Funcionários [MIGRAÇÃO MERCADAPP]",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-626",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af28vc2"
+    },
+    {
+      "id": "86af28ubg",
+      "name": "[INTEGRACAO] Super Portugal Granja Portugal [MIGRAÇÃO MERCADAPP]",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-625",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af28ubg"
+    },
+    {
+      "id": "86af1php0",
+      "name": "[INTEGRACAO] Telefrango Supermercados João XXIII [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 19,
+      "erp": null,
+      "fatherCustomId": "F0H-623",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af1php0"
+    },
+    {
+      "id": "86af1ph3e",
+      "name": "[INTEGRACAO] Telefrango Supermercados Redenção [MIGRAÇÃO MERCADAPP]",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 19,
+      "erp": null,
+      "fatherCustomId": "F0H-624",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af1ph3e"
+    },
+    {
+      "id": "86af1hk8h",
+      "name": "[INTEGRACAO] Supermercado Rodrigues",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 19,
+      "daysSinceUpdated": 19,
+      "erp": null,
+      "fatherCustomId": "F0H-617",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af1hk8h"
+    },
+    {
+      "id": "86af0dc0j",
+      "name": "[INTEGRACAO] Supermercado Real - Carmo do Rio Verde",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 20,
+      "daysSinceUpdated": 20,
+      "erp": null,
+      "fatherCustomId": "F0H-619",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af0dc0j"
+    },
+    {
+      "id": "86af0dbaa",
+      "name": "[INTEGRACAO] Supermercado Real - Ceres",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 20,
+      "daysSinceUpdated": 20,
+      "erp": null,
+      "fatherCustomId": "F0H-618",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86af0dbaa"
+    },
+    {
+      "id": "86aewxgz2",
+      "name": "[INTEGRACAO] Supermercado Real - Ceres",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 25,
+      "daysSinceUpdated": 25,
+      "erp": null,
+      "fatherCustomId": "F0H-618",
+      "implantador": "Derik",
+      "assignees": [],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aewxgz2"
+    },
+    {
+      "id": "86aemer60",
+      "name": "[INTEGRACAO] RedeMIX - Loja 5",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-609",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemer60"
+    },
+    {
+      "id": "86aemer0r",
+      "name": "[INTEGRACAO] RedeMIX - Loja 06",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-610",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemer0r"
+    },
+    {
+      "id": "86aemepqc",
+      "name": "[INTEGRACAO] RedeMIX - Loja 7",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-611",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemepqc"
+    },
+    {
+      "id": "86aemepj1",
+      "name": "[INTEGRACAO] RedeMIX - Loja 08",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-612",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemepj1"
+    },
+    {
+      "id": "86aemeped",
+      "name": "[INTEGRACAO] RedeMIX - Loja 09",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-613",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemeped"
+    },
+    {
+      "id": "86aemepb6",
+      "name": "[INTEGRACAO] RedeMIX - Loja 10",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-614",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemepb6"
+    },
+    {
+      "id": "86aemep6j",
+      "name": "[INTEGRACAO] RedeMIX - Loja 04",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-608",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemep6j"
+    },
+    {
+      "id": "86aemen33",
+      "name": "[INTEGRACAO] RedeMIX - Loja 11",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-615",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aemen33"
+    },
+    {
+      "id": "86aememzm",
+      "name": "[INTEGRACAO] RedeMIX - Loja 3",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-607",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aememzm"
+    },
+    {
+      "id": "86aememwa",
+      "name": "[INTEGRACAO] RedeMIX - Loja 2 (Migração VTEX)",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-606",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aememwa"
+    },
+    {
+      "id": "86aememrm",
+      "name": "[INTEGRACAO] RedeMIX - Loja 1 ",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 34,
+      "daysSinceUpdated": 0,
+      "erp": "socin",
+      "fatherCustomId": "F0H-605",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aememrm"
+    },
+    {
+      "id": "86aeh1jkh",
+      "name": "[INTEGRACAO] O Mundo das Embalagens",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 39,
+      "daysSinceUpdated": 0,
+      "erp": "hipcom",
+      "fatherCustomId": "F0H-616",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86aeh1jkh"
+    },
+    {
+      "id": "86ady723m",
+      "name": "[INTEGRACAO] Atacadão São Roque",
+      "status": "produtos integrado",
+      "isBlocked": false,
+      "daysSinceCreated": 69,
+      "daysSinceUpdated": 0,
+      "erp": "winthor",
+      "fatherCustomId": "F0H-599",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme",
+        "Gabriel"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86ady723m"
+    },
+    {
+      "id": "86adx5cb0",
+      "name": "[INTEGRACAO] Supermercado Batista",
+      "status": "todo/dados coletados",
+      "isBlocked": false,
+      "daysSinceCreated": 72,
+      "daysSinceUpdated": 2,
+      "erp": "avanço",
+      "fatherCustomId": "F0H-598",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme",
+        "Gabriel"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adx5cb0"
+    },
+    {
+      "id": "86advjux5",
+      "name": "[INTEGRACAO] Empório Pas - Loja 04 - Andradina",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 74,
+      "daysSinceUpdated": 13,
+      "erp": null,
+      "fatherCustomId": "F0H-583",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86advjux5"
+    },
+    {
+      "id": "86advjuq4",
+      "name": "[INTEGRACAO] Emporio Pas - Loja 2  - Mirandopolis",
+      "status": "backlog",
+      "isBlocked": false,
+      "daysSinceCreated": 74,
+      "daysSinceUpdated": 16,
+      "erp": null,
+      "fatherCustomId": "F0H-582",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86advjuq4"
+    },
+    {
+      "id": "86adu1pjf",
+      "name": "[INTEGRACAO] Emporio Natural Mix - Loja 5 ",
+      "status": "revisão",
+      "isBlocked": false,
+      "daysSinceCreated": 75,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-580",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme",
+        "Welington",
+        "Gabriel"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adu1pjf"
+    },
+    {
+      "id": "86adu1p4y",
+      "name": "[INTEGRACAO] Emporio Natural Mix - Loja 4 - Tijucas",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 75,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-579",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adu1p4y"
+    },
+    {
+      "id": "86adu1nwu",
+      "name": "[INTEGRACAO] Emporio Natural Mix - Loja 3 - Campo Grande",
+      "status": "revisão",
+      "isBlocked": false,
+      "daysSinceCreated": 75,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-578",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adu1nwu"
+    },
+    {
+      "id": "86adu1nfz",
+      "name": "[INTEGRACAO] Emporio Natural Mix - Loja 2 - Bangu",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 75,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-577",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adu1nfz"
+    },
+    {
+      "id": "86adu1mzh",
+      "name": "[INTEGRACAO] Emporio Natural Mix - Loja 1 Madureira ",
+      "status": "revisão",
+      "isBlocked": false,
+      "daysSinceCreated": 75,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-576",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adu1mzh"
+    },
+    {
+      "id": "86adpbfdb",
+      "name": "[INTEGRACAO] Almeida Supermercado",
+      "status": "progresso pedido",
+      "isBlocked": false,
+      "daysSinceCreated": 81,
+      "daysSinceUpdated": 0,
+      "erp": "vivasistemas",
+      "fatherCustomId": "F0H-565",
+      "implantador": "Laissa",
+      "assignees": [
+        "Guilherme",
+        "Gabriel"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adpbfdb"
+    },
+    {
+      "id": "86adhu7rq",
+      "name": "[INTEGRACAO] Rota da Economia",
+      "status": "revisão",
+      "isBlocked": false,
+      "daysSinceCreated": 87,
+      "daysSinceUpdated": 10,
+      "erp": "novo erp",
+      "fatherCustomId": "F0H-548",
+      "implantador": "Derik",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adhu7rq"
+    },
+    {
+      "id": "86adh6989",
+      "name": "[INTEGRACAO] Ana Risorlange Bernardo Manuel (Migração Mercadapp)",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 88,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-564",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme",
+        "LUAN"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adh6989"
+    },
+    {
+      "id": "86adh690q",
+      "name": "[INTEGRACAO] Ana Risorlange Bonsucesso (Migração Mercadapp)",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 88,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-563",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme",
+        "LUAN"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adh690q"
+    },
+    {
+      "id": "86adh67wb",
+      "name": "[INTEGRACAO] Ana Risorlange Bom Jardim (Migração Mercadapp)",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 88,
+      "daysSinceUpdated": 0,
+      "erp": null,
+      "fatherCustomId": "F0H-562",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Paulo",
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adh67wb"
+    },
+    {
+      "id": "86adew46b",
+      "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 90,
+      "daysSinceUpdated": 40,
+      "erp": null,
+      "fatherCustomId": null,
+      "implantador": null,
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86adew46b"
+    },
+    {
+      "id": "86ada9m7x",
+      "name": "[INTEGRACAO] Araripe Supermercado ",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 97,
+      "daysSinceUpdated": 0,
+      "erp": "rms",
+      "fatherCustomId": "F0H-549",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": "Ana Débora",
+      "url": "https://app.clickup.com/t/86ada9m7x"
+    },
+    {
+      "id": "86ada8dxa",
+      "name": "[INTEGRACAO] Araripe Supermercado ",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 97,
+      "daysSinceUpdated": 0,
+      "erp": "rms",
+      "fatherCustomId": "F0H-549",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": "Ana Débora",
+      "url": "https://app.clickup.com/t/86ada8dxa"
+    },
+    {
+      "id": "86ad839np",
+      "name": "[INTEGRACAO] Araripe Supermercado Bom Jardim",
+      "status": "aguardando cliente",
+      "isBlocked": true,
+      "daysSinceCreated": 101,
+      "daysSinceUpdated": 19,
+      "erp": "rms",
+      "fatherCustomId": "F0H-550",
+      "implantador": "Ana Débora",
+      "assignees": [
+        "Guilherme"
+      ],
+      "engajamento_lojista": null,
+      "url": "https://app.clickup.com/t/86ad839np"
+    }
+  ],
+  "summary": {
+    "Derik": {
+      "total": 24,
+      "blocked": 0,
+      "byStatus": {
+        "backlog": 15,
+        "progresso pedido": 3,
+        "produtos integrado": 1,
+        "todo/dados coletados": 1,
+        "revisão": 4
+      },
+      "avgDaysSinceCreated": 43,
+      "maxDaysSinceCreated": 87
+    },
+    "Laissa": {
+      "total": 8,
+      "blocked": 4,
+      "byStatus": {
+        "aguardando cliente": 4,
+        "todo/dados coletados": 1,
+        "produtos integrado": 1,
+        "backlog": 1,
+        "progresso pedido": 1
+      },
+      "avgDaysSinceCreated": 24,
+      "maxDaysSinceCreated": 81
+    },
+    "Ana Débora": {
+      "total": 17,
+      "blocked": 6,
+      "byStatus": {
+        "progresso pedido": 11,
+        "aguardando cliente": 6
+      },
+      "avgDaysSinceCreated": 55,
+      "maxDaysSinceCreated": 101
+    }
+  },
+  "noImplantador": [
+    {
+      "id": "86adew46b",
+      "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
+      "status": "aguardando cliente",
+      "fatherCustomId": null
+    }
+  ]
+}

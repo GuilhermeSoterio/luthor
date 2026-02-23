@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Integrações Ativas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  body { background:#0f172a; color:#e2e8f0; font-family:'Inter',sans-serif; min-height:100vh; }
+  .tab-btn { transition:all .15s; border-bottom:2px solid transparent; }
+  .tab-btn.active { color:#60a5fa; border-bottom-color:#3b82f6; }
+  .tab-btn:not(.active) { color:#64748b; }
+  .tab-btn:not(.active):hover { color:#94a3b8; }
+  .card { background:#1e293b; border:1px solid #334155; border-radius:12px; }
+  .kpi { background:linear-gradient(135deg,#1e293b,#162032); border:1px solid #334155; border-radius:12px; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:99px; font-size:11px; font-weight:600; white-space:nowrap; }
+  .scrollable { max-height:500px; overflow-y:auto; }
+  .scrollable-tall { max-height:680px; overflow-y:auto; }
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:#0f172a; }
+  ::-webkit-scrollbar-thumb { background:#334155; border-radius:3px; }
+  table th { background:#0f172a; position:sticky; top:0; z-index:10; padding:8px 12px 8px 0; }
+  table td { padding:8px 12px 8px 0; }
+  tr:hover td { background:#1e293b88; }
+  .bar-bg { background:#0f172a; border-radius:4px; height:6px; overflow:hidden; }
+  .bar-fill { height:6px; border-radius:4px; }
+  input[type=text] { background:#1e293b; border:1px solid #334155; color:#e2e8f0; }
+  input[type=text]:focus { outline:none; border-color:#3b82f6; }
+  .kanban-col { background:#162032; border:1px solid #293548; border-radius:10px; min-width:180px; }
+  .kanban-card { background:#1e293b; border:1px solid #334155; border-radius:8px; }
+  .kanban-card:hover { border-color:#3b82f6; }
+  .progress-bar { height:4px; background:#0f172a; border-radius:2px; }
+  .progress-fill { height:4px; border-radius:2px; transition:width .3s; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 bg-slate-900 z-50 backdrop-blur">
+  <div>
+    <h1 class="text-lg font-bold text-white">⚡ Integrações Ativas</h1>
+    <p class="text-slate-500 text-xs mt-0.5">Atualizado 21/02/2026, 22:03:24</p>
+  </div>
+  <div class="flex gap-2 flex-wrap justify-end">
+    <span class="badge bg-slate-700/60 text-slate-300">49 lojas</span>
+    <span class="badge bg-blue-900/40 text-blue-300 border border-blue-700/30">19 em andamento</span>
+    <span class="badge bg-orange-900/40 text-orange-300 border border-orange-700/30">⚠ 8 bloqueadas</span>
+    <span class="badge bg-slate-700/40 text-slate-400">22 backlog</span>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="px-6 pt-5 grid grid-cols-5 gap-3">
+  <div class="kpi p-4 text-center">
+    <p class="text-slate-400 text-xs mb-1">Total ativas</p>
+    <p class="text-3xl font-bold text-white">49</p>
+    <p class="text-slate-500 text-xs mt-1">10 redes/lojas</p>
+  </div>
+  <div class="kpi p-4 text-center">
+    <p class="text-slate-400 text-xs mb-1">Em andamento</p>
+    <p class="text-3xl font-bold text-blue-400">19</p>
+    <p class="text-slate-500 text-xs mt-1">trabalhando agora</p>
+  </div>
+  <div class="kpi p-4 text-center">
+    <p class="text-slate-400 text-xs mb-1">Bloqueadas</p>
+    <p class="text-3xl font-bold text-orange-400">8</p>
+    <p class="text-slate-500 text-xs mt-1">30% das ativas</p>
+  </div>
+  <div class="kpi p-4 text-center">
+    <p class="text-slate-400 text-xs mb-1">Backlog</p>
+    <p class="text-3xl font-bold text-slate-400">22</p>
+    <p class="text-slate-500 text-xs mt-1">aguardando início</p>
+  </div>
+  <div class="kpi p-4 text-center">
+    <p class="text-slate-400 text-xs mb-1">Tempo médio</p>
+    <p class="text-3xl font-bold text-purple-400">26.1d</p>
+    <p class="text-slate-500 text-xs mt-1">no pipeline</p>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="px-6 pt-5 flex gap-0 border-b border-slate-700 overflow-x-auto">
+  <button class="tab-btn active px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('kanban',this)">🗂 Kanban</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('table',this)">📋 Tabela</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('groups',this)">🏢 Por Rede</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('blocked',this)">🔴 Bloqueios</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('phases',this)">⏱ Fases</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('charts',this)">📊 Gráficos</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('implantadores',this)">👷 Implantadores</button>
+</div>
+
+<div class="p-6">
+
+<!-- ═══════════════════ KANBAN ════════════════════════════════════════════ -->
+<div id="tab-kanban" class="tab-content active">
+  <div class="flex gap-3 overflow-x-auto pb-4">
+    
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#f59e0b"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">aguardando cliente</p>
+        <span class="ml-auto text-xs font-bold" style="color:#f59e0b">6</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86adh6989" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Ana Risorlange Bernardo Manuel</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Ana Risorlange</span>
+            <span class="text-xs text-red-400">10.8d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adh690q" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Ana Risorlange Bonsucesso</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Ana Risorlange</span>
+            <span class="text-xs text-red-400">10.8d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adh67wb" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Ana Risorlange Bom Jardim</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Ana Risorlange</span>
+            <span class="text-xs text-red-400">10.8d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86ada9m7x" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Araripe Supermercado</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Araripe Superme</span>
+            <span class="text-xs text-orange-400">81.7d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86ada8dxa" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Araripe Supermercado</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Araripe Superme</span>
+            <span class="text-xs text-orange-400">81.7d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86ad839np" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Araripe Supermercado Bom Jardim</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Araripe Superme</span>
+            <span class="text-xs text-orange-400">81.7d ⚠</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#a855f7"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">revisão</p>
+        <span class="ml-auto text-xs font-bold" style="color:#a855f7">4</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86adu1pjf" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Natural Mix - Loja 5</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Natural</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1nwu" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Natural Mix - Loja 3 - Campo Gra</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Natural</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1mzh" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Natural Mix - Loja 1 Madureira</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Natural</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adhu7rq" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Rota da Economia</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Novo Erp</span>
+            <span class="text-xs text-slate-400">44.6d</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#10b981"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">progresso pedido</p>
+        <span class="ml-auto text-xs font-bold" style="color:#10b981">13</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86aemer60" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 5</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemer0r" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 06</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepqc" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 7</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepj1" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 08</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemeped" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 09</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepb6" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 10</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemep6j" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 04</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aemen33" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 11</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">15.7d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aememzm" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 3</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">15.7d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aememwa" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 2 (Migração VTEX)</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">15.7d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aememrm" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">RedeMIX - Loja 1</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">RedeMIX</span>
+            <span class="text-xs text-slate-400">14.6d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aeh1jkh" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">O Mundo das Embalagens</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            <span class="text-xs text-slate-400">8.7d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1p4y" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Natural Mix - Loja 4 - Tijucas</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Natural</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#06b6d4"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">produtos integrado</p>
+        <span class="ml-auto text-xs font-bold" style="color:#06b6d4">1</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86ady723m" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Atacadão São Roque</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Winthor</span>
+            <span class="text-xs text-slate-400">43d</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#8b5cf6"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">todo/dados coletados</p>
+        <span class="ml-auto text-xs font-bold" style="color:#8b5cf6">1</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Batista</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Avanço</span>
+            <span class="text-xs text-orange-400">43.9d ⚠</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#475569"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">backlog</p>
+        <span class="ml-auto text-xs font-bold" style="color:#475569">22</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86afcp5zd" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Aguiar</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af908mn" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">R Center - Parque Santa Rosa</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">R Center</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af8yurq" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">R Center - Messejana</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">R Center</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af77qd3" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Telefrango Supermercados Passaré</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Telefrango Supe</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af560cg" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Brisa Mini Mercado</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2yxw7" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Compre Certo - Guaiuba</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Compre Certo</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2yx8b" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Compre Certo - Maranguape</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Compre Certo</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2ywtw" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Compre Certo - Baturité</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Compre Certo</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2wu06" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Compre Certo - Pacatuba</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Compre Certo</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2w531" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Compre Certo - Itaitinga</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Compre Certo</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af2vp6k" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Aconchemax</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af28vp4" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Super Portugal Sobral</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Super Portugal</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af28vc2" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Super Portugal Cidade dos Funcionários</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Super Portugal</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af28ubg" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Super Portugal Granja Portugal</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Super Portugal</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af1php0" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Telefrango Supermercados João XXIII</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Telefrango Supe</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af1ph3e" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Telefrango Supermercados Redenção</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Telefrango Supe</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af1hk8h" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Rodrigues</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af0dc0j" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Real - Carmo do Rio Verde</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86af0dbaa" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Real - Ceres</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86aewxgz2" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Supermercado Real - Ceres</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">N/A</span>
+            
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86advjux5" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Empório Pas - Loja 04 - Andradina</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Pas</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86advjuq4" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Pas - Loja 2 - Mirandopolis</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Pas</span>
+            <span class="text-xs text-slate-400">18.9d</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="kanban-col flex-shrink-0 w-52 p-3">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#f97316"></div>
+        <p class="text-xs font-semibold text-slate-300 leading-tight">bloqueado pedido</p>
+        <span class="ml-auto text-xs font-bold" style="color:#f97316">2</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        
+        <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Emporio Natural Mix - Loja 2 - Bangu</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Empório Natural</span>
+            <span class="text-xs text-orange-400">18.9d ⚠</span>
+          </div>
+        </a>
+        <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
+          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">Almeida Supermercado</p>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 text-xs">Vivasistemas</span>
+            <span class="text-xs text-red-400">43.8d ⚠</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TABLE ════════════════════════════════════════════ -->
+<div id="tab-table" class="tab-content">
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-semibold text-white text-sm">Todas as integrações ativas</h2>
+      <div class="flex gap-3 items-center">
+        <input type="text" id="tbl-search" placeholder="Filtrar..." class="text-sm px-3 py-1.5 rounded-lg w-52"
+          oninput="renderTable()">
+        <select id="tbl-status" class="bg-slate-700 text-slate-300 text-xs px-2 py-1.5 rounded-lg border border-slate-600"
+          onchange="renderTable()">
+          <option value="">Todos os status</option>
+          <option value="contato/comunicação">contato/comunicação</option><option value="todo/dados coletados">todo/dados coletados</option><option value="aguardando cliente">aguardando cliente</option><option value="progresso produto">progresso produto</option><option value="produtos integrado">produtos integrado</option><option value="bloqueado produto">bloqueado produto</option><option value="progresso pedido">progresso pedido</option><option value="bloqueado pedido">bloqueado pedido</option><option value="revisão">revisão</option><option value="backlog">backlog</option>
+        </select>
+      </div>
+    </div>
+    <div class="scrollable-tall">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="text-left text-slate-400 border-b border-slate-700/50 text-xs">
+            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('name')">Loja</th>
+            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('group')">Rede</th>
+            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('erp')">ERP</th>
+            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('status')">Status</th>
+            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('total_days')">Total</th>
+            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('blocked_days')">Bloq.</th>
+            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('blocked_pct')">% Bloq</th>
+            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('days_since_created')">No board</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body" class="divide-y divide-slate-700/30"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ GROUPS ════════════════════════════════════════════ -->
+<div id="tab-groups" class="tab-content">
+  <div class="grid grid-cols-1 gap-4">
+    
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Individual</h3>
+          <p class="text-slate-400 text-xs mt-0.5">12 lojas · 4 em andamento · <span class="text-orange-400">1 bloqueada</span> · 7 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span><span class="badge text-xs" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span><span class="badge text-xs" style="background:#06b6d422;color:#06b6d4;border:1px solid #06b6d433">produtos integrado</span>
+          <span class="text-slate-500 text-xs">+3</span>
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86adhu7rq" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Rota da Economia</span>
+          <span class="badge mt-0.5" style="background:#a855f722;color:#a855f7;border:1px solid #a855f733">revisão</span>
+          <span class="text-slate-500">44.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aeh1jkh" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">O Mundo das Embalagens</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">8.7d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86ady723m" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Atacadão São Roque</span>
+          <span class="badge mt-0.5" style="background:#06b6d422;color:#06b6d4;border:1px solid #06b6d433">produtos integrado</span>
+          <span class="text-slate-500">43d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Batista</span>
+          <span class="badge mt-0.5" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf633">todo/dados coletados</span>
+          <span class="text-slate-500">43.9d · <span class="text-orange-400">20% bloq</span></span>
+        </a>
+        <a href="https://app.clickup.com/t/86afcp5zd" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Aguiar</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af560cg" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Brisa Mini Mercado</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af2vp6k" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Aconchemax</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af1hk8h" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Rodrigues</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af0dc0j" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Real Carmo do Rio</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af0dbaa" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Real Ceres</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86aewxgz2" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Supermercado Real Ceres</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Almeida Supermercado</span>
+          <span class="badge mt-0.5" style="background:#f9731622;color:#f97316;border:1px solid #f9731633">bloqueado pedido</span>
+          <span class="text-slate-500">43.8d · <span class="text-orange-400">68% bloq</span></span>
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">RedeMIX</h3>
+          <p class="text-slate-400 text-xs mt-0.5">11 lojas · 11 em andamento · 0 bloqueadas · 0 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86aemer60" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 5</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemer0r" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 06</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepqc" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 7</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepj1" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 08</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemeped" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 09</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemepb6" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 10</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemep6j" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 04</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aemen33" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 11</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">15.7d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aememzm" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 3</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">15.7d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aememwa" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 2 (Migração VTEX)</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">15.7d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86aememrm" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 1</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">14.6d </span>
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Compre Certo</h3>
+          <p class="text-slate-400 text-xs mt-0.5">5 lojas · 0 em andamento · 0 bloqueadas · 5 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86af2yxw7" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Guaiuba</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af2yx8b" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Maranguape</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af2ywtw" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Baturité</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af2wu06" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Pacatuba</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af2w531" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Itaitinga</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Empório Natural Mix</h3>
+          <p class="text-slate-400 text-xs mt-0.5">5 lojas · 4 em andamento · <span class="text-orange-400">1 bloqueada</span> · 0 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#a855f722;color:#a855f7;border:1px solid #a855f733">revisão</span><span class="badge text-xs" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span><span class="badge text-xs" style="background:#f9731622;color:#f97316;border:1px solid #f9731633">bloqueado pedido</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86adu1pjf" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Natural Mix Loja 5</span>
+          <span class="badge mt-0.5" style="background:#a855f722;color:#a855f7;border:1px solid #a855f733">revisão</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1nwu" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Natural Mix Loja 3 - C</span>
+          <span class="badge mt-0.5" style="background:#a855f722;color:#a855f7;border:1px solid #a855f733">revisão</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1mzh" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Natural Mix Loja 1 Mad</span>
+          <span class="badge mt-0.5" style="background:#a855f722;color:#a855f7;border:1px solid #a855f733">revisão</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1p4y" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Natural Mix Loja 4 - T</span>
+          <span class="badge mt-0.5" style="background:#10b98122;color:#10b981;border:1px solid #10b98133">progresso pedido</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Natural Mix Loja 2 - B</span>
+          <span class="badge mt-0.5" style="background:#f9731622;color:#f97316;border:1px solid #f9731633">bloqueado pedido</span>
+          <span class="text-slate-500">18.9d · <span class="text-orange-400">9% bloq</span></span>
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Telefrango Supermercados</h3>
+          <p class="text-slate-400 text-xs mt-0.5">3 lojas · 0 em andamento · 0 bloqueadas · 3 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86af77qd3" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Passaré</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af1php0" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">João XXIII</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af1ph3e" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Redenção</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Super Portugal</h3>
+          <p class="text-slate-400 text-xs mt-0.5">3 lojas · 0 em andamento · 0 bloqueadas · 3 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86af28vp4" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Sobral</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af28vc2" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Cidade dos Funcionários</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af28ubg" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Granja Portugal</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Ana Risorlange</h3>
+          <p class="text-slate-400 text-xs mt-0.5">3 lojas · 0 em andamento · <span class="text-orange-400">3 bloqueadas</span> · 0 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86adh6989" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Bernardo Manuel</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">10.8d · <span class="text-orange-400">91% bloq</span></span>
+        </a>
+        <a href="https://app.clickup.com/t/86adh690q" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Bonsucesso</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">10.8d · <span class="text-orange-400">91% bloq</span></span>
+        </a>
+        <a href="https://app.clickup.com/t/86adh67wb" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Bom Jardim</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">10.8d · <span class="text-orange-400">91% bloq</span></span>
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Araripe Supermercado</h3>
+          <p class="text-slate-400 text-xs mt-0.5">3 lojas · 0 em andamento · <span class="text-orange-400">3 bloqueadas</span> · 0 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86ada9m7x" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Araripe Supermercado</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">81.7d · <span class="text-orange-400">12% bloq</span></span>
+        </a>
+        <a href="https://app.clickup.com/t/86ada8dxa" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Araripe Supermercado</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">81.7d · <span class="text-orange-400">12% bloq</span></span>
+        </a>
+        <a href="https://app.clickup.com/t/86ad839np" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Bom Jardim</span>
+          <span class="badge mt-0.5" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33">aguardando cliente</span>
+          <span class="text-slate-500">81.7d · <span class="text-orange-400">12% bloq</span></span>
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">R Center</h3>
+          <p class="text-slate-400 text-xs mt-0.5">2 lojas · 0 em andamento · 0 bloqueadas · 2 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86af908mn" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Parque Santa Rosa</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+        <a href="https://app.clickup.com/t/86af8yurq" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Messejana</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </a>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="font-semibold text-white">Empório Pas</h3>
+          <p class="text-slate-400 text-xs mt-0.5">2 lojas · 0 em andamento · 0 bloqueadas · 2 backlog</p>
+        </div>
+        <div class="flex gap-2 flex-wrap justify-end">
+          <span class="badge text-xs" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          
+        </div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        
+        <a href="https://app.clickup.com/t/86advjux5" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Loja 04 - Andradina</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+        <a href="https://app.clickup.com/t/86advjuq4" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
+          <span class="text-slate-300 font-medium">Emporio Pas Loja 2 - Mirandopo</span>
+          <span class="badge mt-0.5" style="background:#47556922;color:#475569;border:1px solid #47556933">backlog</span>
+          <span class="text-slate-500">18.9d </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ BLOCKED ════════════════════════════════════════════ -->
+<div id="tab-blocked" class="tab-content">
+  <div class="grid grid-cols-3 gap-3 mb-5">
+    <div class="kpi p-4">
+      <p class="text-slate-400 text-xs">Bloqueadas agora</p>
+      <p class="text-3xl font-bold text-orange-400 mt-1">8</p>
+    </div>
+    <div class="kpi p-4">
+      <p class="text-slate-400 text-xs">Pedido bloqueado</p>
+      <p class="text-3xl font-bold text-red-400 mt-1">2</p>
+    </div>
+    <div class="kpi p-4">
+      <p class="text-slate-400 text-xs">Aguardando cliente</p>
+      <p class="text-3xl font-bold text-yellow-400 mt-1">6</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Lojas com maior % bloqueado</h2>
+      <div class="scrollable">
+        
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adh6989" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Ana Risorlange Bernardo Manuel</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">91%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:91%;background:#ef4444"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 10.8d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adh690q" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Ana Risorlange Bonsucesso</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">91%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:91%;background:#ef4444"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 10.8d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adh67wb" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Ana Risorlange Bom Jardim</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">91%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:91%;background:#ef4444"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 10.8d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Almeida Supermercado</a>
+              <span class="badge ml-2 text-xs" style="background:#f9731622;color:#f97316">bloqueado pedido</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">68%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:68%;background:#ef4444"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">29.8d bloqueado de 43.8d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Supermercado Batista</a>
+              <span class="badge ml-2 text-xs" style="background:#8b5cf622;color:#8b5cf6">todo/dados coletados</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">20%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:20%;background:#f59e0b"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">8.9d bloqueado de 43.9d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86ada9m7x" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Araripe Supermercado</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">12%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:12%;background:#f59e0b"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 81.7d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86ada8dxa" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Araripe Supermercado</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">12%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:12%;background:#f59e0b"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 81.7d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86ad839np" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Araripe Supermercado Bom Jardim</a>
+              <span class="badge ml-2 text-xs" style="background:#f59e0b22;color:#f59e0b">aguardando cliente</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">12%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:12%;background:#f59e0b"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">9.9d bloqueado de 81.7d total</p>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div>
+              <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">Emporio Natural Mix - Loja 2 - Bangu</a>
+              <span class="badge ml-2 text-xs" style="background:#f9731622;color:#f97316">bloqueado pedido</span>
+            </div>
+            <span class="text-xs text-red-400 font-bold ml-2">9%</span>
+          </div>
+          <div class="relative">
+            <div class="bar-bg w-full">
+              <div class="bar-fill" style="width:9%;background:#f59e0b"></div>
+            </div>
+          </div>
+          <p class="text-slate-600 text-xs mt-1">1.7d bloqueado de 18.9d total</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Status bloqueantes</h2>
+      
+        <div class="mb-5">
+          <p class="text-xs font-semibold mb-2" style="color:#f97316">BLOQUEADO PEDIDO (2)</p>
+          
+          <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Emporio Natural Mix - Loja 2 - Bangu</p>
+              <p class="text-slate-600 text-xs">Empório Natural Mix</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">1.7d bloq</p>
+              <p class="text-slate-600 text-xs">18.9d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Almeida Supermercado</p>
+              <p class="text-slate-600 text-xs">Vivasistemas</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">29.8d bloq</p>
+              <p class="text-slate-600 text-xs">43.8d total</p>
+            </div>
+          </a>
+        </div>
+        <div class="mb-5">
+          <p class="text-xs font-semibold mb-2" style="color:#f59e0b">AGUARDANDO CLIENTE (6)</p>
+          
+          <a href="https://app.clickup.com/t/86adh6989" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Ana Risorlange Bernardo Manuel</p>
+              <p class="text-slate-600 text-xs">Ana Risorlange</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">10.8d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86adh690q" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Ana Risorlange Bonsucesso</p>
+              <p class="text-slate-600 text-xs">Ana Risorlange</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">10.8d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86adh67wb" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Ana Risorlange Bom Jardim</p>
+              <p class="text-slate-600 text-xs">Ana Risorlange</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">10.8d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86ada9m7x" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Araripe Supermercado</p>
+              <p class="text-slate-600 text-xs">Araripe Supermercado</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">81.7d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86ada8dxa" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Araripe Supermercado</p>
+              <p class="text-slate-600 text-xs">Araripe Supermercado</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">81.7d total</p>
+            </div>
+          </a>
+          <a href="https://app.clickup.com/t/86ad839np" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
+            <div>
+              <p class="text-xs text-slate-300 group-hover:text-white">Araripe Supermercado Bom Jardim</p>
+              <p class="text-slate-600 text-xs">Araripe Supermercado</p>
+            </div>
+            <div class="text-right ml-2">
+              <p class="text-xs text-red-400">9.9d bloq</p>
+              <p class="text-slate-600 text-xs">81.7d total</p>
+            </div>
+          </a>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PHASES ════════════════════════════════════════════ -->
+<div id="tab-phases" class="tab-content">
+  <div class="grid grid-cols-4 gap-3 mb-5">
+    
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1 capitalize">Preparação</p>
+      <p class="text-3xl font-bold text-white">8.6d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana 7.1d · n=26</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1 capitalize">Produto</p>
+      <p class="text-3xl font-bold text-white">8.8d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana 9.9d · n=20</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1 capitalize">Pedido</p>
+      <p class="text-3xl font-bold text-white">3.7d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana 0.9d · n=17</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1 capitalize">Revisão</p>
+      <p class="text-3xl font-bold text-white">3.7d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana 1.7d · n=4</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Tempo médio por fase</h2>
+      <canvas id="phasesBarChart" height="180"></canvas>
+    </div>
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Breakdown por loja (ativas)</h2>
+      <div class="scrollable">
+        <canvas id="phasesStoreChart" height="350"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CHARTS ════════════════════════════════════════════ -->
+<div id="tab-charts" class="tab-content">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Distribuição por status</h2>
+      <canvas id="statusDonutChart" height="200"></canvas>
+    </div>
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-4">Lojas por rede</h2>
+      <canvas id="groupBarChart" height="200"></canvas>
+    </div>
+    <div class="card p-5 col-span-2">
+      <h2 class="font-semibold text-white text-sm mb-4">Ativo vs Bloqueado por loja (em andamento)</h2>
+      <div style="overflow-x:auto">
+        <canvas id="activeBlockedChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ IMPLANTADORES ════════════════════════════════════ -->
+<div id="tab-implantadores" class="tab-content">
+
+  <div class="grid grid-cols-3 gap-4 mb-5"><div class="card p-5 border-2" style="border-color:#8b5cf644"><div class="flex items-start justify-between mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background:#8b5cf6">DL</div><div><p class="font-bold text-white">Derik</p><p class="text-xs text-slate-500">24 lojas ativas</p></div></div><p class="text-2xl font-bold" style="color:#8b5cf6">24</p></div><div class="flex gap-0 h-2 rounded overflow-hidden mb-3 bg-slate-800"><div style="background:#ef4444;width:4%" title="1 bloqueadas"></div><div style="background:#3b82f6;width:33%" title="8 em andamento"></div><div style="background:#475569;width:63%" title="15 backlog"></div></div><div class="grid grid-cols-3 gap-2 mb-3 text-center"><div class="bg-red-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Bloqueadas</p><p class="font-bold text-red-400">1</p></div><div class="bg-blue-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Andamento</p><p class="font-bold text-blue-400">8</p></div><div class="bg-slate-800 rounded-lg p-2"><p class="text-xs text-slate-500">Backlog</p><p class="font-bold text-slate-400">15</p></div></div><div class="flex items-center justify-between text-xs mb-3"><span class="text-slate-500">Média na fila</span><span class="font-mono font-semibold text-yellow-400">42d</span></div><div class="space-y-1"><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#475569"></span><span class="text-slate-400">backlog</span></span><span class="text-slate-300 font-mono">15</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#a855f7"></span><span class="text-slate-400">revisão</span></span><span class="text-slate-300 font-mono">4</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#10b981"></span><span class="text-slate-400">progresso pedido</span></span><span class="text-slate-300 font-mono">2</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#06b6d4"></span><span class="text-slate-400">produtos integrado</span></span><span class="text-slate-300 font-mono">1</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#8b5cf6"></span><span class="text-slate-400">todo/dados coletados</span></span><span class="text-slate-300 font-mono">1</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#f97316"></span><span class="text-slate-400">bloqueado pedido</span></span><span class="text-slate-300 font-mono">1</span></div></div></div><div class="card p-5 border-2" style="border-color:#10b98144"><div class="flex items-start justify-between mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background:#10b981">LO</div><div><p class="font-bold text-white">Laissa</p><p class="text-xs text-slate-500">8 lojas ativas</p></div></div><p class="text-2xl font-bold" style="color:#10b981">8</p></div><div class="flex gap-0 h-2 rounded overflow-hidden mb-3 bg-slate-800"><div style="background:#ef4444;width:13%" title="1 bloqueadas"></div><div style="background:#475569;width:88%" title="7 backlog"></div></div><div class="grid grid-cols-3 gap-2 mb-3 text-center"><div class="bg-red-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Bloqueadas</p><p class="font-bold text-red-400">1</p></div><div class="bg-blue-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Andamento</p><p class="font-bold text-blue-400">0</p></div><div class="bg-slate-800 rounded-lg p-2"><p class="text-xs text-slate-500">Backlog</p><p class="font-bold text-slate-400">7</p></div></div><div class="flex items-center justify-between text-xs mb-3"><span class="text-slate-500">Média na fila</span><span class="font-mono font-semibold text-slate-300">23d</span></div><div class="space-y-1"><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#475569"></span><span class="text-slate-400">backlog</span></span><span class="text-slate-300 font-mono">7</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#f97316"></span><span class="text-slate-400">bloqueado pedido</span></span><span class="text-slate-300 font-mono">1</span></div></div></div><div class="card p-5 border-2" style="border-color:#f59e0b44"><div class="flex items-start justify-between mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background:#f59e0b">AD</div><div><p class="font-bold text-white">Ana Débora</p><p class="text-xs text-slate-500">17 lojas ativas</p></div></div><p class="text-2xl font-bold" style="color:#f59e0b">17</p></div><div class="flex gap-0 h-2 rounded overflow-hidden mb-3 bg-slate-800"><div style="background:#ef4444;width:35%" title="6 bloqueadas"></div><div style="background:#3b82f6;width:65%" title="11 em andamento"></div></div><div class="grid grid-cols-3 gap-2 mb-3 text-center"><div class="bg-red-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Bloqueadas</p><p class="font-bold text-red-400">6</p></div><div class="bg-blue-900/20 rounded-lg p-2"><p class="text-xs text-slate-500">Andamento</p><p class="font-bold text-blue-400">11</p></div><div class="bg-slate-800 rounded-lg p-2"><p class="text-xs text-slate-500">Backlog</p><p class="font-bold text-slate-400">0</p></div></div><div class="flex items-center justify-between text-xs mb-3"><span class="text-slate-500">Média na fila</span><span class="font-mono font-semibold text-yellow-400">54d</span></div><div class="space-y-1"><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#10b981"></span><span class="text-slate-400">progresso pedido</span></span><span class="text-slate-300 font-mono">11</span></div><div class="flex items-center justify-between text-xs"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#f59e0b"></span><span class="text-slate-400">aguardando cliente</span></span><span class="text-slate-300 font-mono">6</span></div></div><div class="mt-3"><span class="badge text-xs" style="background:#ef444422;color:#ef4444;border:1px solid #ef444440">⚠ até 100d na fila</span></div></div></div>
+
+  <div class="card p-5 mb-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-semibold text-white text-sm">Distribuição de carga</h2>
+      <span class="text-slate-500 text-xs">50 lojas ativas · 1 sem implantador atribuído</span>
+    </div>
+    <div class="space-y-2"><div class="flex items-center gap-3"><span class="text-xs font-medium w-24 text-right" style="color:#8b5cf6">Derik</span><div class="flex-1 flex h-7 rounded overflow-hidden bg-slate-800"><div class="flex items-center justify-center text-xs text-white font-bold" style="background:#ef4444;width:2%;min-width:22px">1</div><div class="flex items-center justify-center text-xs text-white" style="background:#3b82f6aa;width:16%">8</div><div class="flex items-center justify-center text-xs text-slate-400" style="background:#47556940;width:30%">15</div></div><span class="text-xs font-mono text-slate-400 w-8 text-right">24</span></div><div class="flex items-center gap-3"><span class="text-xs font-medium w-24 text-right" style="color:#10b981">Laissa</span><div class="flex-1 flex h-7 rounded overflow-hidden bg-slate-800"><div class="flex items-center justify-center text-xs text-white font-bold" style="background:#ef4444;width:2%;min-width:22px">1</div><div class="flex items-center justify-center text-xs text-slate-400" style="background:#47556940;width:14%">7</div></div><span class="text-xs font-mono text-slate-400 w-8 text-right">8</span></div><div class="flex items-center gap-3"><span class="text-xs font-medium w-24 text-right" style="color:#f59e0b">Ana Débora</span><div class="flex-1 flex h-7 rounded overflow-hidden bg-slate-800"><div class="flex items-center justify-center text-xs text-white font-bold" style="background:#ef4444;width:12%;min-width:22px">6</div><div class="flex items-center justify-center text-xs text-white" style="background:#3b82f6aa;width:22%">11</div></div><span class="text-xs font-mono text-slate-400 w-8 text-right">17</span></div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-medium w-24 text-right text-slate-600">Sem atrib.</span>
+        <div class="flex-1 h-7 rounded overflow-hidden bg-slate-800">
+          <div class="h-full" style="background:#33415560;width:2%"></div>
+        </div>
+        <span class="text-xs font-mono text-slate-600 w-8 text-right">1</span>
+      </div>
+    </div>
+    <div class="flex gap-4 mt-3 text-xs text-slate-500">
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-400 inline-block"></span> Bloqueadas</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-blue-500 inline-block"></span> Em andamento</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-slate-600 inline-block"></span> Backlog</span>
+    </div>
+  </div>
+
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <h2 class="font-semibold text-white text-sm">Lojas por implantador</h2>
+        <span id="imp-count" class="text-slate-500 text-xs"></span>
+      </div>
+      <div class="flex gap-1.5 flex-wrap">
+        <button class="imp-filter-btn text-xs px-3 py-1 rounded-full border border-slate-600 bg-slate-700 text-white transition-all" onclick="setImpFilter('all',this)">Todos</button>
+        <button class="imp-filter-btn text-xs px-3 py-1 rounded-full border transition-all text-slate-400" style="border-color:#8b5cf644" onmouseover="this.style.background='#8b5cf622'" onmouseout="this.style.background=''" onclick="setImpFilter('Derik',this)">Derik</button><button class="imp-filter-btn text-xs px-3 py-1 rounded-full border transition-all text-slate-400" style="border-color:#10b98144" onmouseover="this.style.background='#10b98122'" onmouseout="this.style.background=''" onclick="setImpFilter('Laissa',this)">Laissa</button><button class="imp-filter-btn text-xs px-3 py-1 rounded-full border transition-all text-slate-400" style="border-color:#f59e0b44" onmouseover="this.style.background='#f59e0b22'" onmouseout="this.style.background=''" onclick="setImpFilter('Ana Débora',this)">Ana Débora</button>
+        <button class="imp-filter-btn text-xs px-3 py-1 rounded-full border border-slate-700 text-slate-400 transition-all" onclick="setImpFilter('none',this)">Sem atrib.</button>
+      </div>
+    </div>
+    <div class="scrollable-tall">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="text-slate-400 border-b border-slate-700/50" style="font-size:11px">
+            <th class="pr-3 pb-2">Loja</th>
+            <th class="pr-3 pb-2">Status</th>
+            <th class="pr-3 pb-2">ERP</th>
+            <th class="pr-3 pb-2 text-right">Na fila</th>
+            <th class="pr-3 pb-2 text-right">Últ. atualiz.</th>
+            <th class="pr-3 pb-2 text-center">Implantador</th>
+            <th class="pb-2 text-center">Engaj. Lojista</th>
+          </tr>
+        </thead>
+        <tbody id="imp-tbody"></tbody>
+      </table>
+    </div>
+    <div class="mt-4 pt-4 border-t border-slate-700/50"><div class="flex items-center gap-2 mb-2"><span class="text-amber-400 text-xs font-semibold">⚠ 1 lojas sem implantador identificado</span><span class="text-slate-600 text-xs">(não constam como watcher no ClickUp)</span></div><div class="flex flex-wrap gap-1.5"><a href="https://app.clickup.com/t/86adew46b" target="_blank" class="badge text-xs hover:border-slate-500 transition-all" style="background:#1e293b;color:#94a3b8;border:1px solid #334155" title="[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova — aguardando cliente">[BOA COMPRA ATACAREJO] Desen…</a></div></div>
+  </div>
+</div>
+
+</div><!-- /p-6 -->
+
+<script>
+const DATA = {"kpis":{"total":49,"inProgress":19,"blocked":8,"backlog":22,"blockedPct":30,"avgDays":26.1,"groups":10},"tasks":[{"id":"86adh6989","name":"Ana Risorlange Bernardo Manuel","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"N/A","group":"Ana Risorlange","total_days":10.8,"active_days":0.9,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh6989","created_label":"26/11/2025","days_since_created":87,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"não vão iniciar","minutes":1361,"days":0.9,"entered_at":"2026-02-10T16:13:43.341Z"},{"status":"aguardando cliente","minutes":14234,"days":9.9,"entered_at":"2026-02-11T14:55:25.159Z"}]},{"id":"86adh690q","name":"Ana Risorlange Bonsucesso","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"N/A","group":"Ana Risorlange","total_days":10.8,"active_days":0.9,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh690q","created_label":"26/11/2025","days_since_created":87,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"não vão iniciar","minutes":1361,"days":0.9,"entered_at":"2026-02-10T16:13:42.048Z"},{"status":"aguardando cliente","minutes":14234,"days":9.9,"entered_at":"2026-02-11T14:55:23.406Z"}]},{"id":"86adh67wb","name":"Ana Risorlange Bom Jardim","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"N/A","group":"Ana Risorlange","total_days":10.8,"active_days":0.9,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh67wb","created_label":"26/11/2025","days_since_created":87,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"não vão iniciar","minutes":1361,"days":0.9,"entered_at":"2026-02-10T16:13:37.890Z"},{"status":"aguardando cliente","minutes":14234,"days":9.9,"entered_at":"2026-02-11T14:55:22.057Z"}]},{"id":"86ada9m7x","name":"Araripe Supermercado","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"Rms","group":"Araripe Supermercado","total_days":81.7,"active_days":71.9,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ada9m7x","created_label":"17/11/2025","days_since_created":96,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"aguardando cliente","minutes":14235,"days":9.9,"entered_at":"2026-02-11T14:54:53.752Z"},{"status":"todo","minutes":15942,"days":11.1,"entered_at":"2025-12-01T18:22:42.848Z"},{"status":"bloqueado","minutes":87530,"days":60.8,"entered_at":"2025-12-12T20:04:44.309Z"}]},{"id":"86ada8dxa","name":"Araripe Supermercado","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"Rms","group":"Araripe Supermercado","total_days":81.7,"active_days":71.9,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ada8dxa","created_label":"17/11/2025","days_since_created":96,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"aguardando cliente","minutes":14235,"days":9.9,"entered_at":"2026-02-11T14:54:53.752Z"},{"status":"todo","minutes":15942,"days":11.1,"entered_at":"2025-12-01T18:22:42.848Z"},{"status":"bloqueado","minutes":87530,"days":60.8,"entered_at":"2025-12-12T20:04:49.935Z"}]},{"id":"86ad839np","name":"Araripe Supermercado Bom Jardim","status":"aguardando cliente","color":"#f59e0b","isBlocked":true,"isBacklog":false,"erp":"Rms","group":"Araripe Supermercado","total_days":81.7,"active_days":71.9,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ad839np","created_label":"13/11/2025","days_since_created":100,"phases":{"preparacao":9.9,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"aguardando cliente","minutes":14235,"days":9.9,"entered_at":"2026-02-11T14:54:53.752Z"},{"status":"todo","minutes":15941,"days":11.1,"entered_at":"2025-12-01T18:22:42.848Z"},{"status":"bloqueado","minutes":87530,"days":60.8,"entered_at":"2025-12-12T20:04:30.483Z"}]},{"id":"86adu1pjf","name":"Emporio Natural Mix - Loja 5","status":"revisão","color":"#a855f7","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"Empório Natural Mix","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1pjf","created_label":"09/12/2025","days_since_created":75,"phases":{"preparacao":7.1,"produto":10.1,"pedido":0.1,"teste":1.7},"status_breakdown":[{"status":"contato/comunicação","minutes":2800,"days":1.9,"entered_at":"2026-02-02T13:41:41.344Z"},{"status":"todo/dados coletados","minutes":7428,"days":5.2,"entered_at":"2026-02-04T12:21:49.097Z"},{"status":"produtos integrado","minutes":14549,"days":10.1,"entered_at":"2026-02-09T16:10:33.977Z"},{"status":"progresso pedido","minutes":88,"days":0.1,"entered_at":"2026-02-19T18:39:41.887Z"},{"status":"revisão","minutes":2401,"days":1.7,"entered_at":"2026-02-19T20:08:01.653Z"}]},{"id":"86adu1nwu","name":"Emporio Natural Mix - Loja 3 - Campo Grande","status":"revisão","color":"#a855f7","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"Empório Natural Mix","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1nwu","created_label":"09/12/2025","days_since_created":75,"phases":{"preparacao":7.1,"produto":10.1,"pedido":0,"teste":1.7},"status_breakdown":[{"status":"contato/comunicação","minutes":6202,"days":4.3,"entered_at":"2026-02-02T13:42:56.488Z"},{"status":"todo/dados coletados","minutes":4024,"days":2.8,"entered_at":"2026-02-06T21:05:28.205Z"},{"status":"produtos integrado","minutes":14549,"days":10.1,"entered_at":"2026-02-09T16:09:49.270Z"},{"status":"progresso pedido","minutes":3,"days":0,"entered_at":"2026-02-19T18:39:48.797Z"},{"status":"revisão","minutes":2486,"days":1.7,"entered_at":"2026-02-19T18:42:53.273Z"}]},{"id":"86adu1mzh","name":"Emporio Natural Mix - Loja 1 Madureira","status":"revisão","color":"#a855f7","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"Empório Natural Mix","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1mzh","created_label":"09/12/2025","days_since_created":75,"phases":{"preparacao":7.1,"produto":10.1,"pedido":0,"teste":1.7},"status_breakdown":[{"status":"contato/comunicação","minutes":6201,"days":4.3,"entered_at":"2026-02-02T13:44:21.309Z"},{"status":"todo/dados coletados","minutes":4023,"days":2.8,"entered_at":"2026-02-06T21:05:32.675Z"},{"status":"produtos integrado","minutes":14551,"days":10.1,"entered_at":"2026-02-09T16:08:37.394Z"},{"status":"progresso pedido","minutes":3,"days":0,"entered_at":"2026-02-19T18:39:55.029Z"},{"status":"revisão","minutes":2486,"days":1.7,"entered_at":"2026-02-19T18:42:57.907Z"}]},{"id":"86adhu7rq","name":"Rota da Economia","status":"revisão","color":"#a855f7","isBlocked":false,"isBacklog":false,"erp":"Novo Erp","group":"Individual","total_days":44.6,"active_days":44.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adhu7rq","created_label":"27/11/2025","days_since_created":86,"phases":{"preparacao":11.9,"produto":3.7,"pedido":19.4,"teste":9.6},"status_breakdown":[{"status":"contato/comunicação","minutes":8207,"days":5.7,"entered_at":"2026-01-07T21:54:12.936Z"},{"status":"todo/dados coletados","minutes":8942,"days":6.2,"entered_at":"2026-01-13T14:41:15.992Z"},{"status":"progresso produto","minutes":2957,"days":2.1,"entered_at":"2026-01-19T19:43:54.361Z"},{"status":"produtos integrado","minutes":2387,"days":1.7,"entered_at":"2026-01-21T21:01:42.056Z"},{"status":"progresso pedido","minutes":27921,"days":19.4,"entered_at":"2026-01-23T12:49:36.136Z"},{"status":"revisão","minutes":13799,"days":9.6,"entered_at":"2026-02-11T22:10:58.477Z"}]},{"id":"86aemer60","name":"RedeMIX - Loja 5","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemer60","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5447,"days":3.8,"entered_at":"2026-02-06T21:24:26.068Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:50.351Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:24.786Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:23.490Z"}]},{"id":"86aemer0r","name":"RedeMIX - Loja 06","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemer0r","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5463,"days":3.8,"entered_at":"2026-02-06T21:08:17.791Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:51.981Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:23.465Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:30:59.988Z"}]},{"id":"86aemepqc","name":"RedeMIX - Loja 7","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepqc","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5463,"days":3.8,"entered_at":"2026-02-06T21:08:22.804Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:42.518Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:30.990Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:30:56.771Z"}]},{"id":"86aemepj1","name":"RedeMIX - Loja 08","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepj1","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5463,"days":3.8,"entered_at":"2026-02-06T21:08:27.526Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:41.224Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:32.018Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:30:55.439Z"}]},{"id":"86aemeped","name":"RedeMIX - Loja 09","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemeped","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5446,"days":3.8,"entered_at":"2026-02-06T21:25:14.772Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:47.539Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:26.127Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:02.304Z"}]},{"id":"86aemepb6","name":"RedeMIX - Loja 10","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepb6","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5446,"days":3.8,"entered_at":"2026-02-06T21:25:22.948Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:46.166Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:27.690Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:01.296Z"}]},{"id":"86aemep6j","name":"RedeMIX - Loja 04","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemep6j","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":6,"produto":7.7,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":5446,"days":3.8,"entered_at":"2026-02-06T21:25:31.284Z"},{"status":"todo/dados coletados","minutes":3235,"days":2.2,"entered_at":"2026-02-10T16:11:44.708Z"},{"status":"produtos integrado","minutes":11063,"days":7.7,"entered_at":"2026-02-12T22:07:29.141Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:30:57.799Z"}]},{"id":"86aemen33","name":"RedeMIX - Loja 11","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":15.7,"active_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemen33","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":0,"produto":14.8,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"progresso produto","minutes":1564,"days":1.1,"entered_at":"2026-02-05T19:36:02.474Z"},{"status":"produtos integrado","minutes":19731,"days":13.7,"entered_at":"2026-02-06T21:40:34.525Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:35.147Z"}]},{"id":"86aememzm","name":"RedeMIX - Loja 3","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":15.7,"active_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememzm","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":0,"produto":14.8,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"progresso produto","minutes":1565,"days":1.1,"entered_at":"2026-02-05T19:35:49.135Z"},{"status":"produtos integrado","minutes":19730,"days":13.7,"entered_at":"2026-02-06T21:40:51.086Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:25.845Z"}]},{"id":"86aememwa","name":"RedeMIX - Loja 2 (Migração VTEX)","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":15.7,"active_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememwa","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":0,"produto":14.8,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"progresso produto","minutes":1565,"days":1.1,"entered_at":"2026-02-05T19:35:40.955Z"},{"status":"produtos integrado","minutes":19730,"days":13.7,"entered_at":"2026-02-06T21:41:01.409Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:24.927Z"}]},{"id":"86aememrm","name":"RedeMIX - Loja 1","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"RedeMIX","total_days":14.6,"active_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememrm","created_label":"19/01/2026","days_since_created":33,"phases":{"preparacao":2.8,"produto":10.9,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":4007,"days":2.8,"entered_at":"2026-02-06T21:25:38.290Z"},{"status":"produtos integrado","minutes":15738,"days":10.9,"entered_at":"2026-02-09T16:13:21.849Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:32.708Z"}]},{"id":"86aeh1jkh","name":"O Mundo das Embalagens","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"Individual","total_days":8.7,"active_days":8.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aeh1jkh","created_label":"14/01/2026","days_since_created":38,"phases":{"preparacao":7,"produto":0.8,"pedido":0.9,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":156,"days":0.1,"entered_at":"2026-02-12T19:33:56.282Z"},{"status":"todo/dados coletados","minutes":9955,"days":6.9,"entered_at":"2026-02-12T22:10:42.379Z"},{"status":"produtos integrado","minutes":1105,"days":0.8,"entered_at":"2026-02-19T20:06:19.754Z"},{"status":"progresso pedido","minutes":1298,"days":0.9,"entered_at":"2026-02-20T14:31:22.347Z"}]},{"id":"86adu1p4y","name":"Emporio Natural Mix - Loja 4 - Tijucas","status":"progresso pedido","color":"#10b981","isBlocked":false,"isBacklog":false,"erp":"N/A","group":"Empório Natural Mix","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1p4y","created_label":"09/12/2025","days_since_created":75,"phases":{"preparacao":7.1,"produto":10.1,"pedido":1.7,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":6202,"days":4.3,"entered_at":"2026-02-02T13:42:57.880Z"},{"status":"todo/dados coletados","minutes":4024,"days":2.8,"entered_at":"2026-02-06T21:05:29.748Z"},{"status":"produtos integrado","minutes":14549,"days":10.1,"entered_at":"2026-02-09T16:10:15.165Z"},{"status":"progresso pedido","minutes":2490,"days":1.7,"entered_at":"2026-02-19T18:39:46.121Z"}]},{"id":"86ady723m","name":"Atacadão São Roque","status":"produtos integrado","color":"#06b6d4","isBlocked":false,"isBacklog":false,"erp":"Winthor","group":"Individual","total_days":43,"active_days":43,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86ady723m","created_label":"15/12/2025","days_since_created":68,"phases":{"preparacao":33.1,"produto":9.9,"pedido":0,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":47659,"days":33.1,"entered_at":"2026-01-09T12:37:46.678Z"},{"status":"progresso produto","minutes":1873,"days":1.3,"entered_at":"2026-02-11T14:57:00.855Z"},{"status":"produtos integrado","minutes":12359,"days":8.6,"entered_at":"2026-02-12T22:10:33.103Z"}]},{"id":"86adx5cb0","name":"Supermercado Batista","status":"todo/dados coletados","color":"#8b5cf6","isBlocked":false,"isBacklog":false,"erp":"Avanço","group":"Individual","total_days":43.9,"active_days":34.9,"blocked_days":8.9,"blocked_pct":20,"url":"https://app.clickup.com/t/86adx5cb0","created_label":"12/12/2025","days_since_created":71,"phases":{"preparacao":10.2,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":274,"days":0.2,"entered_at":"2026-01-08T18:54:22.324Z"},{"status":"aguardando cliente","minutes":12874,"days":8.9,"entered_at":"2026-02-11T14:54:53.752Z"},{"status":"todo/dados coletados","minutes":1469,"days":1,"entered_at":"2026-02-20T13:29:27.501Z"},{"status":"bloqueado","minutes":48575,"days":33.7,"entered_at":"2026-01-08T21:19:07.946Z"}]},{"id":"86afcp5zd","name":"Supermercado Aguiar","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86afcp5zd","created_label":"13/02/2026","days_since_created":8,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af908mn","name":"R Center - Parque Santa Rosa","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"R Center","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af908mn","created_label":"10/02/2026","days_since_created":11,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af8yurq","name":"R Center - Messejana","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"R Center","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af8yurq","created_label":"10/02/2026","days_since_created":11,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af77qd3","name":"Telefrango Supermercados Passaré","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Telefrango Supermercados","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af77qd3","created_label":"09/02/2026","days_since_created":12,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af560cg","name":"Brisa Mini Mercado","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af560cg","created_label":"06/02/2026","days_since_created":15,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2yxw7","name":"Compre Certo - Guaiuba","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Compre Certo","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2yxw7","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2yx8b","name":"Compre Certo - Maranguape","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Compre Certo","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2yx8b","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2ywtw","name":"Compre Certo - Baturité","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Compre Certo","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2ywtw","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2wu06","name":"Compre Certo - Pacatuba","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Compre Certo","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2wu06","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2w531","name":"Compre Certo - Itaitinga","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Compre Certo","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2w531","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af2vp6k","name":"Supermercado Aconchemax","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2vp6k","created_label":"04/02/2026","days_since_created":17,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af28vp4","name":"Super Portugal Sobral","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Super Portugal","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28vp4","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af28vc2","name":"Super Portugal Cidade dos Funcionários","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Super Portugal","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28vc2","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af28ubg","name":"Super Portugal Granja Portugal","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Super Portugal","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28ubg","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af1php0","name":"Telefrango Supermercados João XXIII","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Telefrango Supermercados","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1php0","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af1ph3e","name":"Telefrango Supermercados Redenção","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Telefrango Supermercados","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1ph3e","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af1hk8h","name":"Supermercado Rodrigues","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1hk8h","created_label":"03/02/2026","days_since_created":18,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af0dc0j","name":"Supermercado Real - Carmo do Rio Verde","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af0dc0j","created_label":"02/02/2026","days_since_created":19,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86af0dbaa","name":"Supermercado Real - Ceres","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af0dbaa","created_label":"02/02/2026","days_since_created":19,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86aewxgz2","name":"Supermercado Real - Ceres","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Individual","total_days":0,"active_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aewxgz2","created_label":"28/01/2026","days_since_created":24,"phases":{"preparacao":0,"produto":0,"pedido":0,"teste":0},"status_breakdown":[]},{"id":"86advjux5","name":"Empório Pas - Loja 04 - Andradina","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Empório Pas","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86advjux5","created_label":"10/12/2025","days_since_created":73,"phases":{"preparacao":4.3,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"backlog","minutes":17042,"days":11.8,"entered_at":"2026-02-09T16:07:05.403Z"},{"status":"contato/comunicação","minutes":6203,"days":4.3,"entered_at":"2026-02-02T13:42:27.763Z"},{"status":"bloqueado","minutes":4021,"days":2.8,"entered_at":"2026-02-06T21:05:58.075Z"}]},{"id":"86advjuq4","name":"Emporio Pas - Loja 2 - Mirandopolis","status":"backlog","color":"#475569","isBlocked":false,"isBacklog":true,"erp":"N/A","group":"Empório Pas","total_days":18.9,"active_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86advjuq4","created_label":"10/12/2025","days_since_created":73,"phases":{"preparacao":4.3,"produto":0,"pedido":0,"teste":0},"status_breakdown":[{"status":"backlog","minutes":21061,"days":14.6,"entered_at":"2026-02-06T21:08:14.713Z"},{"status":"contato/comunicação","minutes":6205,"days":4.3,"entered_at":"2026-02-02T13:42:26.581Z"}]},{"id":"86adpbfdb","name":"Almeida Supermercado","status":"bloqueado pedido","color":"#f97316","isBlocked":true,"isBacklog":false,"erp":"Vivasistemas","group":"Individual","total_days":43.8,"active_days":14,"blocked_days":29.8,"blocked_pct":68,"url":"https://app.clickup.com/t/86adpbfdb","created_label":"03/12/2025","days_since_created":80,"phases":{"preparacao":11.9,"produto":2.1,"pedido":29.8,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":17113,"days":11.9,"entered_at":"2026-01-08T16:52:29.449Z"},{"status":"progresso produto","minutes":3,"days":0,"entered_at":"2026-01-20T14:06:05.197Z"},{"status":"produtos integrado","minutes":2989,"days":2.1,"entered_at":"2026-01-21T21:03:50.169Z"},{"status":"bloqueado pedido","minutes":42970,"days":29.8,"entered_at":"2026-01-22T15:59:10.680Z"}]},{"id":"86adu1nfz","name":"Emporio Natural Mix - Loja 2 - Bangu","status":"bloqueado pedido","color":"#f97316","isBlocked":true,"isBacklog":false,"erp":"N/A","group":"Empório Natural Mix","total_days":18.9,"active_days":17.3,"blocked_days":1.7,"blocked_pct":9,"url":"https://app.clickup.com/t/86adu1nfz","created_label":"09/12/2025","days_since_created":75,"phases":{"preparacao":7.1,"produto":10.1,"pedido":1.7,"teste":0},"status_breakdown":[{"status":"contato/comunicação","minutes":6202,"days":4.3,"entered_at":"2026-02-02T13:43:18.437Z"},{"status":"todo/dados coletados","minutes":4022,"days":2.8,"entered_at":"2026-02-06T21:06:43.163Z"},{"status":"produtos integrado","minutes":14550,"days":10.1,"entered_at":"2026-02-09T16:09:23.281Z"},{"status":"progresso pedido","minutes":88,"days":0.1,"entered_at":"2026-02-19T18:39:51.677Z"},{"status":"bloqueado pedido","minutes":2401,"days":1.7,"entered_at":"2026-02-19T20:08:07.368Z"}]}],"statusGroups":[{"status":"aguardando cliente","color":"#f59e0b","count":6,"blocked":true,"tasks":[{"id":"86adh6989","name":"Ana Risorlange Bernardo Manuel","group":"Ana Risorlange","erp":"N/A","total_days":10.8,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh6989"},{"id":"86adh690q","name":"Ana Risorlange Bonsucesso","group":"Ana Risorlange","erp":"N/A","total_days":10.8,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh690q"},{"id":"86adh67wb","name":"Ana Risorlange Bom Jardim","group":"Ana Risorlange","erp":"N/A","total_days":10.8,"blocked_days":9.9,"blocked_pct":91,"url":"https://app.clickup.com/t/86adh67wb"},{"id":"86ada9m7x","name":"Araripe Supermercado","group":"Araripe Supermercado","erp":"Rms","total_days":81.7,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ada9m7x"},{"id":"86ada8dxa","name":"Araripe Supermercado","group":"Araripe Supermercado","erp":"Rms","total_days":81.7,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ada8dxa"},{"id":"86ad839np","name":"Araripe Supermercado Bom Jardim","group":"Araripe Supermercado","erp":"Rms","total_days":81.7,"blocked_days":9.9,"blocked_pct":12,"url":"https://app.clickup.com/t/86ad839np"}]},{"status":"revisão","color":"#a855f7","count":4,"blocked":false,"tasks":[{"id":"86adu1pjf","name":"Emporio Natural Mix - Loja 5","group":"Empório Natural Mix","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1pjf"},{"id":"86adu1nwu","name":"Emporio Natural Mix - Loja 3 - Campo Grande","group":"Empório Natural Mix","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1nwu"},{"id":"86adu1mzh","name":"Emporio Natural Mix - Loja 1 Madureira","group":"Empório Natural Mix","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1mzh"},{"id":"86adhu7rq","name":"Rota da Economia","group":"Individual","erp":"Novo Erp","total_days":44.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adhu7rq"}]},{"status":"progresso pedido","color":"#10b981","count":13,"blocked":false,"tasks":[{"id":"86aemer60","name":"RedeMIX - Loja 5","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemer60"},{"id":"86aemer0r","name":"RedeMIX - Loja 06","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemer0r"},{"id":"86aemepqc","name":"RedeMIX - Loja 7","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepqc"},{"id":"86aemepj1","name":"RedeMIX - Loja 08","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepj1"},{"id":"86aemeped","name":"RedeMIX - Loja 09","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemeped"},{"id":"86aemepb6","name":"RedeMIX - Loja 10","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemepb6"},{"id":"86aemep6j","name":"RedeMIX - Loja 04","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemep6j"},{"id":"86aemen33","name":"RedeMIX - Loja 11","group":"RedeMIX","erp":"N/A","total_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aemen33"},{"id":"86aememzm","name":"RedeMIX - Loja 3","group":"RedeMIX","erp":"N/A","total_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememzm"},{"id":"86aememwa","name":"RedeMIX - Loja 2 (Migração VTEX)","group":"RedeMIX","erp":"N/A","total_days":15.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememwa"},{"id":"86aememrm","name":"RedeMIX - Loja 1","group":"RedeMIX","erp":"N/A","total_days":14.6,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aememrm"},{"id":"86aeh1jkh","name":"O Mundo das Embalagens","group":"Individual","erp":"N/A","total_days":8.7,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aeh1jkh"},{"id":"86adu1p4y","name":"Emporio Natural Mix - Loja 4 - Tijucas","group":"Empório Natural Mix","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86adu1p4y"}]},{"status":"produtos integrado","color":"#06b6d4","count":1,"blocked":false,"tasks":[{"id":"86ady723m","name":"Atacadão São Roque","group":"Individual","erp":"Winthor","total_days":43,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86ady723m"}]},{"status":"todo/dados coletados","color":"#8b5cf6","count":1,"blocked":false,"tasks":[{"id":"86adx5cb0","name":"Supermercado Batista","group":"Individual","erp":"Avanço","total_days":43.9,"blocked_days":8.9,"blocked_pct":20,"url":"https://app.clickup.com/t/86adx5cb0"}]},{"status":"backlog","color":"#475569","count":22,"blocked":false,"tasks":[{"id":"86afcp5zd","name":"Supermercado Aguiar","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86afcp5zd"},{"id":"86af908mn","name":"R Center - Parque Santa Rosa","group":"R Center","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af908mn"},{"id":"86af8yurq","name":"R Center - Messejana","group":"R Center","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af8yurq"},{"id":"86af77qd3","name":"Telefrango Supermercados Passaré","group":"Telefrango Supermercados","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af77qd3"},{"id":"86af560cg","name":"Brisa Mini Mercado","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af560cg"},{"id":"86af2yxw7","name":"Compre Certo - Guaiuba","group":"Compre Certo","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2yxw7"},{"id":"86af2yx8b","name":"Compre Certo - Maranguape","group":"Compre Certo","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2yx8b"},{"id":"86af2ywtw","name":"Compre Certo - Baturité","group":"Compre Certo","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2ywtw"},{"id":"86af2wu06","name":"Compre Certo - Pacatuba","group":"Compre Certo","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2wu06"},{"id":"86af2w531","name":"Compre Certo - Itaitinga","group":"Compre Certo","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2w531"},{"id":"86af2vp6k","name":"Supermercado Aconchemax","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af2vp6k"},{"id":"86af28vp4","name":"Super Portugal Sobral","group":"Super Portugal","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28vp4"},{"id":"86af28vc2","name":"Super Portugal Cidade dos Funcionários","group":"Super Portugal","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28vc2"},{"id":"86af28ubg","name":"Super Portugal Granja Portugal","group":"Super Portugal","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af28ubg"},{"id":"86af1php0","name":"Telefrango Supermercados João XXIII","group":"Telefrango Supermercados","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1php0"},{"id":"86af1ph3e","name":"Telefrango Supermercados Redenção","group":"Telefrango Supermercados","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1ph3e"},{"id":"86af1hk8h","name":"Supermercado Rodrigues","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af1hk8h"},{"id":"86af0dc0j","name":"Supermercado Real - Carmo do Rio Verde","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af0dc0j"},{"id":"86af0dbaa","name":"Supermercado Real - Ceres","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86af0dbaa"},{"id":"86aewxgz2","name":"Supermercado Real - Ceres","group":"Individual","erp":"N/A","total_days":0,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86aewxgz2"},{"id":"86advjux5","name":"Empório Pas - Loja 04 - Andradina","group":"Empório Pas","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86advjux5"},{"id":"86advjuq4","name":"Emporio Pas - Loja 2 - Mirandopolis","group":"Empório Pas","erp":"N/A","total_days":18.9,"blocked_days":0,"blocked_pct":0,"url":"https://app.clickup.com/t/86advjuq4"}]},{"status":"bloqueado pedido","color":"#f97316","count":2,"blocked":true,"tasks":[{"id":"86adu1nfz","name":"Emporio Natural Mix - Loja 2 - Bangu","group":"Empório Natural Mix","erp":"N/A","total_days":18.9,"blocked_days":1.7,"blocked_pct":9,"url":"https://app.clickup.com/t/86adu1nfz"},{"id":"86adpbfdb","name":"Almeida Supermercado","group":"Individual","erp":"Vivasistemas","total_days":43.8,"blocked_days":29.8,"blocked_pct":68,"url":"https://app.clickup.com/t/86adpbfdb"}]}],"groups":[{"group":"Individual","count":12,"blocked":1,"inProgress":4,"backlog":7,"statuses":["backlog","progresso pedido","produtos integrado","todo/dados coletados","bloqueado pedido","revisão"],"avgDays":36.8},{"group":"RedeMIX","count":11,"blocked":0,"inProgress":11,"backlog":0,"statuses":["progresso pedido"],"avgDays":14.9},{"group":"Compre Certo","count":5,"blocked":0,"inProgress":0,"backlog":5,"statuses":["backlog"],"avgDays":0},{"group":"Empório Natural Mix","count":5,"blocked":1,"inProgress":4,"backlog":0,"statuses":["revisão","progresso pedido","bloqueado pedido"],"avgDays":18.9},{"group":"Telefrango Supermercados","count":3,"blocked":0,"inProgress":0,"backlog":3,"statuses":["backlog"],"avgDays":0},{"group":"Super Portugal","count":3,"blocked":0,"inProgress":0,"backlog":3,"statuses":["backlog"],"avgDays":0},{"group":"Ana Risorlange","count":3,"blocked":3,"inProgress":0,"backlog":0,"statuses":["aguardando cliente"],"avgDays":10.8},{"group":"Araripe Supermercado","count":3,"blocked":3,"inProgress":0,"backlog":0,"statuses":["aguardando cliente"],"avgDays":81.7},{"group":"R Center","count":2,"blocked":0,"inProgress":0,"backlog":2,"statuses":["backlog"],"avgDays":0},{"group":"Empório Pas","count":2,"blocked":0,"inProgress":0,"backlog":2,"statuses":["backlog"],"avgDays":18.9}],"phaseStats":[{"phase":"preparacao","avg":8.6,"min":2.8,"max":33.1,"median":7.1,"count":26},{"phase":"produto","avg":8.8,"min":0.8,"max":14.8,"median":9.9,"count":20},{"phase":"pedido","avg":3.7,"min":0.1,"max":29.8,"median":0.9,"count":17},{"phase":"teste","avg":3.7,"min":1.7,"max":9.6,"median":1.7,"count":4}],"sortedByBlocked":[{"name":"Ana Risorlange Bernardo Manuel","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":91,"total_days":10.8,"url":"https://app.clickup.com/t/86adh6989","group":"Ana Risorlange"},{"name":"Ana Risorlange Bonsucesso","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":91,"total_days":10.8,"url":"https://app.clickup.com/t/86adh690q","group":"Ana Risorlange"},{"name":"Ana Risorlange Bom Jardim","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":91,"total_days":10.8,"url":"https://app.clickup.com/t/86adh67wb","group":"Ana Risorlange"},{"name":"Almeida Supermercado","status":"bloqueado pedido","color":"#f97316","blocked_days":29.8,"blocked_pct":68,"total_days":43.8,"url":"https://app.clickup.com/t/86adpbfdb","group":"Individual"},{"name":"Supermercado Batista","status":"todo/dados coletados","color":"#8b5cf6","blocked_days":8.9,"blocked_pct":20,"total_days":43.9,"url":"https://app.clickup.com/t/86adx5cb0","group":"Individual"},{"name":"Araripe Supermercado","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":12,"total_days":81.7,"url":"https://app.clickup.com/t/86ada9m7x","group":"Araripe Supermercado"},{"name":"Araripe Supermercado","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":12,"total_days":81.7,"url":"https://app.clickup.com/t/86ada8dxa","group":"Araripe Supermercado"},{"name":"Araripe Supermercado Bom Jardim","status":"aguardando cliente","color":"#f59e0b","blocked_days":9.9,"blocked_pct":12,"total_days":81.7,"url":"https://app.clickup.com/t/86ad839np","group":"Araripe Supermercado"},{"name":"Emporio Natural Mix - Loja 2 - Bangu","status":"bloqueado pedido","color":"#f97316","blocked_days":1.7,"blocked_pct":9,"total_days":18.9,"url":"https://app.clickup.com/t/86adu1nfz","group":"Empório Natural Mix"}]};
+const STATUS_COLORS = {"contato/comunicação":"#6366f1","todo/dados coletados":"#8b5cf6","aguardando cliente":"#f59e0b","progresso produto":"#3b82f6","produtos integrado":"#06b6d4","bloqueado produto":"#ef4444","progresso pedido":"#10b981","bloqueado pedido":"#f97316","revisão":"#a855f7","backlog":"#475569"};
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+const chartsInited = {};
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (!chartsInited[id]) { initTabContent(id); chartsInited[id] = true; }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+let tblSort = 'blocked_pct', tblAsc = false;
+function sortTable(key) {
+  if(tblSort===key) tblAsc=!tblAsc; else {tblSort=key;tblAsc=false;}
+  renderTable();
+}
+function renderTable() {
+  const q = (document.getElementById('tbl-search')?.value||'').toLowerCase();
+  const sf = document.getElementById('tbl-status')?.value||'';
+  let rows = DATA.tasks;
+  if(q) rows = rows.filter(r=>r.name.toLowerCase().includes(q)||r.group.toLowerCase().includes(q)||r.erp.toLowerCase().includes(q)||r.status.toLowerCase().includes(q));
+  if(sf) rows = rows.filter(r=>r.status===sf);
+  rows = [...rows].sort((a,b)=>{
+    const va=a[tblSort],vb=b[tblSort];
+    if(typeof va==='string') return tblAsc?va.localeCompare(vb):vb.localeCompare(va);
+    return tblAsc?(va||0)-(vb||0):(vb||0)-(va||0);
+  });
+  const tbody = document.getElementById('tbl-body');
+  tbody.innerHTML = rows.map(r=>`
+    <tr class="border-b border-slate-700/30">
+      <td class="pr-3 py-2"><a href="${r.url}" target="_blank" class="text-blue-400 hover:underline text-xs">${r.name.substring(0,40)}</a></td>
+      <td class="pr-3 text-slate-400 text-xs">${r.group!=='Individual'?r.group:'—'}</td>
+      <td class="pr-3 text-slate-500 text-xs">${r.erp}</td>
+      <td class="pr-3"><span class="badge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}33">${r.status}</span></td>
+      <td class="pr-3 text-right font-mono text-xs text-white">${r.total_days||'—'}d</td>
+      <td class="pr-3 text-right text-xs ${r.blocked_days>0?'text-red-400':'text-slate-600'}">${r.blocked_days>0?r.blocked_days+'d':'—'}</td>
+      <td class="pr-3 text-right text-xs">
+        ${r.blocked_pct>0?`<span class="${r.blocked_pct>50?'text-red-400':r.blocked_pct>25?'text-orange-400':'text-yellow-400'}">${r.blocked_pct}%</span>`:'<span class="text-green-600">0%</span>'}
+      </td>
+      <td class="text-right text-xs text-slate-500">${r.days_since_created!=null?r.days_since_created+'d':'—'}</td>
+    </tr>`).join('');
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+function initTabContent(id) {
+  if(id === 'table') { renderTable(); return; }
+  if(id === 'phases') { initPhaseCharts(); return; }
+  if(id === 'charts') { initAllCharts(); return; }
+}
+
+function initPhaseCharts() {
+  const ps = DATA.phaseStats;
+  const labels = ['Preparação','Produto','Pedido','Revisão'];
+  const colors = ['#6366f1','#3b82f6','#10b981','#a855f7'];
+
+  new Chart(document.getElementById('phasesBarChart').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Média',data:ps.map(p=>p.avg),backgroundColor:colors.map(c=>c+'80'),borderColor:colors,borderWidth:1,borderRadius:4},
+        {label:'Mediana',data:ps.map(p=>p.median||0),backgroundColor:'#94a3b820',borderColor:'#94a3b8',borderWidth:1,borderRadius:4,borderDash:[4,2]},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'#1e293b'}},y:{ticks:{color:'#64748b',callback:v=>v+'d'},grid:{color:'#334155'}}}}
+  });
+
+  const storeData = DATA.tasks.filter(t=>!t.isBacklog && (t.phases.preparacao+t.phases.produto+t.phases.pedido+t.phases.teste)>0).slice(0,20);
+  if(storeData.length) {
+    new Chart(document.getElementById('phasesStoreChart').getContext('2d'),{
+      type:'bar',
+      data:{
+        labels:storeData.map(t=>t.name.substring(0,25)),
+        datasets:[
+          {label:'Prep',data:storeData.map(t=>t.phases.preparacao),backgroundColor:'#6366f180',borderRadius:2},
+          {label:'Produto',data:storeData.map(t=>t.phases.produto),backgroundColor:'#3b82f680',borderRadius:2},
+          {label:'Pedido',data:storeData.map(t=>t.phases.pedido),backgroundColor:'#10b98180',borderRadius:2},
+          {label:'Revisão',data:storeData.map(t=>t.phases.teste),backgroundColor:'#a855f780',borderRadius:2},
+        ]
+      },
+      options:{indexAxis:'y',responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#64748b',callback:v=>v+'d'},grid:{color:'#334155'}},y:{stacked:true,ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}}}}
+    });
+  }
+}
+
+function initAllCharts() {
+  // Donut
+  const sg = DATA.statusGroups.filter(s=>s.count>0);
+  new Chart(document.getElementById('statusDonutChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:sg.map(s=>s.status),datasets:[{data:sg.map(s=>s.count),backgroundColor:sg.map(s=>s.color+'cc'),borderColor:sg.map(s=>s.color),borderWidth:1}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:10},padding:6}},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw}`}}}}
+  });
+
+  // Groups bar
+  const gr = DATA.groups.filter(g=>g.count>0);
+  new Chart(document.getElementById('groupBarChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:gr.map(g=>g.group.substring(0,20)),
+      datasets:[
+        {label:'Em andamento',data:gr.map(g=>g.inProgress),backgroundColor:'#3b82f680',borderColor:'#3b82f6',borderWidth:1,borderRadius:3},
+        {label:'Bloqueadas',data:gr.map(g=>g.blocked),backgroundColor:'#f9731680',borderColor:'#f97316',borderWidth:1,borderRadius:3},
+        {label:'Backlog',data:gr.map(g=>g.backlog),backgroundColor:'#47556980',borderColor:'#475569',borderWidth:1,borderRadius:3},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#64748b',font:{size:9},maxRotation:30},grid:{color:'#1e293b'}},y:{stacked:true,ticks:{color:'#64748b'},grid:{color:'#334155'}}}}
+  });
+
+  // Active vs Blocked horizontal bars
+  const inProg = DATA.tasks.filter(t=>!t.isBacklog && t.total_days>0);
+  if(inProg.length) {
+    new Chart(document.getElementById('activeBlockedChart').getContext('2d'),{
+      type:'bar',
+      data:{
+        labels:inProg.map(t=>t.name.substring(0,30)),
+        datasets:[
+          {label:'Ativo',data:inProg.map(t=>t.active_days),backgroundColor:'#22c55e60',borderColor:'#22c55e',borderWidth:1,borderRadius:2},
+          {label:'Bloqueado',data:inProg.map(t=>t.blocked_days),backgroundColor:'#ef444460',borderColor:'#ef4444',borderWidth:1,borderRadius:2},
+        ]
+      },
+      options:{
+        indexAxis:'y',responsive:true,
+        plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},
+        scales:{
+          x:{stacked:true,ticks:{color:'#64748b',callback:v=>v+'d'},grid:{color:'#334155'}},
+          y:{stacked:true,ticks:{color:'#94a3b8',font:{size:9}},grid:{color:'#1e293b'}}
+        }
+      }
+    });
+  }
+}
+
+// Init table on load (tab-table might be first)
+renderTable();
+
+// ── Implantadores ─────────────────────────────────────────────────────────────
+const IMP_DATA = {"implantadores":[{"name":"Derik","color":"#8b5cf6","initials":"DL","total":24,"blocked":1,"inProgress":8,"backlog":15,"avgDays":42,"maxDays":86,"byStatus":{"backlog":15,"progresso pedido":2,"produtos integrado":1,"todo/dados coletados":1,"revisão":4,"bloqueado pedido":1},"tasks":[{"id":"86af77qd3","name":"Telefrango Supermercados Passaré","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":12,"daysSinceUpdated":12,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af77qd3"},{"id":"86af560cg","name":"Brisa Mini Mercado","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":15,"daysSinceUpdated":15,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af560cg"},{"id":"86af2yxw7","name":"Compre Certo - Guaiuba","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2yxw7"},{"id":"86af2yx8b","name":"Compre Certo - Maranguape","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2yx8b"},{"id":"86af2ywtw","name":"Compre Certo - Baturité","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2ywtw"},{"id":"86af2wu06","name":"Compre Certo - Pacatuba","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2wu06"},{"id":"86af2w531","name":"Compre Certo - Itaitinga","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2w531"},{"id":"86af1php0","name":"Telefrango Supermercados João XXIII","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":18,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af1php0"},{"id":"86af1ph3e","name":"Telefrango Supermercados Redenção","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":18,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af1ph3e"},{"id":"86af1hk8h","name":"Supermercado Rodrigues","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":18,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af1hk8h"},{"id":"86af0dc0j","name":"Supermercado Real - Carmo do Rio Verde","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":19,"daysSinceUpdated":19,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af0dc0j"},{"id":"86af0dbaa","name":"Supermercado Real - Ceres","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":19,"daysSinceUpdated":19,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af0dbaa"},{"id":"86aewxgz2","name":"Supermercado Real - Ceres","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":24,"daysSinceUpdated":24,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86aewxgz2"},{"id":"86aeh1jkh","name":"O Mundo das Embalagens","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":38,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aeh1jkh"},{"id":"86ady723m","name":"Atacadão São Roque","status":"produtos integrado","isBlocked":false,"erp":"winthor","daysSinceCreated":68,"daysSinceUpdated":9,"engajamento":null,"assignees":["Guilherme","Gabriel"],"url":"https://app.clickup.com/t/86ady723m"},{"id":"86adx5cb0","name":"Supermercado Batista","status":"todo/dados coletados","isBlocked":false,"erp":"avanço","daysSinceCreated":71,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme","Gabriel"],"url":"https://app.clickup.com/t/86adx5cb0"},{"id":"86advjux5","name":"Empório Pas - Loja 04 - Andradina","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":73,"daysSinceUpdated":12,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86advjux5"},{"id":"86advjuq4","name":"Emporio Pas - Loja 2  - Mirandopolis","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":73,"daysSinceUpdated":15,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86advjuq4"},{"id":"86adu1pjf","name":"Emporio Natural Mix - Loja 5","status":"revisão","isBlocked":false,"erp":"N/A","daysSinceCreated":75,"daysSinceUpdated":2,"engajamento":null,"assignees":["Guilherme","Welington","Gabriel"],"url":"https://app.clickup.com/t/86adu1pjf"},{"id":"86adu1p4y","name":"Emporio Natural Mix - Loja 4 - Tijucas","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":75,"daysSinceUpdated":2,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86adu1p4y"},{"id":"86adu1nwu","name":"Emporio Natural Mix - Loja 3 - Campo Grande","status":"revisão","isBlocked":false,"erp":"N/A","daysSinceCreated":75,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86adu1nwu"},{"id":"86adu1nfz","name":"Emporio Natural Mix - Loja 2 - Bangu","status":"bloqueado pedido","isBlocked":true,"erp":"N/A","daysSinceCreated":75,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86adu1nfz"},{"id":"86adu1mzh","name":"Emporio Natural Mix - Loja 1 Madureira","status":"revisão","isBlocked":false,"erp":"N/A","daysSinceCreated":75,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86adu1mzh"},{"id":"86adhu7rq","name":"Rota da Economia","status":"revisão","isBlocked":false,"erp":"novo erp","daysSinceCreated":86,"daysSinceUpdated":9,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86adhu7rq"}]},{"name":"Laissa","color":"#10b981","initials":"LO","total":8,"blocked":1,"inProgress":0,"backlog":7,"avgDays":23,"maxDays":80,"byStatus":{"backlog":7,"bloqueado pedido":1},"tasks":[{"id":"86afcp5zd","name":"Supermercado Aguiar","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":8,"daysSinceUpdated":1,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86afcp5zd"},{"id":"86af908mn","name":"R Center - Parque Santa Rosa","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":11,"daysSinceUpdated":2,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af908mn"},{"id":"86af8yurq","name":"R Center - Messejana","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":11,"daysSinceUpdated":2,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af8yurq"},{"id":"86af2vp6k","name":"Supermercado Aconchemax","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":17,"daysSinceUpdated":17,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af2vp6k"},{"id":"86af28vp4","name":"Super Portugal Sobral","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":1,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af28vp4"},{"id":"86af28vc2","name":"Super Portugal Cidade dos Funcionários","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":1,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af28vc2"},{"id":"86af28ubg","name":"Super Portugal Granja Portugal","status":"backlog","isBlocked":false,"erp":"N/A","daysSinceCreated":18,"daysSinceUpdated":1,"engajamento":null,"assignees":[],"url":"https://app.clickup.com/t/86af28ubg"},{"id":"86adpbfdb","name":"Almeida Supermercado","status":"bloqueado pedido","isBlocked":true,"erp":"vivasistemas","daysSinceCreated":80,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme","Gabriel"],"url":"https://app.clickup.com/t/86adpbfdb"}]},{"name":"Ana Débora","color":"#f59e0b","initials":"AD","total":17,"blocked":6,"inProgress":11,"backlog":0,"avgDays":54,"maxDays":100,"byStatus":{"progresso pedido":11,"aguardando cliente":6},"tasks":[{"id":"86aemer60","name":"RedeMIX - Loja 5","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemer60"},{"id":"86aemer0r","name":"RedeMIX - Loja 06","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemer0r"},{"id":"86aemepqc","name":"RedeMIX - Loja 7","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemepqc"},{"id":"86aemepj1","name":"RedeMIX - Loja 08","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemepj1"},{"id":"86aemeped","name":"RedeMIX - Loja 09","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemeped"},{"id":"86aemepb6","name":"RedeMIX - Loja 10","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemepb6"},{"id":"86aemep6j","name":"RedeMIX - Loja 04","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemep6j"},{"id":"86aemen33","name":"RedeMIX - Loja 11","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aemen33"},{"id":"86aememzm","name":"RedeMIX - Loja 3","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aememzm"},{"id":"86aememwa","name":"RedeMIX - Loja 2","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aememwa"},{"id":"86aememrm","name":"RedeMIX - Loja 1","status":"progresso pedido","isBlocked":false,"erp":"N/A","daysSinceCreated":33,"daysSinceUpdated":1,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86aememrm"},{"id":"86adh6989","name":"Ana Risorlange Bernardo Manuel","status":"aguardando cliente","isBlocked":true,"erp":"N/A","daysSinceCreated":87,"daysSinceUpdated":10,"engajamento":null,"assignees":["Guilherme","LUAN"],"url":"https://app.clickup.com/t/86adh6989"},{"id":"86adh690q","name":"Ana Risorlange Bonsucesso","status":"aguardando cliente","isBlocked":true,"erp":"N/A","daysSinceCreated":87,"daysSinceUpdated":10,"engajamento":null,"assignees":["Guilherme","LUAN"],"url":"https://app.clickup.com/t/86adh690q"},{"id":"86adh67wb","name":"Ana Risorlange Bom Jardim","status":"aguardando cliente","isBlocked":true,"erp":"N/A","daysSinceCreated":87,"daysSinceUpdated":10,"engajamento":null,"assignees":["Paulo","Guilherme"],"url":"https://app.clickup.com/t/86adh67wb"},{"id":"86ada9m7x","name":"Araripe Supermercado","status":"aguardando cliente","isBlocked":true,"erp":"rms","daysSinceCreated":96,"daysSinceUpdated":18,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86ada9m7x"},{"id":"86ada8dxa","name":"Araripe Supermercado","status":"aguardando cliente","isBlocked":true,"erp":"rms","daysSinceCreated":96,"daysSinceUpdated":18,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86ada8dxa"},{"id":"86ad839np","name":"Araripe Supermercado Bom Jardim","status":"aguardando cliente","isBlocked":true,"erp":"rms","daysSinceCreated":100,"daysSinceUpdated":18,"engajamento":null,"assignees":["Guilherme"],"url":"https://app.clickup.com/t/86ad839np"}]}],"noImplantador":[{"id":"86adew46b","name":"[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova","status":"aguardando cliente","fatherCustomId":null}],"total":50};
+let impFilter = 'all';
+
+function renderImplantadores() {
+  const filterTasks = impFilter === 'none'
+    ? IMP_DATA.noImplantador.map(t => ({ ...t, implantador: '—', color: '#475569', isBlocked: ['bloqueado pedido','bloqueado produto','aguardando cliente'].includes(t.status), daysSinceCreated: null, erp: 'N/A', engajamento: null, assignees: [], url: 'https://app.clickup.com/t/' + t.id }))
+    : impFilter === 'all'
+      ? IMP_DATA.implantadores.flatMap(imp => imp.tasks.map(t => ({ ...t, implantador: imp.name, color: imp.color })))
+      : (IMP_DATA.implantadores.find(i => i.name === impFilter)?.tasks || []).map(t => ({ ...t, implantador: impFilter, color: IMP_COLORS_JS[impFilter] }));
+
+  const sorted = [...filterTasks].sort((a,b) => {
+    const ao = a.isBlocked?0:1, bo = b.isBlocked?0:1;
+    if(ao!==bo) return ao-bo;
+    return (b.daysSinceCreated||0) - (a.daysSinceCreated||0);
+  });
+
+  const tbody = document.getElementById('imp-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = sorted.map(t => {
+    const sc = STATUS_COLORS_JS[t.status] || '#475569';
+    const eng = t.engajamento;
+    const engColor = eng==='Alto '||eng==='Alto'?'#22c55e':eng==='Médio'?'#f59e0b':'#ef4444';
+    const days = t.daysSinceCreated;
+    const daysColor = days>90?'text-red-400':days>60?'text-orange-400':days>30?'text-yellow-400':'text-slate-300';
+    return `<tr class="border-b border-slate-700/30 hover:bg-slate-800/40">
+      <td class="pr-3 py-2">
+        <a href="${t.url}" target="_blank" class="text-slate-200 hover:text-blue-400 text-xs font-medium leading-snug block">${t.name.substring(0,45)}${t.name.length>45?'…':''}</a>
+      </td>
+      <td class="pr-3 py-2 whitespace-nowrap">
+        <span class="badge text-xs" style="background:${sc}20;color:${sc};border:1px solid ${sc}40">${t.status}</span>
+        ${t.isBlocked?'<span class="ml-1 text-xs text-red-400">⚠</span>':''}
+      </td>
+      <td class="pr-3 py-2 text-xs text-slate-400">${t.erp||'N/A'}</td>
+      <td class="pr-3 py-2 text-xs ${daysColor} font-mono text-right">${days!=null?days+'d':'—'}</td>
+      <td class="pr-3 py-2 text-xs text-slate-400 text-right">${t.daysSinceUpdated!=null?t.daysSinceUpdated+'d':'—'}</td>
+      <td class="pr-3 py-2 text-center">
+        ${t.implantador!=='—'?`<span class="badge text-xs font-bold" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}44">${t.implantador}</span>`:'<span class="text-slate-600 text-xs">—</span>'}
+      </td>
+      <td class="py-2 text-center">
+        ${eng?`<span class="badge text-xs" style="background:${engColor}22;color:${engColor};border:1px solid ${engColor}44">${eng.trim()}</span>`:'<span class="text-slate-600 text-xs">—</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('imp-count').textContent = sorted.length + ' loja' + (sorted.length!==1?'s':'');
+}
+
+function setImpFilter(f, btn) {
+  impFilter = f;
+  document.querySelectorAll('.imp-filter-btn').forEach(b => {
+    b.classList.remove('bg-slate-700','text-white');
+    b.classList.add('text-slate-400');
+  });
+  btn.classList.add('bg-slate-700','text-white');
+  btn.classList.remove('text-slate-400');
+  renderImplantadores();
+}
+
+const STATUS_COLORS_JS = {"contato/comunicação":"#6366f1","todo/dados coletados":"#8b5cf6","aguardando cliente":"#f59e0b","progresso produto":"#3b82f6","produtos integrado":"#06b6d4","bloqueado produto":"#ef4444","progresso pedido":"#10b981","bloqueado pedido":"#f97316","revisão":"#a855f7","backlog":"#475569"};
+const IMP_COLORS_JS = {"Derik":"#8b5cf6","Laissa":"#10b981","Ana Débora":"#f59e0b"};
+</script>
+</body>
+</html>
