@@ -22,7 +22,7 @@
   .status-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;font-weight:700;font-size:13px;border:2px solid}
 
   /* KPI row */
-  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
   .kpi{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;position:relative}
   .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:8px}
   .kpi-value{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
@@ -114,7 +114,7 @@
   <div class="hdr">
     <div class="hdr-left">
       <h1>📊 Gestão de Capacidade — Integrações</h1>
-      <p>Atualizado em 22/02/2026, 04:41:15 · 446 integrações concluídas no histórico</p>
+      <p>Atualizado em 22/02/2026, 16:45:27 · 446 integrações concluídas no histórico</p>
     </div>
     <div class="status-badge" style="color:#ef4444;border-color:#ef4444;background:#ef444418">
       🔴 PRESSÃO ELEVADA
@@ -151,20 +151,146 @@
     <div class="kpi">
       <div class="kpi-accent" style="background:#ef4444"></div>
       <div class="kpi-label">Bloqueadas <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Integrações paradas por fator <strong>externo</strong> — fora do controle da equipe: cliente sem responder, ERP com problema, ou dados pendentes do lojista. O tempo parado <strong>não é trabalho ativo</strong>, mas a integração envelhece e pesa no pipeline. Statuses: <code>aguardando cliente</code>, <code>bloqueado pedido</code>, <code>bloqueado produto</code>.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
-      <div class="kpi-value" style="color:#ef4444">9</div>
-      <div class="kpi-sub">18% do pipeline parado externamente</div>
+      <div class="kpi-value" style="color:#ef4444">11</div>
+      <div class="kpi-sub">22% do pipeline parado externamente</div>
     </div>
     <div class="kpi">
       <div class="kpi-accent" style="background:#10b981"></div>
-      <div class="kpi-label">Throughput / mês <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Quantas integrações chegaram ao status <code>implantado</code> por mês, em média dos <strong>últimos 6 meses</strong>. É a velocidade de saída do pipeline — o quanto o setor efetivamente entrega. Se entram mais lojas do que saem todo mês, o WIP cresce e o backlog se acumula.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+      <div class="kpi-label">Throughput / mês <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Quantas integrações chegaram ao status <code>implantado</code> por mês, em média dos últimos 6 meses. É a velocidade de saída do pipeline. Se entram mais lojas do que saem, o WIP cresce.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
       <div class="kpi-value" style="color:#10b981">11</div>
-      <div class="kpi-sub">média últimos 6 meses</div>
+      <div class="kpi-sub">média últimos 6 meses · entradas 23/mês</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#06b6d4"></div>
+      <div class="kpi-label">Throughput / semana <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Quantas integrações chegam ao status <code>implantado</code> por semana. Derivado do histórico mensal real. É a métrica mais granular de velocidade de entrega.<br><br>Equilíbrio mínimo: <strong>${WEEKLY_BREAKEVEN}/semana</strong> para não crescer o WIP.<br>Média recente (excl. férias/recesso): <strong>${avgWeeklyRate}/sem</strong>.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+      <div class="kpi-value" style="color:#06b6d4">3.5</div>
+      <div class="kpi-sub" style="display:flex;align-items:center;gap:6px">
+        <span style="color:#10b981;font-weight:700">↑ acelerando</span>
+        <span style="color:#475569">· equilíbrio 5.3/sem</span>
+      </div>
     </div>
     <div class="kpi">
       <div class="kpi-accent" style="background:#a855f7"></div>
       <div class="kpi-label">Ciclo Médio <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Tempo do início (criação do card) até a conclusão (status <code>implantado</code>) de cada integração. A <strong>mediana</strong> é mais confiável que a média — ela ignora outliers como lojas que ficaram meses paradas por bloqueio externo.<br><br>Média: <strong>${cap.throughput.avg_cycle_time_days}d</strong> &nbsp;|&nbsp; Mediana: <strong>${cap.throughput.median_cycle_time_days}d</strong><span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
       <div class="kpi-value" style="color:#a855f7">42d</div>
       <div class="kpi-sub">mediana para concluir (avg 44d)</div>
+    </div>
+  </div>
+
+  <!-- ⚡ Métricas Avançadas de Fluxo -->
+  <div style="margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#475569;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <span>⚡</span> Métricas Avançadas de Fluxo
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+      <!-- Card 1: Flow Efficiency -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          Flow Efficiency
+          <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)"><strong>Flow Efficiency</strong> = tempo de trabalho ativo ÷ tempo total no pipeline.<br><br>Mede quanto do tempo a integração ficou em trabalho real vs esperando (fila) ou parada (bloqueio externo).<br><br>🟢 ≥ 15% — saudável<br>🟡 5–15% — atenção<br>🔴 &lt; 5% — crítico<br><br>Valores baixos indicam excesso de espera ou bloqueios externos.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:#f59e0b">11%</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase">atenção</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">média das tasks ativas</div>
+          </div>
+        </div>
+        <!-- Stacked bar -->
+        <div style="margin-bottom:10px">
+          <div style="height:12px;border-radius:6px;overflow:hidden;display:flex;background:#0f172a">
+            <div style="width:11%;background:#22c55e" title="Ativo 11%"></div>
+            <div style="width:8%;background:#ef4444" title="Bloqueado 8%"></div>
+            <div style="flex:1;background:#334155" title="Fila 41%"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:5px;font-size:10px;color:#64748b">
+            <span style="color:#22c55e">● Ativo 11%</span>
+            <span style="color:#ef4444">● Bloqueado 8%</span>
+            <span style="color:#64748b">● Fila 41%</span>
+          </div>
+        </div>
+        <!-- C1/C2/C3 breakdown -->
+        <div style="border-top:1px solid #334155;padding-top:8px;display:flex;gap:0">
+          
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:15px;font-weight:800;color:#94a3b8">0%</div>
+              <div style="font-size:9px;color:#64748b;margin-top:1px">C1 Aguardando</div>
+            </div>
+            <div style="flex:1;text-align:center;border-left:1px solid #334155">
+              <div style="font-size:15px;font-weight:800;color:#f97316">0%</div>
+              <div style="font-size:9px;color:#64748b;margin-top:1px">C2 Bloqueada</div>
+            </div>
+            <div style="flex:1;text-align:center;border-left:1px solid #334155">
+              <div style="font-size:15px;font-weight:800;color:#3b82f6">94%</div>
+              <div style="font-size:9px;color:#64748b;margin-top:1px">C3 Ativa</div>
+            </div>
+        </div>
+        <div style="font-size:9px;color:#475569;margin-top:8px;text-align:center">benchmark: ≥15% saudável · 5–15% atenção · &lt;5% crítico</div>
+      </div>
+
+      <!-- Card 2: SLE -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          SLE — Service Level Expectation
+          <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)"><strong>SLE 85%</strong> é o prazo em que 85% das integrações históricas foram concluídas.<br><br>Estimado como: mediana + 1,5 × (média − mediana), que aproxima o percentil 85 em distribuições com cauda longa.<br><br>Use para definir compromissos de prazo com confiança estatística.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:#a855f7">45 dias</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:#a855f7">SLE 85%</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">prazo de referência</div>
+          </div>
+        </div>
+        <!-- P50 / P85 -->
+        <div style="display:flex;gap:0;margin-bottom:12px">
+          <div style="flex:1;text-align:center;border-right:1px solid #334155">
+            <div style="font-size:18px;font-weight:800;color:#94a3b8">42d</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">P50 — mediana</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:18px;font-weight:800;color:#a855f7">45d</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">P85 — estimado</div>
+          </div>
+        </div>
+        <!-- Alerta de tasks além do SLE -->
+        <div style="background:#ef444412;border:1px solid #ef444433;border-radius:8px;padding:8px 10px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:#ef4444">18 lojas (36%) já ultrapassaram o SLE</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:2px">18 ultrapassaram a mediana (42d)</div>
+        </div>
+        <div style="font-size:9px;color:#475569;text-align:center">85% das integrações históricas concluíram em até 45 dias</div>
+      </div>
+
+      <!-- Card 3: Predictability (CV) -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          Previsibilidade — CV Throughput
+          <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)"><strong>Coeficiente de Variação (CV)</strong> = desvio padrão ÷ média do throughput mensal.<br><br>Mede o quão estável é a velocidade de entrega ao longo dos meses.<br><br>🟢 ≤ 30% — previsível<br>🟡 30–50% — variável<br>🔴 &gt; 50% — imprevisível<br><br>Alta variabilidade torna difícil comprometer datas de entrega.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:#ef4444">58%</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:#ef4444;text-transform:uppercase">imprevisível</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">coef. de variação</div>
+          </div>
+        </div>
+        <!-- Sparkline -->
+        <div style="margin-bottom:8px">
+          <svg width="100%" viewBox="0 0 180 44" style="display:block;overflow:visible">
+            <polyline points="0,28 36,22 72,29 108,28 144,2 180,22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="0" cy="28" r="3" fill="#ef4444"/><circle cx="36" cy="22" r="3" fill="#ef4444"/><circle cx="72" cy="29" r="3" fill="#ef4444"/><circle cx="108" cy="28" r="3" fill="#ef4444"/><circle cx="144" cy="2" r="3" fill="#ef4444"/><circle cx="180" cy="22" r="3" fill="#ef4444"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:#475569;margin-top:2px">
+            <span>2025/09</span>
+            <span>2026/02</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:6px">
+          σ = 6.5 &nbsp;·&nbsp; μ = 11.2 entregas/mês
+        </div>
+        <div style="font-size:9px;color:#475569;text-align:center">benchmark: ≤30% previsível · 30–50% variável · &gt;50% imprevisível</div>
+      </div>
+
     </div>
   </div>
 
@@ -356,7 +482,7 @@
         </div>
         <div>
           <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:600">Mais antiga</div>
-          <div style="font-size:20px;font-weight:800;color:#ef4444">100d</div>
+          <div style="font-size:20px;font-weight:800;color:#ef4444">101d</div>
         </div>
         <div>
           <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:600">Críticas 61+d</div>
@@ -375,12 +501,12 @@
               <div class="imp-name">Derik</div>
               <div class="imp-stats">
                 <span>24 lojas</span>
-                <span style="color:#ef4444">⚑ 1 bloq</span>
+                
               </div>
             </div>
             <div style="text-align:right">
               <div style="font-size:11px;color:#64748b">méd</div>
-              <div style="font-size:14px;font-weight:700;color:#8b5cf6">42d</div>
+              <div style="font-size:14px;font-weight:700;color:#8b5cf6">43d</div>
             </div>
           </div>
           <div class="imp-row" style="border-color:#f59e0b">
@@ -393,7 +519,7 @@
             </div>
             <div style="text-align:right">
               <div style="font-size:11px;color:#64748b">méd</div>
-              <div style="font-size:14px;font-weight:700;color:#f59e0b">54d</div>
+              <div style="font-size:14px;font-weight:700;color:#f59e0b">55d</div>
             </div>
           </div>
           <div class="imp-row" style="border-color:#10b981">
@@ -401,12 +527,12 @@
               <div class="imp-name">Laissa</div>
               <div class="imp-stats">
                 <span>8 lojas</span>
-                <span style="color:#ef4444">⚑ 1 bloq</span>
+                <span style="color:#ef4444">⚑ 4 bloq</span>
               </div>
             </div>
             <div style="text-align:right">
               <div style="font-size:11px;color:#64748b">méd</div>
-              <div style="font-size:14px;font-weight:700;color:#10b981">23d</div>
+              <div style="font-size:14px;font-weight:700;color:#10b981">24d</div>
             </div>
           </div>
         <div style="font-size:11px;color:#475569;margin-top:4px;text-align:center">
@@ -454,12 +580,12 @@
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
           <div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#f97316">C2 — Em Integração, Bloqueada</div>
-            <div style="font-size:36px;font-weight:800;color:#f97316;letter-spacing:-1px;line-height:1.1;margin-top:4px">2</div>
-            <div style="font-size:11px;color:#475569">4% do WIP</div>
+            <div style="font-size:36px;font-weight:800;color:#f97316;letter-spacing:-1px;line-height:1.1;margin-top:4px">0</div>
+            <div style="font-size:11px;color:#475569">0% do WIP</div>
           </div>
           <div style="background:#f9741618;border:1px solid #f9741633;border-radius:8px;padding:6px 10px;text-align:center">
             <div style="font-size:9px;color:#f97316;text-transform:uppercase;font-weight:600">Flow eff.</div>
-            <div style="font-size:16px;font-weight:800;color:#f97316">45%</div>
+            <div style="font-size:16px;font-weight:800;color:#f97316">—%</div>
           </div>
         </div>
         <div style="font-size:11px;color:#94a3b8;line-height:1.6;margin-bottom:10px">
@@ -468,7 +594,7 @@
         <div style="background:#0f172a;border-radius:6px;padding:8px 10px;border:1px solid #334155;display:flex;align-items:center;justify-content:space-between">
           <div>
             <div style="font-size:9px;color:#475569;text-transform:uppercase;font-weight:600">Críticas (61+d)</div>
-            <div style="font-size:20px;font-weight:800;color:#f97316">2</div>
+            <div style="font-size:20px;font-weight:800;color:#f97316">0</div>
           </div>
           <div style="font-size:10px;color:#475569;text-align:right;line-height:1.5">Bloqueio externo<br>acompanhar ativamente</div>
         </div>
@@ -479,12 +605,12 @@
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
           <div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#3b82f6">C3 — Em Integração, Ativa</div>
-            <div style="font-size:36px;font-weight:800;color:#3b82f6;letter-spacing:-1px;line-height:1.1;margin-top:4px">18</div>
-            <div style="font-size:11px;color:#475569">36% do WIP</div>
+            <div style="font-size:36px;font-weight:800;color:#3b82f6;letter-spacing:-1px;line-height:1.1;margin-top:4px">20</div>
+            <div style="font-size:11px;color:#475569">40% do WIP</div>
           </div>
           <div style="background:#3b82f618;border:1px solid #3b82f633;border-radius:8px;padding:6px 10px;text-align:center">
             <div style="font-size:9px;color:#3b82f6;text-transform:uppercase;font-weight:600">Flow eff.</div>
-            <div style="font-size:16px;font-weight:800;color:#3b82f6">100%</div>
+            <div style="font-size:16px;font-weight:800;color:#3b82f6">94%</div>
           </div>
         </div>
         <div style="font-size:11px;color:#cbd5e1;line-height:1.6;margin-bottom:10px">
@@ -493,7 +619,7 @@
         <div style="background:#0f172a;border-radius:6px;padding:8px 10px;border:1px solid #3b82f644;display:flex;align-items:center;justify-content:space-between">
           <div>
             <div style="font-size:9px;color:#475569;text-transform:uppercase;font-weight:600">Críticas (61+d)</div>
-            <div style="font-size:20px;font-weight:800;color:#ef4444">6</div>
+            <div style="font-size:20px;font-weight:800;color:#ef4444">8</div>
           </div>
           <div style="font-size:10px;color:#ef4444;text-align:right;line-height:1.5;font-weight:600">Prioridade máxima<br>ação imediata</div>
         </div>
@@ -627,6 +753,68 @@
 
   </div>
 
+  <!-- Throughput Mensal card -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📦 Throughput Mensal — Implantações por Mês <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Quantas integrações chegaram ao status <code>implantado</code> por mês. Barras <strong>verdes</strong> = mês acima da média histórica de saídas. Barras <strong>amarelas</strong> = abaixo. Cinza = meses com férias ou recesso (não refletem capacidade real).<br><br>🔴 Linha pontilhada vermelha = entradas médias/mês (${IND.flow.avg_in}) — equilíbrio mínimo.<br>⬜ Linha cinza = média histórica de saídas (${IND.flow.avg_out}/mês).<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start">
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chartMonthly"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:180px;padding-top:4px">
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Último mês completo</div>
+          <div style="font-size:26px;font-weight:800;color:#10b981;letter-spacing:-1px;line-height:1">25<span style="font-size:13px;font-weight:600;color:#475569">/mês</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">Jan/26</div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #ef444440">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Média saídas vs entradas</div>
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span style="font-size:22px;font-weight:800;color:#10b981;letter-spacing:-1px">11</span>
+            <span style="font-size:12px;color:#64748b">vs</span>
+            <span style="font-size:22px;font-weight:800;color:#ef4444;letter-spacing:-1px">23</span>
+          </div>
+          <div style="font-size:11px;margin-top:4px;color:#ef4444">
+            deficit de 12/mês
+          </div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Total histórico</div>
+          <div style="font-size:22px;font-weight:800;color:#94a3b8;letter-spacing:-1px;line-height:1">446<span style="font-size:13px;font-weight:600;color:#475569"> implant.</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">ciclo mediano 42d</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Throughput Semanal card -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">⚡ Throughput Semanal — Taxa de Entrega <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Quantas integrações são concluídas por semana em cada mês. Derivado do total mensal dividido pelas semanas do período. Meses com férias (Nov) e recesso (Dez) estão marcados em cinza.<br><br>🔴 Linha pontilhada = <strong>mínimo para não crescer o WIP</strong> (${WEEKLY_BREAKEVEN}/sem = entrada média de ${IND.flow.avg_in} lojas/mês ÷ 4,33 semanas).<br>Abaixo dessa linha o backlog aumenta todo mês.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start">
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chartWeekly"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:180px;padding-top:4px">
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Ritmo atual</div>
+          <div style="font-size:26px;font-weight:800;color:#10b981;letter-spacing:-1px;line-height:1">3.5<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;margin-top:4px;color:#10b981;font-weight:600">↑ acelerando</div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #ef444440">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Mínimo para equilibrar</div>
+          <div style="font-size:22px;font-weight:800;color:#ef4444;letter-spacing:-1px;line-height:1">5.3<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;margin-top:4px;color:#ef4444">
+            deficit de 2/sem — WIP cresce
+          </div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Média histórica</div>
+          <div style="font-size:22px;font-weight:800;color:#94a3b8;letter-spacing:-1px;line-height:1">3.3<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">excl. férias e recesso</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Row 2: Throughput chart + WIP status donut -->
   <div class="grid3" style="margin-bottom:16px">
     <div class="card">
@@ -682,14 +870,14 @@
             <div class="dot" style="background:#3b82f6"></div>
             <span style="font-size:11px;color:#cbd5e1">C3 — Ativa (equipe)</span>
           </div>
-          <span style="font-size:12px;font-weight:700">18</span>
+          <span style="font-size:12px;font-weight:700">20</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:6px">
             <div class="dot" style="background:#f97316"></div>
             <span style="font-size:11px;color:#cbd5e1">C2 — Bloqueada (ext.)</span>
           </div>
-          <span style="font-size:12px;font-weight:700">2</span>
+          <span style="font-size:12px;font-weight:700">0</span>
         </div>
       </div>
     </div>
@@ -721,7 +909,7 @@
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
-                  <td><span class="age-pill" style="background:#ef444422;color:#ef4444">100d</span></td>
+                  <td><span class="age-pill" style="background:#ef444422;color:#ef4444">101d</span></td>
                   <td style="color:#64748b">19d atrás</td>
                 </tr><tr>
                   <td>
@@ -732,7 +920,7 @@
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
                   <td><span class="age-pill" style="background:#ef444422;color:#ef4444">97d</span></td>
-                  <td style="color:#64748b">19d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86ada8dxa" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -742,7 +930,7 @@
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
                   <td><span class="age-pill" style="background:#ef444422;color:#ef4444">97d</span></td>
-                  <td style="color:#64748b">19d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adew46b" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -755,24 +943,14 @@
                   <td style="color:#64748b">40d atrás</td>
                 </tr><tr>
                   <td>
-                    <a href="https://app.clickup.com/t/86adhu7rq" target="_blank" style="color:#f1f5f9;hover:underline">
-                      Rota da Economia
-                    </a>
-                  </td>
-                  <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
-                  <td><span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span></td>
-                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">87d</span></td>
-                  <td style="color:#64748b">9d atrás</td>
-                </tr><tr>
-                  <td>
                     <a href="https://app.clickup.com/t/86adh6989" target="_blank" style="color:#f1f5f9;hover:underline">
                       Ana Risorlange Bernardo Manuel
                     </a>
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
-                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">87d</span></td>
-                  <td style="color:#64748b">11d atrás</td>
+                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">88d</span></td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adh690q" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -781,8 +959,8 @@
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
-                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">87d</span></td>
-                  <td style="color:#64748b">11d atrás</td>
+                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">88d</span></td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adh67wb" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -791,18 +969,28 @@
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">aguardando cliente</span></td>
+                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">88d</span></td>
+                  <td style="color:#64748b">0d atrás</td>
+                </tr><tr>
+                  <td>
+                    <a href="https://app.clickup.com/t/86adhu7rq" target="_blank" style="color:#f1f5f9;hover:underline">
+                      Rota da Economia
+                    </a>
+                  </td>
+                  <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
+                  <td><span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">87d</span></td>
-                  <td style="color:#64748b">11d atrás</td>
+                  <td style="color:#64748b">10d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" style="color:#f1f5f9;hover:underline">
                       Almeida Supermercado
                     </a>
                   </td>
-                  <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">C2 blq</span></td>
-                  <td><span class="badge" style="background:#ef444422;color:#ef4444;border:1px solid #ef444444">bloqueado pedido</span></td>
+                  <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
+                  <td><span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">81d</span></td>
-                  <td style="color:#64748b">2d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adu1pjf" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -812,7 +1000,7 @@
                   <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
                   <td><span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">75d</span></td>
-                  <td style="color:#64748b">2d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adu1p4y" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -822,7 +1010,7 @@
                   <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
                   <td><span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">75d</span></td>
-                  <td style="color:#64748b">3d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adu1nwu" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -832,17 +1020,17 @@
                   <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
                   <td><span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">75d</span></td>
-                  <td style="color:#64748b">1d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" style="color:#f1f5f9;hover:underline">
                       Emporio Natural Mix - Loja 2 - Bangu
                     </a>
                   </td>
-                  <td><span class="badge" style="background:#f9731622;color:#f97316;border:1px solid #f9731644">C2 blq</span></td>
-                  <td><span class="badge" style="background:#ef444422;color:#ef4444;border:1px solid #ef444444">bloqueado pedido</span></td>
+                  <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
+                  <td><span class="badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44">progresso pedido</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">75d</span></td>
-                  <td style="color:#64748b">2d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adu1mzh" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -852,7 +1040,7 @@
                   <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
                   <td><span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">revisão</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">75d</span></td>
-                  <td style="color:#64748b">1d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86advjux5" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -861,7 +1049,7 @@
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span></td>
-                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">73d</span></td>
+                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">74d</span></td>
                   <td style="color:#64748b">13d atrás</td>
                 </tr><tr>
                   <td>
@@ -871,8 +1059,8 @@
                   </td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">C1 gate</span></td>
                   <td><span class="badge" style="background:#64748b22;color:#64748b;border:1px solid #64748b44">backlog</span></td>
-                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">73d</span></td>
-                  <td style="color:#64748b">15d atrás</td>
+                  <td><span class="age-pill" style="background:#f9731622;color:#f97316">74d</span></td>
+                  <td style="color:#64748b">16d atrás</td>
                 </tr><tr>
                   <td>
                     <a href="https://app.clickup.com/t/86adx5cb0" target="_blank" style="color:#f1f5f9;hover:underline">
@@ -892,7 +1080,7 @@
                   <td><span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">C3 ativa</span></td>
                   <td><span class="badge" style="background:#10b98122;color:#10b981;border:1px solid #10b98144">produtos integrado</span></td>
                   <td><span class="age-pill" style="background:#f9731622;color:#f97316">69d</span></td>
-                  <td style="color:#64748b">9d atrás</td>
+                  <td style="color:#64748b">0d atrás</td>
                 </tr>
             </tbody>
           </table>
@@ -900,7 +1088,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title">⚑ Integrações Bloqueadas (9) <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Integrações cujo avanço depende de um fator externo no momento. A <strong>responsabilidade não é da equipe</strong>, mas o card segue envelhecendo. O ideal é ter contato ativo de acompanhamento mesmo nesses casos para não perder o lojista.<br><br><code>aguardando cliente</code> = lojista precisa agir<br><code>bloqueado pedido/produto</code> = problema no ERP ou na API do parceiro<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+      <div class="card-title">⚑ Integrações Bloqueadas (11) <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Integrações cujo avanço depende de um fator externo no momento. A <strong>responsabilidade não é da equipe</strong>, mas o card segue envelhecendo. O ideal é ter contato ativo de acompanhamento mesmo nesses casos para não perder o lojista.<br><br><code>aguardando cliente</code> = lojista precisa agir<br><code>bloqueado pedido/produto</code> = problema no ERP ou na API do parceiro<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
       <div class="tbl-wrap">
           <table class="tbl">
             <thead><tr>
@@ -915,7 +1103,7 @@
                   </a>
                 </td>
                 <td><span class="badge badge-red">aguardando cliente</span></td>
-                <td style="color:#ef4444;font-weight:700">100d</td>
+                <td style="color:#ef4444;font-weight:700">101d</td>
               </tr>
               <tr>
                 <td>
@@ -951,7 +1139,7 @@
                   </a>
                 </td>
                 <td><span class="badge badge-red">aguardando cliente</span></td>
-                <td style="color:#ef4444;font-weight:700">87d</td>
+                <td style="color:#ef4444;font-weight:700">88d</td>
               </tr>
               <tr>
                 <td>
@@ -960,7 +1148,7 @@
                   </a>
                 </td>
                 <td><span class="badge badge-red">aguardando cliente</span></td>
-                <td style="color:#ef4444;font-weight:700">87d</td>
+                <td style="color:#ef4444;font-weight:700">88d</td>
               </tr>
               <tr>
                 <td>
@@ -969,25 +1157,43 @@
                   </a>
                 </td>
                 <td><span class="badge badge-red">aguardando cliente</span></td>
-                <td style="color:#ef4444;font-weight:700">87d</td>
+                <td style="color:#ef4444;font-weight:700">88d</td>
               </tr>
               <tr>
                 <td>
-                  <a href="https://app.clickup.com/t/86adpbfdb" target="_blank" style="color:#f1f5f9">
-                    Almeida Supermercado
+                  <a href="https://app.clickup.com/t/86af28vp4" target="_blank" style="color:#f1f5f9">
+                    Super Portugal Sobral
                   </a>
                 </td>
-                <td><span class="badge badge-red">blq. pedido</span></td>
-                <td style="color:#ef4444;font-weight:700">81d</td>
+                <td><span class="badge badge-red">aguardando cliente</span></td>
+                <td style="color:#ef4444;font-weight:700">19d</td>
               </tr>
               <tr>
                 <td>
-                  <a href="https://app.clickup.com/t/86adu1nfz" target="_blank" style="color:#f1f5f9">
-                    Emporio Natural Mix - Loja 2 - Bang…
+                  <a href="https://app.clickup.com/t/86af28vc2" target="_blank" style="color:#f1f5f9">
+                    Super Portugal Cidade dos Funcionár…
                   </a>
                 </td>
-                <td><span class="badge badge-red">blq. pedido</span></td>
-                <td style="color:#ef4444;font-weight:700">75d</td>
+                <td><span class="badge badge-red">aguardando cliente</span></td>
+                <td style="color:#ef4444;font-weight:700">19d</td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="https://app.clickup.com/t/86af28ubg" target="_blank" style="color:#f1f5f9">
+                    Super Portugal Granja Portugal
+                  </a>
+                </td>
+                <td><span class="badge badge-red">aguardando cliente</span></td>
+                <td style="color:#ef4444;font-weight:700">19d</td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="https://app.clickup.com/t/86afcp5zd" target="_blank" style="color:#f1f5f9">
+                    Supermercado Aguiar
+                  </a>
+                </td>
+                <td><span class="badge badge-red">aguardando cliente</span></td>
+                <td style="color:#ef4444;font-weight:700">9d</td>
               </tr>
             </tbody>
           </table>
@@ -995,9 +1201,1067 @@
     </div>
   </div>
 
+  <!-- Cohort: lojas por mês de entrada -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📅 Coorte — Lojas por Mês de Entrada <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">Mostra as integrações ativas agrupadas pelo mês em que foram criadas no ClickUp. Permite entender o que aconteceu com cada "leva" de lojas — quantas continuam travadas, quantas avançaram, e quais estão críticas.<br><br>As lojas que já foram concluídas (<code>implantado</code>) <strong>não aparecem aqui</strong> — apenas as que ainda estão ativas no pipeline.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+
+    <!-- Cabeçalho com resumo por mês -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+      
+        <div style="background:#0f172a;border:1px solid #8b5cf644;border-top:3px solid #8b5cf6;border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:800;color:#8b5cf6;margin-bottom:8px">Nov/25</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Entraram</span>
+              <span style="color:#f1f5f9;font-weight:700">21</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Concluídas</span>
+              <span style="color:#10b981;font-weight:700">6</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Ainda ativas</span>
+              <span style="color:#8b5cf6;font-weight:700">8</span>
+            </div>
+            
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Bloqueadas</span>
+              <span style="color:#f97316;font-weight:700">7</span>
+            </div>
+            
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Críticas (60+d)</span>
+              <span style="color:#ef4444;font-weight:700">8</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b;line-height:1.5">Mês com férias — parte da equipe afastada, ritmo reduzido de conclusões.</div>
+        </div>
+        <div style="background:#0f172a;border:1px solid #06b6d444;border-top:3px solid #06b6d4;border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:800;color:#06b6d4;margin-bottom:8px">Dez/25</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Entraram</span>
+              <span style="color:#f1f5f9;font-weight:700">31</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Concluídas</span>
+              <span style="color:#10b981;font-weight:700">7</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Ainda ativas</span>
+              <span style="color:#06b6d4;font-weight:700">10</span>
+            </div>
+            
+            
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Críticas (60+d)</span>
+              <span style="color:#ef4444;font-weight:700">10</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b;line-height:1.5">Recesso coletivo no final do mês. Muitas lojas entraram mas poucas foram concluídas.</div>
+        </div>
+        <div style="background:#0f172a;border:1px solid #f59e0b44;border-top:3px solid #f59e0b;border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:800;color:#f59e0b;margin-bottom:8px">Jan/26</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Entraram</span>
+              <span style="color:#f1f5f9;font-weight:700">17</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Concluídas</span>
+              <span style="color:#10b981;font-weight:700">25</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Ainda ativas</span>
+              <span style="color:#f59e0b;font-weight:700">13</span>
+            </div>
+            
+            
+          </div>
+          <div style="font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b;line-height:1.5">Retomada pós-recesso. Janeiro foi o mês de maior throughput (25 concluídas).</div>
+        </div>
+        <div style="background:#0f172a;border:1px solid #10b98144;border-top:3px solid #10b981;border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:800;color:#10b981;margin-bottom:8px">Fev/26</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Entraram</span>
+              <span style="color:#f1f5f9;font-weight:700">20</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Concluídas</span>
+              <span style="color:#10b981;font-weight:700">11</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Ainda ativas</span>
+              <span style="color:#10b981;font-weight:700">19</span>
+            </div>
+            
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Bloqueadas</span>
+              <span style="color:#f97316;font-weight:700">4</span>
+            </div>
+            
+          </div>
+          <div style="font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b;line-height:1.5">Mês atual em andamento.</div>
+        </div>
+    </div>
+
+    <!-- Cards de lojas por mês -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:6px">
+          
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Araripe Supermercado Bom Jardim
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">rms</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#ef4444">101d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 72d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Araripe Supermercado
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">rms</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#ef4444">97d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 72d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Araripe Supermercado
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">rms</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#ef4444">97d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 72d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                [BOA COMPRA ATACAREJO] Desenvolvimen…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">90d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 47d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Ana Risorlange Bernardo Manuel
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">88d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 11d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Ana Risorlange Bonsucesso
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">88d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 11d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Ana Risorlange Bom Jardim
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">88d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 11d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Rota da Economia
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#a855f722;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:1px 6px;font-weight:600">revisão</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">novo erp</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">87d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 34d ativo</span>
+                
+              </div>
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:6px">
+          
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Empório Pas - Loja 04 - Andradina
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">74d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 3d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Pas - Loja 2  - Mirandopolis
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">74d</span>
+              </div>
+              
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Batista
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#3b82f622;color:#3b82f6;border:1px solid #3b82f633;border-radius:99px;padding:1px 6px;font-weight:600">todo/dados coletados</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">avanço</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">72d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                
+                <span style="font-size:9px;color:#f97316">⚑ 43d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Almeida Supermercado
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">vivasistemas</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">81d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 2d ativo</span>
+                <span style="font-size:9px;color:#f97316">⚑ 31d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Natural Mix - Loja 5
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#a855f722;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:1px 6px;font-weight:600">revisão</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">75d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 13d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Natural Mix - Loja 4 - Tijuc…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">75d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 13d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Natural Mix - Loja 3 - Campo…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#a855f722;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:1px 6px;font-weight:600">revisão</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">75d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 13d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Natural Mix - Loja 2 - Bangu
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">75d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                <span style="font-size:9px;color:#f97316">⚑ 3d bloq.</span>
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Emporio Natural Mix - Loja 1 Madurei…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#a855f722;color:#a855f7;border:1px solid #a855f733;border-radius:99px;padding:1px 6px;font-weight:600">revisão</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">75d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 13d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#ef444408;border:1px solid #ef444430;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Atacadão São Roque
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#10b98122;color:#10b981;border:1px solid #10b98133;border-radius:99px;padding:1px 6px;font-weight:600">produtos integrado</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">winthor</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f97316">69d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 11d ativo</span>
+                
+              </div>
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:6px">
+          
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Real - Ceres
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">25d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                O Mundo das Embalagens
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">hipcom</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">39d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 3d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 5
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 06
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 7
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 08
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 09
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 10
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 04
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 10d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 11
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 17d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 3
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 17d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 2
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 17d ativo</span>
+                
+              </div>
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                RedeMIX - Loja 1
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:1px 6px;font-weight:600">progresso pedido</span>
+                <span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">socin</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#3b82f6;font-weight:700">▶ ativa</span>
+                <span style="font-size:11px;font-weight:800;color:#f59e0b">34d</span>
+              </div>
+              
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                <span style="font-size:9px;color:#3b82f6">▶ 13d ativo</span>
+                
+              </div>
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:6px">
+          
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Real - Carmo do Rio Ver…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">20d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Real - Ceres
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">20d</span>
+              </div>
+              
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Super Portugal Sobral
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Super Portugal Cidade dos Funcionári…
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Super Portugal Granja Portugal
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Telefrango Supermercados João XXIII
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Telefrango Supermercados Redenção
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Rodrigues
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">19d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Compre Certo - Guaiuba
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Compre Certo - Maranguape
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Compre Certo - Baturité
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Compre Certo - Pacatuba
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Compre Certo - Itaitinga
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Aconchemax
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">18d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Brisa Mini Mercado
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">16d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Telefrango Supermercados Passaré
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#64748b22;color:#64748b;border:1px solid #64748b33;border-radius:99px;padding:1px 6px;font-weight:600">backlog</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">13d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                R Center - Parque Santa Rosa
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#3b82f622;color:#3b82f6;border:1px solid #3b82f633;border-radius:99px;padding:1px 6px;font-weight:600">todo/dados coletados</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">12d</span>
+              </div>
+              
+            </div>
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                R Center - Messejana
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#10b98122;color:#10b981;border:1px solid #10b98133;border-radius:99px;padding:1px 6px;font-weight:600">produtos integrado</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">12d</span>
+              </div>
+              
+            </div>
+            <div style="background:#f9741608;border:1px solid #f9741640;border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                Supermercado Aguiar
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:#f9731622;color:#f97316;border:1px solid #f9731633;border-radius:99px;padding:1px 6px;font-weight:600">aguardando cliente</span>
+                
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:#64748b;font-weight:700">⏸ aguardando</span>
+                <span style="font-size:11px;font-weight:800;color:#94a3b8">9d</span>
+              </div>
+              
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- ERP Breakdown -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔧 ERPs em Integração <span class="tip-wrap"><span class="tip-icon">i</span><span class="tip-box" style="bottom:calc(100% + 8px);left:50%;transform:translateX(-50%)">ERPs presentes nas integrações ativas. <strong>Tempo médio no pipeline</strong> = idade média das integrações ativas com esse ERP. Quanto mais alto, mais complexas ou mais antigas são essas integrações.<br><br>As colunas de fase mostram quantos dias as integrações com esse ERP passaram em produto e pedido — útil para estimar quanto tempo vai sobrar para lojas que ainda não chegaram nessas fases.<span class="tip-arrow" style="top:100%;left:50%;transform:translateX(-50%);border-top-color:#475569"></span></span></span></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th>ERP</th>
+          <th style="text-align:center">Integrações</th>
+          <th style="text-align:center">Bloqueadas</th>
+          <th style="text-align:center">Tempo médio</th>
+          <th style="text-align:center">Fase Produto</th>
+          <th style="text-align:center">Fase Pedido</th>
+          <th>Barra</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+                <td style="font-weight:700;color:#f1f5f9">rms</td>
+                <td style="text-align:center">3</td>
+                <td style="text-align:center;color:#ef4444">3 <span style="color:#64748b;font-size:10px">(100%)</span></td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#ef444422;color:#ef4444">98d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4"><span style="color:#334155">—</span></td>
+                <td style="text-align:center;color:#f59e0b"><span style="color:#334155">—</span></td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:100%;background:#ef444488;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">novo erp</td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f9731622;color:#f97316">87d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">4d</td>
+                <td style="text-align:center;color:#f59e0b">19d</td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:89%;background:#f9731688;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">vivasistemas</td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f9731622;color:#f97316">81d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">2d</td>
+                <td style="text-align:center;color:#f59e0b">31d</td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:83%;background:#f9731688;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">avanço</td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f9731622;color:#f97316">72d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4"><span style="color:#334155">—</span></td>
+                <td style="text-align:center;color:#f59e0b"><span style="color:#334155">—</span></td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:73%;background:#f9731688;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">winthor</td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f9731622;color:#f97316">69d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">11d</td>
+                <td style="text-align:center;color:#f59e0b"><span style="color:#334155">—</span></td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:70%;background:#f9731688;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">hipcom</td>
+                <td style="text-align:center">1</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f59e0b22;color:#f59e0b">39d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">1d</td>
+                <td style="text-align:center;color:#f59e0b">2d</td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:40%;background:#f59e0b88;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr><tr>
+                <td style="font-weight:700;color:#f1f5f9">socin</td>
+                <td style="text-align:center">11</td>
+                <td style="text-align:center;color:#475569">0</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:#f59e0b22;color:#f59e0b">34d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">10d</td>
+                <td style="text-align:center;color:#f59e0b">2d</td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:35%;background:#f59e0b88;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:11px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
+          ⚠ 31 integrações sem tag de ERP no ClickUp — não listadas acima.
+          Para aparecerem aqui, adicione a tag <code style="background:#1e293b;padding:1px 5px;border-radius:3px">erp: nome</code> nos cards.
+        </div>
+  </div>
+
   <!-- Footer -->
   <div style="text-align:center;color:#1e293b;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #1e293b">
-    Instabuy · Setor de Integrações · 22/02/2026
+    Instabuy · Setor de Integrações · 25/02/2026
   </div>
 
 </div>
@@ -1007,10 +2271,129 @@ const THROUGHPUT = [{"month":"2025-03","label":"Mar/25","started":26,"completed"
 const TICKETS    = [{"month":"2025-03","label":"Mar/25","total":44},{"month":"2025-04","label":"Abr/25","total":42},{"month":"2025-05","label":"Mai/25","total":79},{"month":"2025-06","label":"Jun/25","total":49},{"month":"2025-07","label":"Jul/25","total":45},{"month":"2025-08","label":"Ago/25","total":40},{"month":"2025-09","label":"Set/25","total":32},{"month":"2025-10","label":"Out/25","total":71},{"month":"2025-11","label":"Nov/25","total":51},{"month":"2025-12","label":"Dez/25","total":30},{"month":"2026-01","label":"Jan/26","total":53},{"month":"2026-02","label":"Fev/26","total":48}];
 const WIP_SCENARIOS = {
   labels: ['C1 — Aguardando início', 'C3 — Ativa (equipe)', 'C2 — Bloqueada (ext.)'],
-  values: [30, 18, 2],
+  values: [30, 20, 0],
   colors: ['#64748b', '#3b82f6', '#f97316'],
 };
 const STATUS_COLORS_JS = {"backlog":"#64748b","contato/comunicação":"#8b5cf6","todo/dados coletados":"#3b82f6","progresso produto":"#06b6d4","produtos integrado":"#10b981","progresso pedido":"#f59e0b","bloqueado pedido":"#ef4444","bloqueado produto":"#ef4444","revisão":"#a855f7","aguardando cliente":"#f97316"};
+
+// ── Monthly throughput chart ──────────────────────────────────────────────────
+(function() {
+  const data    = [{"month":"2025-03","label":"Mar/25","started":26,"completed":0,"net":-26,"isMigration":false,"completedDisplay":0},{"month":"2025-04","label":"Abr/25","started":8,"completed":0,"net":-8,"isMigration":false,"completedDisplay":0},{"month":"2025-05","label":"Mai/25","started":9,"completed":0,"net":-9,"isMigration":false,"completedDisplay":0},{"month":"2025-06","label":"Jun/25","started":15,"completed":0,"net":-15,"isMigration":false,"completedDisplay":0},{"month":"2025-07","label":"Jul/25","started":8,"completed":0,"net":-8,"isMigration":false,"completedDisplay":0},{"month":"2025-09","label":"Set/25","started":10,"completed":7,"net":-3,"isMigration":false,"completedDisplay":7},{"month":"2025-10","label":"Out/25","started":11,"completed":11,"net":0,"isMigration":false,"completedDisplay":11},{"month":"2025-11","label":"Nov/25","started":21,"completed":6,"net":-15,"isMigration":false,"completedDisplay":6},{"month":"2025-12","label":"Dez/25","started":31,"completed":7,"net":-24,"isMigration":false,"completedDisplay":7},{"month":"2026-01","label":"Jan/26","started":17,"completed":25,"net":8,"isMigration":false,"completedDisplay":25},{"month":"2026-02","label":"Fev/26","started":20,"completed":11,"net":-9,"isMigration":false,"completedDisplay":11}];
+  const avgOut  = 11;
+  const avgIn   = 23;
+  const holiday = ['2025-11','2025-12'];
+  const labels  = data.map(m => m.label);
+  const values  = data.map(m => m.completed);
+  const colors  = data.map(m =>
+    holiday.includes(m.month) ? '#47556988' :
+    m.completed >= avgOut ? '#10b98188' : '#f59e0b88'
+  );
+  const borders = data.map(m =>
+    holiday.includes(m.month) ? '#64748b' :
+    m.completed >= avgOut ? '#10b981' : '#f59e0b'
+  );
+  new Chart(document.getElementById('chartMonthly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Implantadas', data: values, backgroundColor: colors, borderColor: borders, borderWidth: 1, borderRadius: 5 },
+        { label: 'Equilíbrio (entradas ' + avgIn + '/mês)', data: data.map(() => avgIn), type: 'line', borderColor: '#ef4444', borderWidth: 1.5, borderDash: [5,4], pointRadius: 0, fill: false, tension: 0 },
+        { label: 'Histórico (' + avgOut + '/mês)', data: data.map(() => avgOut), type: 'line', borderColor: '#64748b', borderWidth: 1, borderDash: [3,3], pointRadius: 0, fill: false, tension: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: { callbacks: { afterLabel: ctx => holiday.includes(data[ctx.dataIndex]?.month) ? '⚠ Férias/recesso — excluído da média' : null } }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' }, beginAtZero: true }
+      }
+    }
+  });
+})();
+
+// ── Weekly throughput chart ───────────────────────────────────────────────────
+(function() {
+  const data      = [{"month":"2025-03","label":"Mar/25","started":26,"completed":0,"net":-26,"isMigration":false,"completedDisplay":0,"weeksInPeriod":4.4,"weeklyRate":0,"isCurrentMonth":false},{"month":"2025-04","label":"Abr/25","started":8,"completed":0,"net":-8,"isMigration":false,"completedDisplay":0,"weeksInPeriod":4.3,"weeklyRate":0,"isCurrentMonth":false},{"month":"2025-05","label":"Mai/25","started":9,"completed":0,"net":-9,"isMigration":false,"completedDisplay":0,"weeksInPeriod":4.4,"weeklyRate":0,"isCurrentMonth":false},{"month":"2025-06","label":"Jun/25","started":15,"completed":0,"net":-15,"isMigration":false,"completedDisplay":0,"weeksInPeriod":4.3,"weeklyRate":0,"isCurrentMonth":false},{"month":"2025-07","label":"Jul/25","started":8,"completed":0,"net":-8,"isMigration":false,"completedDisplay":0,"weeksInPeriod":4.4,"weeklyRate":0,"isCurrentMonth":false},{"month":"2025-09","label":"Set/25","started":10,"completed":7,"net":-3,"isMigration":false,"completedDisplay":7,"weeksInPeriod":4.3,"weeklyRate":1.6,"isCurrentMonth":false},{"month":"2025-10","label":"Out/25","started":11,"completed":11,"net":0,"isMigration":false,"completedDisplay":11,"weeksInPeriod":4.4,"weeklyRate":2.5,"isCurrentMonth":false},{"month":"2025-11","label":"Nov/25","started":21,"completed":6,"net":-15,"isMigration":false,"completedDisplay":6,"weeksInPeriod":4.3,"weeklyRate":1.4,"isCurrentMonth":false},{"month":"2025-12","label":"Dez/25","started":31,"completed":7,"net":-24,"isMigration":false,"completedDisplay":7,"weeksInPeriod":4.4,"weeklyRate":1.6,"isCurrentMonth":false},{"month":"2026-01","label":"Jan/26","started":17,"completed":25,"net":8,"isMigration":false,"completedDisplay":25,"weeksInPeriod":4.4,"weeklyRate":5.6,"isCurrentMonth":false},{"month":"2026-02","label":"Fev/26","started":20,"completed":11,"net":-9,"isMigration":false,"completedDisplay":11,"weeksInPeriod":3.1,"weeklyRate":3.5,"isCurrentMonth":true}];
+  const target    = 5.3;
+  const histAvg   = 2.5;
+  const labels = data.map(m => m.isCurrentMonth ? m.label + '*' : m.label);
+  const rates  = data.map(m => m.weeklyRate);
+  const isHoliday = m => ['2025-11','2025-12'].includes(m.month);
+  const colors = data.map(m =>
+    isHoliday(m) ? '#475569' : m.weeklyRate >= target ? '#10b981cc' : '#f59e0bcc'
+  );
+  const borders = data.map(m =>
+    isHoliday(m) ? '#64748b' : m.weeklyRate >= target ? '#10b981' : '#f59e0b'
+  );
+  new Chart(document.getElementById('chartWeekly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Taxa semanal',
+          data: rates,
+          backgroundColor: colors,
+          borderColor: borders,
+          borderWidth: 1,
+          borderRadius: 5,
+        },
+        {
+          label: 'Equilíbrio (' + target + '/sem)',
+          data: data.map(() => target),
+          type: 'line',
+          borderColor: '#ef4444',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        },
+        {
+          label: 'Histórico (' + histAvg + '/sem)',
+          data: data.map(() => histAvg),
+          type: 'line',
+          borderColor: '#64748b',
+          borderWidth: 1,
+          borderDash: [3, 3],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.datasetIndex === 1) return 'Meta: ' + target + '/sem';
+              const m = data[ctx.dataIndex];
+              return ctx.raw + '/sem  (' + m.completed + ' concluídas em ' + m.weeksInPeriod + ' sem' + (m.isCurrentMonth ? ', mês parcial' : '') + ')';
+            },
+            afterLabel: ctx => {
+              if (ctx.datasetIndex !== 0) return null;
+              const m = data[ctx.dataIndex];
+              return isHoliday(m) ? '⚠ Mês com férias/recesso — excluído da média' : null;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' }, beginAtZero: true },
+      }
+    }
+  });
+})();
 
 // ── Throughput chart ──────────────────────────────────────────────────────────
 (function() {

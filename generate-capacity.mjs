@@ -49,12 +49,87 @@ const throughputMonthly = cap.throughput.monthly.map(m => ({
   completedDisplay: m.completed > 50 ? null : m.completed,
 }));
 
+// ── Weekly throughput (derived from monthly data) ─────────────────────────────
+const _now = new Date(cap.generated_at);
+const weeklyThroughput = throughputMonthly
+  .filter(m => !m.isMigration)
+  .map(m => {
+    const [y, mo] = m.month.split('-').map(Number);
+    const isCurrentMonth = y === _now.getFullYear() && mo === (_now.getMonth() + 1);
+    const daysInPeriod   = isCurrentMonth ? _now.getDate() : new Date(y, mo, 0).getDate();
+    const weeksInPeriod  = daysInPeriod / 7;
+    const weeklyRate     = Math.round(m.completed / weeksInPeriod * 10) / 10;
+    return { ...m, weeksInPeriod: Math.round(weeksInPeriod * 10) / 10, weeklyRate, isCurrentMonth };
+  });
+
+// Current weekly pace = most recent month with completions
+const _recentW = weeklyThroughput.filter(m => m.completed > 0);
+const currentWeeklyRate = _recentW.length ? _recentW[_recentW.length - 1].weeklyRate : 0;
+
+// Avg weekly (last 4 months, excluding holiday outliers Nov/Dec)
+const _normalW = weeklyThroughput.filter(m => !['2025-11','2025-12'].includes(m.month) && m.completed > 0);
+const avgWeeklyRate = _normalW.length >= 2
+  ? Math.round(_normalW.slice(-4).reduce((s,m) => s + m.weeklyRate, 0) / Math.min(_normalW.length, 4) * 10) / 10
+  : currentWeeklyRate;
+
+// Trend: compare last 2 periods vs 2 before
+const _last2 = weeklyThroughput.slice(-2).filter(m => m.completed > 0);
+const _prev2 = weeklyThroughput.slice(-4, -2).filter(m => m.completed > 0);
+const _l2avg = _last2.length ? _last2.reduce((s,m) => s + m.weeklyRate, 0) / _last2.length : 0;
+const _p2avg = _prev2.length ? _prev2.reduce((s,m) => s + m.weeklyRate, 0) / _prev2.length : 0;
+const weeklyTrend       = _l2avg > _p2avg * 1.15 ? 'up' : _l2avg < _p2avg * 0.85 ? 'down' : 'stable';
+const weeklyTrendIcon   = weeklyTrend === 'up' ? '↑' : weeklyTrend === 'down' ? '↓' : '→';
+const weeklyTrendColor  = weeklyTrend === 'up' ? '#10b981' : weeklyTrend === 'down' ? '#ef4444' : '#f59e0b';
+const weeklyTrendLabel  = weeklyTrend === 'up' ? 'acelerando' : weeklyTrend === 'down' ? 'desacelerando' : 'estável';
+
+// Meta mínima = só para não crescer o WIP (igualar entradas)
+// Meta ideal  = histórico * 1.3 (melhoria razoável)
+const WEEKLY_BREAKEVEN = Math.round(IND.flow.avg_in / 4.33 * 10) / 10;
+const WEEKLY_TARGET    = Math.round(IND.flow.avg_out / 4.33 * 10) / 10; // referência histórica
+const weeklyGap        = Math.round((WEEKLY_BREAKEVEN - avgWeeklyRate) * 10) / 10;
+const weeksToGoal      = weeklyGap > 0 && avgWeeklyRate > WEEKLY_BREAKEVEN * 0.5
+  ? Math.round(LIM.over_by / Math.max(0.1, avgWeeklyRate - (IND.flow.avg_in / 4.33))) : null;
+
+// ── ERP enriched (phase data from wip tasks) ──────────────────────────────────
+const _avgArr = arr => arr.length ? Math.round(arr.reduce((s,v)=>s+v,0)/arr.length) : null;
+const erpEnriched = cap.erp_breakdown
+  .filter(e => e.erp !== 'N/A')
+  .map(e => {
+    const tasks    = cap.wip.tasks.filter(t => t.erp === e.erp);
+    const produto  = tasks.map(t => t.phaseDays?.produto || 0).filter(v => v > 0);
+    const pedido   = tasks.map(t => t.phaseDays?.pedido  || 0).filter(v => v > 0);
+    return { ...e, avgProduto: _avgArr(produto), avgPedido: _avgArr(pedido) };
+  })
+  .sort((a,b) => b.avgAge - a.avgAge);
+
 // WIP status breakdown for donut
 const wipByStatus = {};
 cap.wip.tasks.forEach(t => {
   wipByStatus[t.status] = (wipByStatus[t.status] || 0) + 1;
 });
 const wipStatusEntries = Object.entries(wipByStatus).sort((a,b) => b[1]-a[1]);
+
+// ── Cohort by entry month (derived from age) ──────────────────────────────────
+const _nowTs = new Date(cap.generated_at).getTime();
+const COHORT_MONTHS = ['2025-11','2025-12','2026-01','2026-02'];
+const COHORT_LABELS = { '2025-11':'Nov/25','2025-12':'Dez/25','2026-01':'Jan/26','2026-02':'Fev/26' };
+const COHORT_COLORS = { '2025-11':'#8b5cf6','2025-12':'#06b6d4','2026-01':'#f59e0b','2026-02':'#10b981' };
+const COHORT_CONTEXT = {
+  '2025-11': 'Mês com férias — parte da equipe afastada, ritmo reduzido de conclusões.',
+  '2025-12': 'Recesso coletivo no final do mês. Muitas lojas entraram mas poucas foram concluídas.',
+  '2026-01': 'Retomada pós-recesso. Janeiro foi o mês de maior throughput (25 concluídas).',
+  '2026-02': 'Mês atual em andamento.',
+};
+const cohortTasks = {};
+COHORT_MONTHS.forEach(m => { cohortTasks[m] = []; });
+cap.wip.tasks.forEach(t => {
+  const created = new Date(_nowTs - t.age * 86400000);
+  const month   = created.toISOString().substring(0, 7);
+  if (cohortTasks[month]) cohortTasks[month].push(t);
+});
+// Throughput monthly reference: how many were completed in each cohort month
+const _thrMap = {};
+cap.throughput.monthly.forEach(m => { _thrMap[m.month] = m; });
 
 // Blocked tasks list
 const blockedTasks = cap.wip.tasks.filter(t => t.isBlocked).sort((a,b) => b.age - a.age);
@@ -127,6 +202,53 @@ const monthContext = {
 
 const contextMonths = throughputMonthly.filter(m => monthContext[m.month]);
 
+// ── Flow Efficiency ───────────────────────────────────────────────────────────
+const flowEfficiencyByTask = cap.wip.tasks.map(t => ({
+  name: t.name,
+  efficiency: t.age > 0 ? Math.round(t.workDays    / t.age * 100) : 0,
+  blockedPct: t.age > 0 ? Math.round(t.blockedDays / t.age * 100) : 0,
+  queuePct:   t.age > 0 ? Math.round(t.queueDays   / t.age * 100) : 0,
+}));
+const _feLen = flowEfficiencyByTask.length || 1;
+const avgFlowEfficiency = Math.round(flowEfficiencyByTask.reduce((s,t) => s + t.efficiency, 0) / _feLen);
+const feStatus = avgFlowEfficiency >= 15 ? 'normal' : avgFlowEfficiency >= 5 ? 'atenção' : 'crítico';
+const feColor  = avgFlowEfficiency >= 15 ? '#22c55e' : avgFlowEfficiency >= 5 ? '#f59e0b' : '#ef4444';
+const feC1 = Math.round(SC.c1.avg_flow_efficiency || 0);
+const feC2 = Math.round(SC.c2.avg_flow_efficiency || 0);
+const feC3 = Math.round(SC.c3.avg_flow_efficiency || 0);
+const avgAtiva     = Math.round(flowEfficiencyByTask.reduce((s,t) => s + t.efficiency, 0) / _feLen);
+const avgBloqueada = Math.round(flowEfficiencyByTask.reduce((s,t) => s + t.blockedPct, 0) / _feLen);
+const avgFila      = Math.round(flowEfficiencyByTask.reduce((s,t) => s + t.queuePct,   0) / _feLen);
+
+// ── SLE (Service Level Expectation) ──────────────────────────────────────────
+const avgCycle    = cap.throughput.avg_cycle_time_days;
+const medianCycle = cap.throughput.median_cycle_time_days;
+const sle85 = Math.round(medianCycle + 1.5 * (avgCycle - medianCycle));
+const tasksBeyondSle    = cap.wip.tasks.filter(t => t.age > sle85).length;
+const sleBeyondPct      = cap.wip.total > 0 ? Math.round(tasksBeyondSle / cap.wip.total * 100) : 0;
+const sleBeyondColor    = sleBeyondPct > 30 ? '#ef4444' : sleBeyondPct > 15 ? '#f59e0b' : '#22c55e';
+const tasksBeyondMedian = cap.wip.tasks.filter(t => t.age > medianCycle).length;
+
+// ── Predictability (CV do Throughput) ────────────────────────────────────────
+const tpValues = throughputMonthly.filter(m => !m.isMigration && m.completed > 0).map(m => m.completed);
+const tpMean   = tpValues.length ? tpValues.reduce((s,v) => s + v, 0) / tpValues.length : 0;
+const tpStdDev = tpValues.length > 1
+  ? Math.sqrt(tpValues.reduce((s,v) => s + (v - tpMean) ** 2, 0) / tpValues.length)
+  : 0;
+const tpCV     = tpMean > 0 ? Math.round(tpStdDev / tpMean * 100) : 0;
+const cvStatus = tpCV <= 30 ? 'previsível' : tpCV <= 50 ? 'variável' : 'imprevisível';
+const cvColor  = tpCV <= 30 ? '#22c55e'    : tpCV <= 50 ? '#f59e0b'   : '#ef4444';
+// Sparkline: map values to SVG points (width=180, height=40)
+const _spMax = Math.max(...tpValues, 1);
+const _spW   = 180;
+const _spH   = 40;
+const _spStep = tpValues.length > 1 ? _spW / (tpValues.length - 1) : _spW;
+const sparklinePoints = tpValues.map((v, i) => {
+  const x = Math.round(i * _spStep);
+  const y = Math.round(_spH - (v / _spMax) * (_spH - 4) - 2);
+  return `${x},${y}`;
+}).join(' ');
+
 // ── HTML ────────────────────────────────────────────────────────────────────────
 const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -152,7 +274,7 @@ const html = `<!DOCTYPE html>
   .status-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;font-weight:700;font-size:13px;border:2px solid}
 
   /* KPI row */
-  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
   .kpi{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;position:relative}
   .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:8px}
   .kpi-value{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
@@ -286,15 +408,141 @@ const html = `<!DOCTYPE html>
     </div>
     <div class="kpi">
       <div class="kpi-accent" style="background:#10b981"></div>
-      <div class="kpi-label">Throughput / mês ${tip('Quantas integrações chegaram ao status <code>implantado</code> por mês, em média dos <strong>últimos 6 meses</strong>. É a velocidade de saída do pipeline — o quanto o setor efetivamente entrega. Se entram mais lojas do que saem todo mês, o WIP cresce e o backlog se acumula.')}</div>
+      <div class="kpi-label">Throughput / mês ${tip('Quantas integrações chegaram ao status <code>implantado</code> por mês, em média dos últimos 6 meses. É a velocidade de saída do pipeline. Se entram mais lojas do que saem, o WIP cresce.')}</div>
       <div class="kpi-value" style="color:#10b981">${cap.throughput.avg_monthly_completions}</div>
-      <div class="kpi-sub">média últimos 6 meses</div>
+      <div class="kpi-sub">média últimos 6 meses · entradas ${IND.flow.avg_in}/mês</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#06b6d4"></div>
+      <div class="kpi-label">Throughput / semana ${tip('Quantas integrações chegam ao status <code>implantado</code> por semana. Derivado do histórico mensal real. É a métrica mais granular de velocidade de entrega.<br><br>Equilíbrio mínimo: <strong>${WEEKLY_BREAKEVEN}/semana</strong> para não crescer o WIP.<br>Média recente (excl. férias/recesso): <strong>${avgWeeklyRate}/sem</strong>.')}</div>
+      <div class="kpi-value" style="color:#06b6d4">${currentWeeklyRate}</div>
+      <div class="kpi-sub" style="display:flex;align-items:center;gap:6px">
+        <span style="color:${weeklyTrendColor};font-weight:700">${weeklyTrendIcon} ${weeklyTrendLabel}</span>
+        <span style="color:#475569">· equilíbrio ${WEEKLY_BREAKEVEN}/sem</span>
+      </div>
     </div>
     <div class="kpi">
       <div class="kpi-accent" style="background:#a855f7"></div>
       <div class="kpi-label">Ciclo Médio ${tip('Tempo do início (criação do card) até a conclusão (status <code>implantado</code>) de cada integração. A <strong>mediana</strong> é mais confiável que a média — ela ignora outliers como lojas que ficaram meses paradas por bloqueio externo.<br><br>Média: <strong>${cap.throughput.avg_cycle_time_days}d</strong> &nbsp;|&nbsp; Mediana: <strong>${cap.throughput.median_cycle_time_days}d</strong>')}</div>
       <div class="kpi-value" style="color:#a855f7">${cap.throughput.median_cycle_time_days}d</div>
       <div class="kpi-sub">mediana para concluir (avg ${cap.throughput.avg_cycle_time_days}d)</div>
+    </div>
+  </div>
+
+  <!-- ⚡ Métricas Avançadas de Fluxo -->
+  <div style="margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#475569;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <span>⚡</span> Métricas Avançadas de Fluxo
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+      <!-- Card 1: Flow Efficiency -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          Flow Efficiency
+          ${tip('<strong>Flow Efficiency</strong> = tempo de trabalho ativo ÷ tempo total no pipeline.<br><br>Mede quanto do tempo a integração ficou em trabalho real vs esperando (fila) ou parada (bloqueio externo).<br><br>🟢 ≥ 15% — saudável<br>🟡 5–15% — atenção<br>🔴 &lt; 5% — crítico<br><br>Valores baixos indicam excesso de espera ou bloqueios externos.')}
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:${feColor}">${avgFlowEfficiency}%</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:${feColor};text-transform:uppercase">${feStatus}</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">média das tasks ativas</div>
+          </div>
+        </div>
+        <!-- Stacked bar -->
+        <div style="margin-bottom:10px">
+          <div style="height:12px;border-radius:6px;overflow:hidden;display:flex;background:#0f172a">
+            <div style="width:${Math.min(avgAtiva,100)}%;background:#22c55e" title="Ativo ${avgAtiva}%"></div>
+            <div style="width:${Math.min(avgBloqueada,100-Math.min(avgAtiva,100))}%;background:#ef4444" title="Bloqueado ${avgBloqueada}%"></div>
+            <div style="flex:1;background:#334155" title="Fila ${avgFila}%"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:5px;font-size:10px;color:#64748b">
+            <span style="color:#22c55e">● Ativo ${avgAtiva}%</span>
+            <span style="color:#ef4444">● Bloqueado ${avgBloqueada}%</span>
+            <span style="color:#64748b">● Fila ${avgFila}%</span>
+          </div>
+        </div>
+        <!-- C1/C2/C3 breakdown -->
+        <div style="border-top:1px solid #334155;padding-top:8px;display:flex;gap:0">
+          ${[
+            { label: 'C1 Aguardando', val: feC1, color: '#94a3b8' },
+            { label: 'C2 Bloqueada',  val: feC2, color: '#f97316' },
+            { label: 'C3 Ativa',      val: feC3, color: '#3b82f6' },
+          ].map((s,i) => `
+            <div style="flex:1;text-align:center;${i > 0 ? 'border-left:1px solid #334155' : ''}">
+              <div style="font-size:15px;font-weight:800;color:${s.color}">${s.val}%</div>
+              <div style="font-size:9px;color:#64748b;margin-top:1px">${s.label}</div>
+            </div>`).join('')}
+        </div>
+        <div style="font-size:9px;color:#475569;margin-top:8px;text-align:center">benchmark: ≥15% saudável · 5–15% atenção · &lt;5% crítico</div>
+      </div>
+
+      <!-- Card 2: SLE -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          SLE — Service Level Expectation
+          ${tip('<strong>SLE 85%</strong> é o prazo em que 85% das integrações históricas foram concluídas.<br><br>Estimado como: mediana + 1,5 × (média − mediana), que aproxima o percentil 85 em distribuições com cauda longa.<br><br>Use para definir compromissos de prazo com confiança estatística.')}
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:#a855f7">${sle85} dias</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:#a855f7">SLE 85%</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">prazo de referência</div>
+          </div>
+        </div>
+        <!-- P50 / P85 -->
+        <div style="display:flex;gap:0;margin-bottom:12px">
+          <div style="flex:1;text-align:center;border-right:1px solid #334155">
+            <div style="font-size:18px;font-weight:800;color:#94a3b8">${medianCycle}d</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">P50 — mediana</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:18px;font-weight:800;color:#a855f7">${sle85}d</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">P85 — estimado</div>
+          </div>
+        </div>
+        <!-- Alerta de tasks além do SLE -->
+        <div style="background:${sleBeyondColor}12;border:1px solid ${sleBeyondColor}33;border-radius:8px;padding:8px 10px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:${sleBeyondColor}">${tasksBeyondSle} lojas (${sleBeyondPct}%) já ultrapassaram o SLE</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:2px">${tasksBeyondMedian} ultrapassaram a mediana (${medianCycle}d)</div>
+        </div>
+        <div style="font-size:9px;color:#475569;text-align:center">85% das integrações históricas concluíram em até ${sle85} dias</div>
+      </div>
+
+      <!-- Card 3: Predictability (CV) -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">
+          Previsibilidade — CV Throughput
+          ${tip('<strong>Coeficiente de Variação (CV)</strong> = desvio padrão ÷ média do throughput mensal.<br><br>Mede o quão estável é a velocidade de entrega ao longo dos meses.<br><br>🟢 ≤ 30% — previsível<br>🟡 30–50% — variável<br>🔴 &gt; 50% — imprevisível<br><br>Alta variabilidade torna difícil comprometer datas de entrega.')}
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+          <div style="font-size:2.5rem;font-weight:700;letter-spacing:-2px;line-height:1;color:${cvColor}">${tpCV}%</div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:11px;font-weight:700;color:${cvColor};text-transform:uppercase">${cvStatus}</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px">coef. de variação</div>
+          </div>
+        </div>
+        <!-- Sparkline -->
+        <div style="margin-bottom:8px">
+          <svg width="100%" viewBox="0 0 180 44" style="display:block;overflow:visible">
+            <polyline points="${sparklinePoints}" fill="none" stroke="${cvColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+            ${tpValues.map((v,i) => {
+              const x = Math.round(i * (tpValues.length > 1 ? _spW / (tpValues.length - 1) : _spW));
+              const y = Math.round(_spH - (v / _spMax) * (_spH - 4) - 2);
+              return `<circle cx="${x}" cy="${y}" r="3" fill="${cvColor}"/>`;
+            }).join('')}
+          </svg>
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:#475569;margin-top:2px">
+            <span>${throughputMonthly.filter(m => !m.isMigration && m.completed > 0)[0]?.month?.replace('-','/')}</span>
+            <span>${throughputMonthly.filter(m => !m.isMigration && m.completed > 0).slice(-1)[0]?.month?.replace('-','/')}</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:6px">
+          σ = ${Math.round(tpStdDev * 10) / 10} &nbsp;·&nbsp; μ = ${Math.round(tpMean * 10) / 10} entregas/mês
+        </div>
+        <div style="font-size:9px;color:#475569;text-align:center">benchmark: ≤30% previsível · 30–50% variável · &gt;50% imprevisível</div>
+      </div>
+
     </div>
   </div>
 
@@ -614,6 +862,70 @@ const html = `<!DOCTYPE html>
 
   </div>
 
+  <!-- Throughput Mensal card -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📦 Throughput Mensal — Implantações por Mês ${tip('Quantas integrações chegaram ao status <code>implantado</code> por mês. Barras <strong>verdes</strong> = mês acima da média histórica de saídas. Barras <strong>amarelas</strong> = abaixo. Cinza = meses com férias ou recesso (não refletem capacidade real).<br><br>🔴 Linha pontilhada vermelha = entradas médias/mês (${IND.flow.avg_in}) — equilíbrio mínimo.<br>⬜ Linha cinza = média histórica de saídas (${IND.flow.avg_out}/mês).')}</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start">
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chartMonthly"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:180px;padding-top:4px">
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Último mês completo</div>
+          <div style="font-size:26px;font-weight:800;color:#10b981;letter-spacing:-1px;line-height:1">${throughputMonthly.filter(m=>!m.isMigration).slice(-2,-1)[0]?.completed ?? '—'}<span style="font-size:13px;font-weight:600;color:#475569">/mês</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">Jan/26</div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid ${IND.flow.avg_out >= IND.flow.avg_in ? '#10b98140' : '#ef444440'}">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Média saídas vs entradas</div>
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span style="font-size:22px;font-weight:800;color:#10b981;letter-spacing:-1px">${IND.flow.avg_out}</span>
+            <span style="font-size:12px;color:#64748b">vs</span>
+            <span style="font-size:22px;font-weight:800;color:#ef4444;letter-spacing:-1px">${IND.flow.avg_in}</span>
+          </div>
+          <div style="font-size:11px;margin-top:4px;color:${IND.flow.avg_out >= IND.flow.avg_in ? '#10b981' : '#ef4444'}">
+            ${IND.flow.avg_out >= IND.flow.avg_in ? '✓ saindo mais do que entra' : `deficit de ${IND.flow.avg_in - IND.flow.avg_out}/mês`}
+          </div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Total histórico</div>
+          <div style="font-size:22px;font-weight:800;color:#94a3b8;letter-spacing:-1px;line-height:1">${cap.throughput.total_completed}<span style="font-size:13px;font-weight:600;color:#475569"> implant.</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">ciclo mediano ${cap.throughput.median_cycle_time_days}d</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Throughput Semanal card -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">⚡ Throughput Semanal — Taxa de Entrega ${tip('Quantas integrações são concluídas por semana em cada mês. Derivado do total mensal dividido pelas semanas do período. Meses com férias (Nov) e recesso (Dez) estão marcados em cinza.<br><br>🔴 Linha pontilhada = <strong>mínimo para não crescer o WIP</strong> (${WEEKLY_BREAKEVEN}/sem = entrada média de ${IND.flow.avg_in} lojas/mês ÷ 4,33 semanas).<br>Abaixo dessa linha o backlog aumenta todo mês.')}</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start">
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chartWeekly"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:180px;padding-top:4px">
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Ritmo atual</div>
+          <div style="font-size:26px;font-weight:800;color:#10b981;letter-spacing:-1px;line-height:1">${currentWeeklyRate}<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;margin-top:4px;color:${weeklyTrendColor};font-weight:600">${weeklyTrendIcon} ${weeklyTrendLabel}</div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid ${weeklyGap > 0 ? '#ef444440' : '#10b98140'}">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Mínimo para equilibrar</div>
+          <div style="font-size:22px;font-weight:800;color:${weeklyGap > 0 ? '#ef4444' : '#10b981'};letter-spacing:-1px;line-height:1">${WEEKLY_BREAKEVEN}<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;margin-top:4px;color:${weeklyGap > 0 ? '#ef4444' : '#10b981'}">
+            ${weeklyGap > 0
+              ? `deficit de ${weeklyGap}/sem — WIP cresce`
+              : `✓ acima do ponto de equilíbrio`}
+          </div>
+        </div>
+        <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #334155">
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Média histórica</div>
+          <div style="font-size:22px;font-weight:800;color:#94a3b8;letter-spacing:-1px;line-height:1">${avgWeeklyRate}<span style="font-size:13px;font-weight:600;color:#475569">/sem</span></div>
+          <div style="font-size:11px;color:#475569;margin-top:4px">excl. férias e recesso</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Row 2: Throughput chart + WIP status donut -->
   <div class="grid3" style="margin-bottom:16px">
     <div class="card">
@@ -725,6 +1037,149 @@ const html = `<!DOCTYPE html>
     </div>
   </div>
 
+  <!-- Cohort: lojas por mês de entrada -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📅 Coorte — Lojas por Mês de Entrada ${tip('Mostra as integrações ativas agrupadas pelo mês em que foram criadas no ClickUp. Permite entender o que aconteceu com cada "leva" de lojas — quantas continuam travadas, quantas avançaram, e quais estão críticas.<br><br>As lojas que já foram concluídas (<code>implantado</code>) <strong>não aparecem aqui</strong> — apenas as que ainda estão ativas no pipeline.')}</div>
+
+    <!-- Cabeçalho com resumo por mês -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+      ${COHORT_MONTHS.map(m => {
+        const tasks    = cohortTasks[m];
+        const thr      = _thrMap[m];
+        const color    = COHORT_COLORS[m];
+        const entered  = thr?.started ?? '?';
+        const concluded = thr?.isMigration ? 0 : (thr?.completed ?? 0);
+        const stillActive = tasks.length;
+        const blocked  = tasks.filter(t => t.isBlocked).length;
+        const critical = tasks.filter(t => t.age > 60).length;
+        return `
+        <div style="background:#0f172a;border:1px solid ${color}44;border-top:3px solid ${color};border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:800;color:${color};margin-bottom:8px">${COHORT_LABELS[m]}</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Entraram</span>
+              <span style="color:#f1f5f9;font-weight:700">${entered}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Concluídas</span>
+              <span style="color:#10b981;font-weight:700">${concluded}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Ainda ativas</span>
+              <span style="color:${color};font-weight:700">${stillActive}</span>
+            </div>
+            ${blocked > 0 ? `
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Bloqueadas</span>
+              <span style="color:#f97316;font-weight:700">${blocked}</span>
+            </div>` : ''}
+            ${critical > 0 ? `
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:#64748b">Críticas (60+d)</span>
+              <span style="color:#ef4444;font-weight:700">${critical}</span>
+            </div>` : ''}
+          </div>
+          <div style="font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b;line-height:1.5">${COHORT_CONTEXT[m]}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Cards de lojas por mês -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:start">
+      ${COHORT_MONTHS.map(m => {
+        const tasks = cohortTasks[m].sort((a,b) => {
+          const urgOrd = { C2: 0, C1: 1, C3: 2 };
+          return (urgOrd[a.scenario]??3) - (urgOrd[b.scenario]??3) || b.age - a.age;
+        });
+        const color = COHORT_COLORS[m];
+        if (tasks.length === 0) {
+          return `<div style="color:#475569;font-size:12px;text-align:center;padding:20px;background:#0f172a;border-radius:8px;border:1px dashed #334155">
+            Nenhuma loja ativa desta coorte
+          </div>`;
+        }
+        return `<div style="display:flex;flex-direction:column;gap:6px">
+          ${tasks.map(t => {
+            const statusColor = STATUS_COLORS[t.status] || '#64748b';
+            const scenColor   = { C1:'#64748b', C2:'#f97316', C3:'#3b82f6' };
+            const scenIcon    = { C1:'⏸', C2:'⚑', C3:'▶' };
+            const ageColor    = t.age > 90 ? '#ef4444' : t.age > 60 ? '#f97316' : t.age > 30 ? '#f59e0b' : '#94a3b8';
+            const cardBorder  = t.isBlocked ? '1px solid #f9741640' : t.age > 60 ? '1px solid #ef444430' : '1px solid #1e293b';
+            const cardBg      = t.isBlocked ? '#f9741608' : t.age > 60 ? '#ef444408' : '#0f172a';
+            return `
+            <div style="background:${cardBg};border:${cardBorder};border-radius:8px;padding:9px 11px">
+              <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px;line-height:1.3">
+                ${t.name.substring(0,36)}${t.name.length > 36 ? '…' : ''}
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">
+                <span style="font-size:9px;background:${statusColor}22;color:${statusColor};border:1px solid ${statusColor}33;border-radius:99px;padding:1px 6px;font-weight:600">${t.status}</span>
+                ${t.erp ? `<span style="font-size:9px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:99px;padding:1px 6px">${t.erp}</span>` : ''}
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:9px;color:${scenColor[t.scenario]};font-weight:700">${scenIcon[t.scenario]} ${t.scenario === 'C1' ? 'aguardando' : t.scenario === 'C2' ? 'bloqueada' : 'ativa'}</span>
+                <span style="font-size:11px;font-weight:800;color:${ageColor}">${t.age}d</span>
+              </div>
+              ${t.workDays > 0 || t.blockedDays > 0 ? `
+              <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">
+                ${t.workDays    > 0 ? `<span style="font-size:9px;color:#3b82f6">▶ ${t.workDays}d ativo</span>` : ''}
+                ${t.blockedDays > 0 ? `<span style="font-size:9px;color:#f97316">⚑ ${t.blockedDays}d bloq.</span>` : ''}
+              </div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- ERP Breakdown -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔧 ERPs em Integração ${tip('ERPs presentes nas integrações ativas. <strong>Tempo médio no pipeline</strong> = idade média das integrações ativas com esse ERP. Quanto mais alto, mais complexas ou mais antigas são essas integrações.<br><br>As colunas de fase mostram quantos dias as integrações com esse ERP passaram em produto e pedido — útil para estimar quanto tempo vai sobrar para lojas que ainda não chegaram nessas fases.')}</div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th>ERP</th>
+          <th style="text-align:center">Integrações</th>
+          <th style="text-align:center">Bloqueadas</th>
+          <th style="text-align:center">Tempo médio</th>
+          <th style="text-align:center">Fase Produto</th>
+          <th style="text-align:center">Fase Pedido</th>
+          <th>Barra</th>
+        </tr></thead>
+        <tbody>
+          ${(() => {
+            const maxAge = Math.max(...erpEnriched.map(e => e.avgAge), 1);
+            return erpEnriched.map(e => {
+              const pct        = Math.round(e.avgAge / maxAge * 100);
+              const ageColor   = e.avgAge > 90 ? '#ef4444' : e.avgAge > 60 ? '#f97316' : e.avgAge > 30 ? '#f59e0b' : '#10b981';
+              const blkColor   = e.blocked > 0 ? '#ef4444' : '#475569';
+              const blkPct     = Math.round(e.blocked / e.total * 100);
+              return `<tr>
+                <td style="font-weight:700;color:#f1f5f9">${e.erp}</td>
+                <td style="text-align:center">${e.total}</td>
+                <td style="text-align:center;color:${blkColor}">${e.blocked}${e.blocked > 0 ? ` <span style="color:#64748b;font-size:10px">(${blkPct}%)</span>` : ''}</td>
+                <td style="text-align:center">
+                  <span class="age-pill" style="background:${ageColor}22;color:${ageColor}">${e.avgAge}d</span>
+                </td>
+                <td style="text-align:center;color:#06b6d4">${e.avgProduto != null ? e.avgProduto + 'd' : '<span style="color:#334155">—</span>'}</td>
+                <td style="text-align:center;color:#f59e0b">${e.avgPedido  != null ? e.avgPedido  + 'd' : '<span style="color:#334155">—</span>'}</td>
+                <td style="min-width:100px">
+                  <div style="background:#0f172a;border-radius:3px;height:14px;overflow:hidden">
+                    <div style="height:100%;width:${pct}%;background:${ageColor}88;border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('');
+          })()}
+        </tbody>
+      </table>
+    </div>
+    ${cap.erp_breakdown.find(e => e.erp === 'N/A')
+      ? `<div style="font-size:11px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
+          ⚠ ${cap.erp_breakdown.find(e => e.erp === 'N/A').total} integrações sem tag de ERP no ClickUp — não listadas acima.
+          Para aparecerem aqui, adicione a tag <code style="background:#1e293b;padding:1px 5px;border-radius:3px">erp: nome</code> nos cards.
+        </div>`
+      : ''}
+  </div>
+
   <!-- Footer -->
   <div style="text-align:center;color:#1e293b;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #1e293b">
     Instabuy · Setor de Integrações · ${new Date().toLocaleDateString('pt-BR')}
@@ -741,6 +1196,125 @@ const WIP_SCENARIOS = {
   colors: ['#64748b', '#3b82f6', '#f97316'],
 };
 const STATUS_COLORS_JS = ${JSON.stringify(STATUS_COLORS)};
+
+// ── Monthly throughput chart ──────────────────────────────────────────────────
+(function() {
+  const data    = ${JSON.stringify(throughputMonthly.filter(m => !m.isMigration))};
+  const avgOut  = ${IND.flow.avg_out};
+  const avgIn   = ${IND.flow.avg_in};
+  const holiday = ['2025-11','2025-12'];
+  const labels  = data.map(m => m.label);
+  const values  = data.map(m => m.completed);
+  const colors  = data.map(m =>
+    holiday.includes(m.month) ? '#47556988' :
+    m.completed >= avgOut ? '#10b98188' : '#f59e0b88'
+  );
+  const borders = data.map(m =>
+    holiday.includes(m.month) ? '#64748b' :
+    m.completed >= avgOut ? '#10b981' : '#f59e0b'
+  );
+  new Chart(document.getElementById('chartMonthly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Implantadas', data: values, backgroundColor: colors, borderColor: borders, borderWidth: 1, borderRadius: 5 },
+        { label: 'Equilíbrio (entradas ' + avgIn + '/mês)', data: data.map(() => avgIn), type: 'line', borderColor: '#ef4444', borderWidth: 1.5, borderDash: [5,4], pointRadius: 0, fill: false, tension: 0 },
+        { label: 'Histórico (' + avgOut + '/mês)', data: data.map(() => avgOut), type: 'line', borderColor: '#64748b', borderWidth: 1, borderDash: [3,3], pointRadius: 0, fill: false, tension: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: { callbacks: { afterLabel: ctx => holiday.includes(data[ctx.dataIndex]?.month) ? '⚠ Férias/recesso — excluído da média' : null } }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' }, beginAtZero: true }
+      }
+    }
+  });
+})();
+
+// ── Weekly throughput chart ───────────────────────────────────────────────────
+(function() {
+  const data      = ${JSON.stringify(weeklyThroughput)};
+  const target    = ${WEEKLY_BREAKEVEN};
+  const histAvg   = ${WEEKLY_TARGET};
+  const labels = data.map(m => m.isCurrentMonth ? m.label + '*' : m.label);
+  const rates  = data.map(m => m.weeklyRate);
+  const isHoliday = m => ['2025-11','2025-12'].includes(m.month);
+  const colors = data.map(m =>
+    isHoliday(m) ? '#475569' : m.weeklyRate >= target ? '#10b981cc' : '#f59e0bcc'
+  );
+  const borders = data.map(m =>
+    isHoliday(m) ? '#64748b' : m.weeklyRate >= target ? '#10b981' : '#f59e0b'
+  );
+  new Chart(document.getElementById('chartWeekly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Taxa semanal',
+          data: rates,
+          backgroundColor: colors,
+          borderColor: borders,
+          borderWidth: 1,
+          borderRadius: 5,
+        },
+        {
+          label: 'Equilíbrio (' + target + '/sem)',
+          data: data.map(() => target),
+          type: 'line',
+          borderColor: '#ef4444',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        },
+        {
+          label: 'Histórico (' + histAvg + '/sem)',
+          data: data.map(() => histAvg),
+          type: 'line',
+          borderColor: '#64748b',
+          borderWidth: 1,
+          borderDash: [3, 3],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.datasetIndex === 1) return 'Meta: ' + target + '/sem';
+              const m = data[ctx.dataIndex];
+              return ctx.raw + '/sem  (' + m.completed + ' concluídas em ' + m.weeksInPeriod + ' sem' + (m.isCurrentMonth ? ', mês parcial' : '') + ')';
+            },
+            afterLabel: ctx => {
+              if (ctx.datasetIndex !== 0) return null;
+              const m = data[ctx.dataIndex];
+              return isHoliday(m) ? '⚠ Mês com férias/recesso — excluído da média' : null;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e293b' }, beginAtZero: true },
+      }
+    }
+  });
+})();
 
 // ── Throughput chart ──────────────────────────────────────────────────────────
 (function() {

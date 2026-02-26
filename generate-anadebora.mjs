@@ -24,9 +24,9 @@ function getUrgency(status, currentStatusDays) {
   if (WAITING_STATUSES.has(st)) {
     return {
       level:   'action',
-      color:   '#3b82f6',
-      bgColor: '#3b82f615',
-      border:  '#3b82f640',
+      color:   '#a855f7',
+      bgColor: '#a855f715',
+      border:  '#a855f740',
       label:   '📋 Ação necessária',
       message: 'Essa loja ainda não foi iniciada. Tente coletar os dados necessários para integração, registre uma justificativa para o atraso, ou busque desbloqueá-la.',
     };
@@ -55,7 +55,7 @@ function getUrgency(status, currentStatusDays) {
     }
     return {
       level:   'normal',
-      color:   '#3b82f6',
+      color:   '#a855f7',
       bgColor: null,
       border:  null,
       label:   null,
@@ -77,15 +77,12 @@ function getUrgency(status, currentStatusDays) {
   return { level: 'normal', color: '#64748b', bgColor: null, border: null, label: null, message: '' };
 }
 
-// ── Derik's tasks, enriched ──────────────────────────────────────────────────
-const derikTasks = imp.tasks
-  .filter(t => t.implantador === 'Derik')
+// ── Ana Débora's tasks, enriched ──────────────────────────────────────────────
+const anaTasks = imp.tasks
+  .filter(t => t.implantador === 'Ana Débora')
   .map(t => {
     const c = findCapMatch(t.name);
-    // Use integration task status (cap) as source of truth for urgency;
-    // fall back to father task status (imp) if no match
     const integStatus       = c?.status ?? t.status;
-    // currentStatusDays: prefer API value, fallback to daysSinceUpdated
     const currentStatusDays = (c?.currentStatusDays != null && c.currentStatusDays > 0)
       ? c.currentStatusDays
       : (c?.daysSinceUpdated ?? t.daysSinceUpdated ?? null);
@@ -105,17 +102,16 @@ const derikTasks = imp.tasks
       clickupUrl:        c ? `https://app.clickup.com/t/${c.id}` : t.url,
     };
   })
-  // Sort: critical first → warning → action → blocked → normal
   .sort((a, b) => {
     const order = { critical: 0, warning: 1, action: 2, blocked: 3, normal: 4 };
     const diff = order[a.urgency.level] - order[b.urgency.level];
     return diff !== 0 ? diff : b.daysSinceCreated - a.daysSinceCreated;
   });
 
-// ── "Chegando em breve": C3 in revisão / progresso pedido (not Derik's) ──────
+// ── "Chegando em breve": C3 em revisão / progresso pedido (não da Ana) ────────
 const comingSoon = cap.wip.tasks
   .filter(t => t.scenario === 'C3' && ['revisão','progresso pedido','produtos integrado'].includes(t.status))
-  .filter(t => !derikTasks.find(l => findCapMatch(l.name)?.name === t.name))
+  .filter(t => !anaTasks.find(l => findCapMatch(l.name)?.name === t.name))
   .sort((a, b) => b.age - a.age)
   .slice(0, 5);
 
@@ -123,7 +119,7 @@ const comingSoon = cap.wip.tasks
 const STATUS_COLORS = {
   'backlog':              '#64748b',
   'contato/comunicação':  '#8b5cf6',
-  'todo/dados coletados': '#3b82f6',
+  'todo/dados coletados': '#a855f7',
   'progresso produto':    '#06b6d4',
   'produtos integrado':   '#3b82f6',
   'progresso pedido':     '#f59e0b',
@@ -134,13 +130,11 @@ const STATUS_COLORS = {
 };
 
 const SCENARIO_LABEL = { C1: 'Aguardando início', C2: 'Em integração — bloqueada', C3: 'Em integração — ativa' };
-const SCENARIO_COLOR = { C1: '#64748b', C2: '#f97316', C3: '#3b82f6' };
+const SCENARIO_COLOR = { C1: '#64748b', C2: '#f97316', C3: '#a855f7' };
 
 // ── Alert tasks ────────────────────────────────────────────────────────────────
-// Vermelho: bloqueadas agora ou críticas
-const blockedAlerts = derikTasks.filter(t => t.urgency.level === 'blocked' || t.urgency.level === 'critical');
-// Âmbar: historicamente bloqueadas pelo lojista por 10+ dias, mas hoje ativas
-const historyAlerts = derikTasks.filter(t =>
+const blockedAlerts = anaTasks.filter(t => t.urgency.level === 'blocked' || t.urgency.level === 'critical');
+const historyAlerts = anaTasks.filter(t =>
   t.blockedDays >= 10 &&
   t.urgency.level !== 'blocked' &&
   t.urgency.level !== 'critical'
@@ -152,22 +146,22 @@ function buildImplStats(name) {
     const c = findCapMatch(t.name);
     return { ...t, blockedDays: c?.blockedDays || 0 };
   });
-  const blocked   = tasks.filter(t => t.isBlocked).length;
+  const blocked    = tasks.filter(t => t.isBlocked).length;
   const blockedPct = tasks.length ? Math.round(blocked / tasks.length * 100) : 0;
-  const avgAge    = tasks.length ? Math.round(tasks.reduce((s,t) => s + t.daysSinceCreated, 0) / tasks.length) : 0;
-  const critical  = tasks.filter(t => t.daysSinceCreated > 60).length;
+  const avgAge     = tasks.length ? Math.round(tasks.reduce((s,t) => s + t.daysSinceCreated, 0) / tasks.length) : 0;
+  const critical   = tasks.filter(t => t.daysSinceCreated > 60).length;
   return { name, total: tasks.length, blocked, blockedPct, avgAge, critical };
 }
 const teamStats = ['Derik','Laissa','Ana Débora'].map(buildImplStats);
-const derikStats = teamStats.find(s => s.name === 'Derik');
+const anaStats  = teamStats.find(s => s.name === 'Ana Débora');
 
 // ── Summary counts ─────────────────────────────────────────────────────────────
-const totalActive   = derikTasks.length;
-const totalCritical = derikTasks.filter(t => t.urgency.level === 'critical').length;
-const totalWarning  = derikTasks.filter(t => t.urgency.level === 'warning').length;
-const totalAction   = derikTasks.filter(t => t.urgency.level === 'action').length;
-const totalNeeded   = derikTasks.filter(t => t.urgency.level !== 'normal').length;
-const oldest        = [...derikTasks].sort((a, b) => b.daysSinceCreated - a.daysSinceCreated)[0];
+const totalActive   = anaTasks.length;
+const totalCritical = anaTasks.filter(t => t.urgency.level === 'critical').length;
+const totalWarning  = anaTasks.filter(t => t.urgency.level === 'warning').length;
+const totalAction   = anaTasks.filter(t => t.urgency.level === 'action').length;
+const totalNeeded   = anaTasks.filter(t => t.urgency.level !== 'normal').length;
+const oldest        = [...anaTasks].sort((a, b) => b.daysSinceCreated - a.daysSinceCreated)[0];
 
 const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -188,13 +182,11 @@ function getCurrentPhase(status) {
   return null;
 }
 
-// Dentro da fase fila, cada status indica um avanço diferente
-// (quanto da fila já foi "consumido" pelo fato de estar nesse status)
 const FILA_STATUS_ADVANCE = {
-  'todo/dados coletados': 0.75, // dados prontos, quase saindo da fila
-  'aguardando cliente':   0.50, // aguardando, mas já tem contato
-  'contato/comunicação':  0.30, // contato feito
-  'backlog':              0.00, // ainda não iniciou
+  'todo/dados coletados': 0.75,
+  'aguardando cliente':   0.50,
+  'contato/comunicação':  0.30,
+  'backlog':              0.00,
 };
 
 function estimateRemaining(task) {
@@ -204,12 +196,11 @@ function estimateRemaining(task) {
   const currentIdx = PHASE_ORDER.indexOf(phase);
   let days = 0;
   PHASE_ORDER.forEach((p, i) => {
-    if (i < currentIdx) return; // fase já concluída
+    if (i < currentIdx) return;
     const bench = benchmarks[p];
     if (i === currentIdx) {
       const actualSpent = (pd[p] || 0) + (task.currentStatusDays || 0);
       let spent = actualSpent;
-      // Na fase fila: usar avanço mínimo por status para refletir proximidade real
       if (p === 'fila') {
         const st = (task.status || '').toLowerCase().trim();
         const advance = FILA_STATUS_ADVANCE[st] ?? 0;
@@ -218,7 +209,7 @@ function estimateRemaining(task) {
       }
       days += Math.max(3, bench - spent);
     } else {
-      days += bench; // fases futuras: tempo completo do benchmark
+      days += bench;
     }
   });
   return days;
@@ -230,16 +221,15 @@ function addDays(days) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
-// Agrupar tasks da Derik por fase atual
+// Agrupar tasks da Ana por fase atual
 const tasksByPhase = { fila: [], produto: [], pedido: [], revisao: [] };
-derikTasks.forEach(t => {
+anaTasks.forEach(t => {
   const phase = getCurrentPhase(t.status);
   if (phase && tasksByPhase[phase]) {
     tasksByPhase[phase].push({ ...t, daysToComplete: estimateRemaining(t) });
   }
 });
 
-// Pontuação de avanço no pipeline (desempate quando estimativa é igual)
 const STATUS_PROGRESS = {
   'revisão': 8, 'progresso pedido': 7, 'bloqueado pedido': 6,
   'produtos integrado': 5, 'progresso produto': 4, 'bloqueado produto': 3,
@@ -247,17 +237,16 @@ const STATUS_PROGRESS = {
   'contato/comunicação': 0, 'backlog': -1,
 };
 
-// Lista plana ordenada por menor estimativa de entrega; desempate por status mais avançado
 const tasksForPrevisao = PHASE_ORDER.flatMap(p => tasksByPhase[p])
   .sort((a, b) => {
     const dtcDiff = (a.daysToComplete ?? 999) - (b.daysToComplete ?? 999);
     if (dtcDiff !== 0) return dtcDiff;
     const pa = STATUS_PROGRESS[a.status] ?? 0;
     const pb = STATUS_PROGRESS[b.status] ?? 0;
-    return pb - pa; // mais avançado primeiro
+    return pb - pa;
   });
 
-// ERP benchmark detalhado — tempo médio por fase por ERP
+// ERP benchmark detalhado
 const erpMap = {};
 cap.wip.tasks.filter(t => t.erp).forEach(t => {
   if (!erpMap[t.erp]) erpMap[t.erp] = { ages: [], workDays: [], phaseProduto: [], phasePedido: [] };
@@ -281,8 +270,7 @@ const erpBenchmark = Object.entries(erpMap)
   .filter(e => e.count >= 1)
   .sort((a, b) => b.avgAge - a.avgAge);
 
-// ERPs presentes nas lojas da Derik
-const derikErps = new Set(derikTasks.map(t => t.erp).filter(Boolean));
+const anaErps = new Set(anaTasks.map(t => t.erp).filter(Boolean));
 
 // ── Checklist items ────────────────────────────────────────────────────────────
 const checklist = [
@@ -301,7 +289,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Derik — Implantação</title>
+<title>Painel Ana Débora — Implantação</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:#0f172a;color:#f1f5f9;font-family:'Inter',system-ui,sans-serif;font-size:14px;min-height:100vh}
@@ -313,7 +301,7 @@ const html = `<!DOCTYPE html>
 
   /* Header */
   .hdr{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-  .avatar-init{width:46px;height:46px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px #3b82f633;background:linear-gradient(135deg,#1d4ed8,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff}
+  .avatar-init{width:46px;height:46px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px #a855f733;background:linear-gradient(135deg,#6b21a8,#a855f7);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff}
   .hdr-text h1{font-size:21px;font-weight:800;letter-spacing:-.4px}
   .hdr-text p{color:#64748b;font-size:12px;margin-top:3px}
 
@@ -404,11 +392,11 @@ const html = `<!DOCTYPE html>
   .loja-days{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1}
   .loja-days-label{font-size:10px;color:#475569;margin-top:2px}
   .status-days{font-size:11px;margin-top:6px;padding:4px 8px;border-radius:6px;text-align:center;font-weight:700}
-  .card-link{display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none;border:1px solid #3b82f644;border-radius:6px;padding:3px 8px;background:#3b82f610}
+  .card-link{display:inline-block;margin-top:8px;font-size:10px;color:#a855f7;text-decoration:none;border:1px solid #a855f744;border-radius:6px;padding:3px 8px;background:#a855f710}
 
   /* Coming soon */
   .coming-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
-  .coming-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px;border-top:3px solid #3b82f6}
+  .coming-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px;border-top:3px solid #a855f7}
   .coming-name{font-size:12px;font-weight:700;color:#f1f5f9;margin-bottom:5px}
   .coming-meta{font-size:11px;color:#64748b}
 
@@ -416,29 +404,29 @@ const html = `<!DOCTYPE html>
   .checklist{display:flex;flex-direction:column;gap:6px}
   .check-item{display:flex;align-items:center;gap:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
   .check-item:hover{border-color:#475569}
-  .check-item.done{background:#3b82f610;border-color:#3b82f635}
+  .check-item.done{background:#a855f710;border-color:#a855f735}
   .check-item.done .check-text{color:#475569;text-decoration:line-through}
   .check-box{width:18px;height:18px;border-radius:5px;border:2px solid #334155;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;transition:all .15s;background:#0f172a;color:transparent}
-  .check-item.done .check-box{background:#3b82f6;border-color:#3b82f6;color:#fff}
+  .check-item.done .check-box{background:#a855f7;border-color:#a855f7;color:#fff}
   .check-text{font-size:12px;color:#cbd5e1;line-height:1.4;flex:1}
 
   /* Ranking */
-  .rank-card{background:linear-gradient(135deg,#0f2318 0%,#1e293b 60%);border:1px solid #3b82f640;border-radius:14px;padding:20px;margin-bottom:0;position:relative;overflow:hidden}
-  .rank-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#3b82f620 0%,transparent 70%)}
+  .rank-card{background:linear-gradient(135deg,#1a0a2e 0%,#1e293b 60%);border:1px solid #a855f740;border-radius:14px;padding:20px;margin-bottom:0;position:relative;overflow:hidden}
+  .rank-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#a855f720 0%,transparent 70%)}
   .rank-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
   .rank-trophy{font-size:36px;filter:drop-shadow(0 0 8px #f59e0b80)}
   .rank-title{font-size:17px;font-weight:800;color:#f1f5f9;letter-spacing:-.3px}
-  .rank-sub{font-size:12px;color:#3b82f6;margin-top:2px;font-weight:600}
+  .rank-sub{font-size:12px;color:#a855f7;margin-top:2px;font-weight:600}
   .rank-metrics{display:flex;flex-direction:column;gap:10px}
   .rank-metric{background:#0f172a55;border-radius:10px;padding:11px 14px;border:1px solid #1e293b}
-  .rank-metric-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#3b82f6;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .rank-metric-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a855f7;margin-bottom:8px;display:flex;align-items:center;gap:5px}
   .rank-bars{display:flex;flex-direction:column;gap:4px}
   .rank-bar-row{display:flex;align-items:center;gap:8px}
   .rank-bar-name{width:80px;font-size:11px;flex-shrink:0}
   .rank-bar-wrap{flex:1;background:#1e293b;border-radius:3px;height:18px;overflow:hidden;position:relative}
   .rank-bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;transition:width .5s}
   .rank-bar-val{width:32px;text-align:right;font-size:11px;font-weight:700;flex-shrink:0}
-  .you-tag{display:inline-flex;align-items:center;gap:3px;background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644;border-radius:99px;font-size:9px;font-weight:800;padding:1px 6px;flex-shrink:0}
+  .you-tag{display:inline-flex;align-items:center;gap:3px;background:#a855f722;color:#a855f7;border:1px solid #a855f744;border-radius:99px;font-size:9px;font-weight:800;padding:1px 6px;flex-shrink:0}
 
   /* Empty */
   .empty{color:#475569;font-size:12px;padding:16px;text-align:center;background:#1e293b;border-radius:8px;border:1px dashed #334155}
@@ -458,9 +446,9 @@ const html = `<!DOCTYPE html>
 
   <!-- Header -->
   <div class="hdr">
-    <div class="avatar-init">D</div>
+    <div class="avatar-init">A</div>
     <div class="hdr-text">
-      <h1>Painel do Derik</h1>
+      <h1>Painel da Ana Débora</h1>
       <p>Suas integrações em andamento · Atualizado em ${now}</p>
     </div>
   </div>
@@ -477,9 +465,9 @@ const html = `<!DOCTYPE html>
   <!-- KPIs -->
   <div class="kpi-row">
     <div class="kpi">
-      <div class="kpi-accent" style="background:#3b82f6"></div>
+      <div class="kpi-accent" style="background:#a855f7"></div>
       <div class="kpi-label">Suas lojas</div>
-      <div class="kpi-value" style="color:#3b82f6">${totalActive}</div>
+      <div class="kpi-value" style="color:#a855f7">${totalActive}</div>
       <div class="kpi-sub">integrações ativas</div>
     </div>
     <div class="kpi">
@@ -489,9 +477,9 @@ const html = `<!DOCTYPE html>
       <div class="kpi-sub">${totalCritical > 0 ? 'intervir agora' : 'nenhuma crítica'}</div>
     </div>
     <div class="kpi">
-      <div class="kpi-accent" style="background:${totalNeeded > 0 ? '#f59e0b' : '#3b82f6'}"></div>
+      <div class="kpi-accent" style="background:${totalNeeded > 0 ? '#f59e0b' : '#a855f7'}"></div>
       <div class="kpi-label">Ações necessárias</div>
-      <div class="kpi-value" style="color:${totalNeeded > 0 ? '#f59e0b' : '#3b82f6'}">${totalNeeded}</div>
+      <div class="kpi-value" style="color:${totalNeeded > 0 ? '#f59e0b' : '#a855f7'}">${totalNeeded}</div>
       <div class="kpi-sub">${totalNeeded > 0 ? `${totalNeeded} loja${totalNeeded > 1 ? 's' : ''} aguardam sua ação` : 'tudo em dia!'}</div>
     </div>
     <div class="kpi">
@@ -526,23 +514,18 @@ const html = `<!DOCTYPE html>
   <div class="section-title">🏆 Comparativo do time</div>
   <div class="rank-card">
     ${(() => {
-      // Compute overall rank: sum of positions across 3 metrics (lower = better)
-      const rankAvgAge    = [...teamStats].sort((a,b) => a.avgAge     - b.avgAge    ).findIndex(s => s.name === 'Derik') + 1;
-      const rankCritical  = [...teamStats].sort((a,b) => a.critical   - b.critical  ).findIndex(s => s.name === 'Derik') + 1;
-      const rankBlocked   = [...teamStats].sort((a,b) => a.blockedPct - b.blockedPct).findIndex(s => s.name === 'Derik') + 1;
-      const score = rankAvgAge + rankCritical + rankBlocked;
       const allScores = teamStats.map(s => ({
         name: s.name,
         score: ([...teamStats].sort((a,b)=>a.avgAge-b.avgAge).findIndex(x=>x.name===s.name)+1)
              + ([...teamStats].sort((a,b)=>a.critical-b.critical).findIndex(x=>x.name===s.name)+1)
              + ([...teamStats].sort((a,b)=>a.blockedPct-b.blockedPct).findIndex(x=>x.name===s.name)+1)
       })).sort((a,b) => a.score - b.score);
-      const overallRank = allScores.findIndex(s => s.name === 'Derik') + 1;
+      const overallRank = allScores.findIndex(s => s.name === 'Ana Débora') + 1;
       const trophy  = overallRank === 1 ? '🥇' : overallRank === 2 ? '🥈' : '🥉';
       const ordinal = overallRank === 1 ? '1º' : overallRank === 2 ? '2º' : '3º';
-      const subtitle = derikStats.blockedPct === 0
+      const subtitle = anaStats.blockedPct === 0
         ? '⭐ Zero lojas bloqueadas — pipeline sem travamentos'
-        : `${derikStats.total} lojas · ${derikStats.blocked} bloqueada${derikStats.blocked !== 1 ? 's' : ''}`;
+        : `${anaStats.total} lojas · ${anaStats.blocked} bloqueada${anaStats.blocked !== 1 ? 's' : ''}`;
       return `<div class="rank-header">
       <div class="rank-trophy">${trophy}</div>
       <div>
@@ -561,23 +544,20 @@ const html = `<!DOCTYPE html>
           <div class="rank-metric-title">⏱ Menor tempo médio de pipeline <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
           <div class="rank-bars">
             ${sorted.map((s, i) => {
-              const isDerik = s.name === 'Derik';
-              const pct = Math.round(s.avgAge / max * 100);
-              const color = isDerik ? '#3b82f6' : '#334155';
-              const textColor = isDerik ? '#fff' : '#94a3b8';
+              const isAna  = s.name === 'Ana Débora';
+              const pct    = Math.round(s.avgAge / max * 100);
+              const color  = isAna ? '#a855f7' : '#334155';
+              const textColor = isAna ? '#fff' : '#94a3b8';
               return `<div class="rank-bar-row">
-                <div class="rank-bar-name" style="color:${isDerik ? '#f1f5f9' : '#64748b'};font-weight:${isDerik ? 700 : 400}">
+                <div class="rank-bar-name" style="color:${isAna ? '#f1f5f9' : '#64748b'};font-weight:${isAna ? 700 : 400}">
                   ${i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : '🥉 '}${s.name}
                 </div>
                 <div class="rank-bar-wrap">
                   <div class="rank-bar-fill" style="width:${pct}%;background:${color};color:${textColor}">${s.avgAge}d</div>
                 </div>
-                ${isDerik ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.avgAge}d</div>`}
+                ${isAna ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.avgAge}d</div>`}
               </div>`;
             }).join('')}
-          </div>
-          <div style="font-size:11px;color:#3b82f6;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
-            ✨ Seu pipeline é <strong>${Math.round((teamStats.find(s=>s.name==='Ana Débora').avgAge - derikStats.avgAge) / teamStats.find(s=>s.name==='Ana Débora').avgAge * 100)}% mais jovem</strong> que o da Ana Débora e <strong>${Math.round((teamStats.find(s=>s.name==='Laissa').avgAge - derikStats.avgAge) / teamStats.find(s=>s.name==='Laissa').avgAge * 100)}% mais jovem</strong> que o da Laissa
           </div>
         </div>`;
       })()}
@@ -590,25 +570,21 @@ const html = `<!DOCTYPE html>
           <div class="rank-metric-title">🔴 Menos lojas críticas (60+ dias) <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
           <div class="rank-bars">
             ${sorted.map((s, i) => {
-              const isDerik = s.name === 'Derik';
-              const pct = s.critical === 0 ? 4 : Math.round(s.critical / max * 100);
-              const color = isDerik ? '#3b82f6' : '#334155';
-              const textColor = isDerik ? '#fff' : '#94a3b8';
+              const isAna = s.name === 'Ana Débora';
+              const pct   = s.critical === 0 ? 4 : Math.round(s.critical / max * 100);
+              const color = isAna ? '#a855f7' : '#334155';
+              const textColor = isAna ? '#fff' : '#94a3b8';
               return `<div class="rank-bar-row">
-                <div class="rank-bar-name" style="color:${isDerik ? '#f1f5f9' : '#64748b'};font-weight:${isDerik ? 700 : 400}">
+                <div class="rank-bar-name" style="color:${isAna ? '#f1f5f9' : '#64748b'};font-weight:${isAna ? 700 : 400}">
                   ${i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : '🥉 '}${s.name}
                 </div>
                 <div class="rank-bar-wrap">
                   <div class="rank-bar-fill" style="width:${pct}%;background:${color};color:${textColor}">${s.critical === 0 ? '0 ✓' : s.critical}</div>
                 </div>
-                ${isDerik ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.critical}</div>`}
+                ${isAna ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.critical}</div>`}
               </div>`;
             }).join('')}
           </div>
-          ${derikStats.critical === 0 ? `
-          <div style="font-size:11px;color:#3b82f6;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
-            ✨ <strong>Nenhuma loja sua está em estado crítico.</strong> Laissa tem ${teamStats.find(s=>s.name==='Laissa').critical} e Ana Débora tem ${teamStats.find(s=>s.name==='Ana Débora').critical}.
-          </div>` : ''}
         </div>`;
       })()}
 
@@ -620,23 +596,20 @@ const html = `<!DOCTYPE html>
           <div class="rank-metric-title">⚑ Menor % de lojas bloqueadas <span style="color:#64748b;font-weight:400;text-transform:none;letter-spacing:0">— quanto mais baixo, melhor</span></div>
           <div class="rank-bars">
             ${sorted.map((s, i) => {
-              const isDerik = s.name === 'Derik';
-              const pct = s.blockedPct === 0 ? 4 : Math.round(s.blockedPct / max * 100);
-              const color = isDerik ? '#3b82f6' : '#334155';
-              const textColor = isDerik ? '#fff' : '#94a3b8';
+              const isAna = s.name === 'Ana Débora';
+              const pct   = s.blockedPct === 0 ? 4 : Math.round(s.blockedPct / max * 100);
+              const color = isAna ? '#a855f7' : '#334155';
+              const textColor = isAna ? '#fff' : '#94a3b8';
               return `<div class="rank-bar-row">
-                <div class="rank-bar-name" style="color:${isDerik ? '#f1f5f9' : '#64748b'};font-weight:${isDerik ? 700 : 400}">
+                <div class="rank-bar-name" style="color:${isAna ? '#f1f5f9' : '#64748b'};font-weight:${isAna ? 700 : 400}">
                   ${i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : '🥉 '}${s.name}
                 </div>
                 <div class="rank-bar-wrap">
                   <div class="rank-bar-fill" style="width:${pct}%;background:${color};color:${textColor}">${s.blockedPct}%</div>
                 </div>
-                ${isDerik ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.blockedPct}%</div>`}
+                ${isAna ? `<div class="you-tag">você</div>` : `<div class="rank-bar-val" style="color:#475569">${s.blockedPct}%</div>`}
               </div>`;
             }).join('')}
-          </div>
-          <div style="font-size:11px;color:#3b82f6;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
-            ✨ Apenas <strong>${derikStats.blockedPct}% das suas lojas</strong> estão bloqueadas vs ${teamStats.find(s=>s.name==='Ana Débora').blockedPct}% da Ana Débora
           </div>
         </div>`;
       })()}
@@ -647,7 +620,7 @@ const html = `<!DOCTYPE html>
   <!-- Suas Lojas -->
   <div class="section-title">🏪 Suas lojas — ordenadas por prioridade</div>
   <div class="loja-list">
-    ${derikTasks.map(t => {
+    ${anaTasks.map(t => {
       const urg = t.urgency;
       const statusColor = STATUS_COLORS[t.status] || '#64748b';
       const totalDaysColor = t.daysSinceCreated > 60 ? '#ef4444' : t.daysSinceCreated > 30 ? '#f59e0b' : '#94a3b8';
@@ -684,7 +657,7 @@ const html = `<!DOCTYPE html>
             <div class="phase-row">
               ${t.queueDays   > 0 ? `<span class="phase-pill" style="background:#64748b18;color:#64748b;border:1px solid #64748b33">⏸ fila ${t.queueDays}d</span>` : ''}
               ${t.blockedDays > 0 ? `<span class="phase-pill" style="background:#f9741618;color:#f97316;border:1px solid #f9741633">⚑ bloqueada ${t.blockedDays}d</span>` : ''}
-              ${t.workDays    > 0 ? `<span class="phase-pill" style="background:#3b82f618;color:#3b82f6;border:1px solid #3b82f633">▶ ativa ${t.workDays}d</span>` : ''}
+              ${t.workDays    > 0 ? `<span class="phase-pill" style="background:#a855f718;color:#a855f7;border:1px solid #a855f733">▶ ativa ${t.workDays}d</span>` : ''}
             </div>` : ''}
           </div>
           <div class="loja-right">
@@ -715,7 +688,7 @@ const html = `<!DOCTYPE html>
             <span style="color:${STATUS_COLORS[t.status]||'#64748b'}">${t.status}</span>
           </div>
           <div class="coming-meta">${sc} · ${t.workDays}d ativo${t.erp ? ` · ${t.erp}` : ''}</div>
-          <a href="${t.url}" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#3b82f6;text-decoration:none">ver card ↗</a>
+          <a href="${t.url}" target="_blank" style="display:inline-block;margin-top:8px;font-size:10px;color:#a855f7;text-decoration:none">ver card ↗</a>
         </div>`;
       }).join('')}
     </div>`}
@@ -793,7 +766,7 @@ const html = `<!DOCTYPE html>
       const statusColor = STATUS_COLORS[t.status] || '#64748b';
       const dtc         = t.daysToComplete;
       const daysLabel   = !dtc ? '?' : dtc <= 14 ? `~${dtc} dias` : dtc <= 60 ? `~${Math.ceil(dtc/7)} sem` : `~${Math.ceil(dtc/30)} mes`;
-      const urgColor    = !dtc ? '#94a3b8' : dtc <= 14 ? '#3b82f6' : dtc <= 30 ? '#f59e0b' : '#94a3b8';
+      const urgColor    = !dtc ? '#94a3b8' : dtc <= 14 ? '#a855f7' : dtc <= 30 ? '#f59e0b' : '#94a3b8';
       const futurePhasePills = PHASE_ORDER.slice(PHASE_ORDER.indexOf(phase)+1).map(fp => {
         const fc = PHASE_COLORS[fp];
         return `<span style="font-size:10px;background:${fc}15;color:${fc};border:1px solid ${fc}33;border-radius:99px;padding:2px 8px">${PHASE_ICONS[fp]} +${benchmarks[fp]}d</span>`;
@@ -801,7 +774,6 @@ const html = `<!DOCTYPE html>
 
       return `
       <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden">
-        <!-- Fase atual como header do card -->
         <div style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:${color}15;border-bottom:1px solid ${color}30">
           <span style="font-size:12px">${PHASE_ICONS[phase]}</span>
           <span style="font-size:11px;font-weight:700;color:${color}">${PHASE_LABELS[phase]}</span>
@@ -819,7 +791,6 @@ const html = `<!DOCTYPE html>
               ${dtc ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px">~${addDays(dtc)}</div>` : ''}
             </div>
           </div>
-          <!-- Barra de progresso na fase atual -->
           <div style="margin-bottom:8px">
             <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:3px">
               <span>${spent}d nessa fase — ~${remaining}d restantes</span>
@@ -829,7 +800,6 @@ const html = `<!DOCTYPE html>
               <div style="height:100%;width:${pct}%;background:${color};border-radius:4px"></div>
             </div>
           </div>
-          <!-- Próximas fases -->
           ${futurePhasePills ? `
           <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
             <span style="font-size:10px;color:#64748b;margin-right:2px">próximas fases:</span>
@@ -847,35 +817,33 @@ const html = `<!DOCTYPE html>
       <div class="insight-text">
         Tempo médio que integrações ficam no pipeline, agrupado por ERP.
         ERPs com ciclos mais longos costumam ter maior complexidade ou mais dependências externas.
-        <strong style="color:#f1f5f9">Lojas suas destacadas em verde.</strong>
+        <strong style="color:#f1f5f9">Lojas suas destacadas em roxo.</strong>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
       ${(() => {
         const maxAge = Math.max(...erpBenchmark.map(e => e.avgAge));
         return erpBenchmark.map(e => {
-          const isDerik = derikErps.has(e.erp);
-          const barColor = isDerik ? '#3b82f6' : '#334155';
-          const textColor = isDerik ? '#3b82f6' : '#94a3b8';
+          const isAna     = anaErps.has(e.erp);
+          const barColor  = isAna ? '#a855f7' : '#334155';
+          const textColor = isAna ? '#a855f7' : '#94a3b8';
           const pct = Math.max(Math.round(e.avgAge / maxAge * 100), 12);
           return `
-          <div style="background:#1e293b;border:1px solid ${isDerik ? '#3b82f644' : '#334155'};border-radius:10px;padding:11px 14px${isDerik ? ';border-left:3px solid #3b82f6' : ''}">
+          <div style="background:#1e293b;border:1px solid ${isAna ? '#a855f744' : '#334155'};border-radius:10px;padding:11px 14px${isAna ? ';border-left:3px solid #a855f7' : ''}">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
               <span style="font-size:12px;font-weight:700;color:${textColor}">${e.erp}</span>
-              ${isDerik ? `<span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">sua loja</span>` : ''}
+              ${isAna ? `<span class="badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744">sua loja</span>` : ''}
               <span style="margin-left:auto;font-size:11px;color:#64748b">${e.count} integração${e.count > 1 ? 'ões' : ''} ativa${e.count > 1 ? 's' : ''}</span>
             </div>
-            <!-- Barra de tempo médio total -->
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
               <div style="width:90px;font-size:10px;color:#64748b;flex-shrink:0">Tempo médio</div>
               <div style="flex:1;background:#0f172a;border-radius:3px;height:18px;overflow:hidden">
-                <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:${isDerik ? '#fff' : '#94a3b8'}">
+                <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:700;color:${isAna ? '#fff' : '#94a3b8'}">
                   ${e.avgAge}d no pipeline
                 </div>
               </div>
             </div>
             ${(e.avgProduto || e.avgPedido) ? `
-            <!-- Detalhamento por fase -->
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
               ${e.avgProduto ? `<span style="font-size:10px;background:#06b6d415;color:#06b6d4;border:1px solid #06b6d433;border-radius:99px;padding:2px 8px">📦 produto ~${e.avgProduto}d</span>` : ''}
               ${e.avgPedido  ? `<span style="font-size:10px;background:#f59e0b15;color:#f59e0b;border:1px solid #f59e0b33;border-radius:99px;padding:2px 8px">🛒 pedido ~${e.avgPedido}d</span>` : ''}
@@ -888,12 +856,11 @@ const html = `<!DOCTYPE html>
   </div><!-- /tab-previsibilidade -->
 
   <div class="footer">
-    Instabuy · Setor de Integrações · ${now} · Painel exclusivo Derik
+    Instabuy · Setor de Integrações · ${now} · Painel exclusivo Ana Débora
   </div>
 
 </div>
 <script>
-  // Tab switching
   function switchTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -905,19 +872,18 @@ const html = `<!DOCTYPE html>
 
   function load() {
     KEYS.forEach(id => {
-      if (localStorage.getItem('derik_check_' + id) === '1') apply(id, true);
+      if (localStorage.getItem('ana_check_' + id) === '1') apply(id, true);
     });
   }
 
   function toggle(id) {
-    const done = localStorage.getItem('derik_check_' + id) === '1';
-    localStorage.setItem('derik_check_' + id, done ? '0' : '1');
+    const done = localStorage.getItem('ana_check_' + id) === '1';
+    localStorage.setItem('ana_check_' + id, done ? '0' : '1');
     apply(id, !done);
   }
 
   function apply(id, done) {
     const item = document.getElementById('item-' + id);
-    const box  = document.getElementById('box-' + id);
     item.classList.toggle('done', done);
   }
 
@@ -926,11 +892,11 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-writeFileSync('dashboard-derik.html', html);
+writeFileSync('dashboard-anadebora.html', html);
 const kb = Math.round(html.length / 1024);
-console.log(`Dashboard da Derik gerado!`);
-console.log(`Arquivo: dashboard-derik.html (${kb}KB)`);
+console.log(`Dashboard da Ana Débora gerado!`);
+console.log(`Arquivo: dashboard-anadebora.html (${kb}KB)`);
 console.log(`\nResumo de urgência:`);
-derikTasks.forEach(t => {
+anaTasks.forEach(t => {
   console.log(`  [${t.urgency.level.toUpperCase().padEnd(8)}] ${t.displayName.substring(0,40)} | ${t.status} | ${t.currentStatusDays ?? '?'}d nesse status`);
 });
