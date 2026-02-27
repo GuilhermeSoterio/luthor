@@ -55,7 +55,6 @@ function cleanName(name) {
     .trim();
 }
 
-// Detect store group (network)
 function detectGroup(name) {
   const n = cleanName(name).toLowerCase();
   if (n.includes("redem") || n.includes("redemix")) return "RedeMIX";
@@ -71,7 +70,7 @@ function detectGroup(name) {
   return "Individual";
 }
 
-// Load active tasks
+// ── Active tasks ──────────────────────────────────────────────────────────────
 const tasks = raw.tasks
   .filter(t => t.name.startsWith("[INTEGRACAO]") && !t.name.toLowerCase().includes("integrações paradas"))
   .filter(t => ACTIVE_STATUSES.includes(t.status))
@@ -95,23 +94,17 @@ const tasks = raw.tasks
     status_breakdown: t.status_breakdown || [],
     url: `https://app.clickup.com/t/${t.id}`,
     created_label: t.date_created ? new Date(t.date_created).toLocaleDateString("pt-BR") : "—",
-    days_since_created: t.date_created
-      ? Math.round((Date.now() - t.date_created) / 86400000)
-      : null,
+    days_since_created: t.date_created ? Math.round((Date.now() - t.date_created) / 86400000) : null,
   }));
 
 console.log(`Active tasks: ${tasks.length}`);
-const byStatus = {};
-tasks.forEach(t => { byStatus[t.status] = (byStatus[t.status]||0)+1; });
-console.log("By status:", JSON.stringify(byStatus));
 
-// ── KPIs ──────────────────────────────────────────────────────────────────────
 const kpis = {
   total: tasks.length,
   inProgress: tasks.filter(t => t.isInProgress).length,
   blocked: tasks.filter(t => t.isBlocked).length,
   backlog: tasks.filter(t => t.isBacklog).length,
-  blockedPct: Math.round(tasks.filter(t=>t.isBlocked).length / tasks.filter(t=>!t.isBacklog).length * 100),
+  blockedPct: Math.round(tasks.filter(t=>t.isBlocked).length / Math.max(tasks.filter(t=>!t.isBacklog).length, 1) * 100),
   avgDays: (() => {
     const w = tasks.filter(t=>t.total_days>0);
     return w.length ? Math.round(w.reduce((a,t)=>a+t.total_days,0)/w.length*10)/10 : 0;
@@ -119,37 +112,23 @@ const kpis = {
   groups: [...new Set(tasks.map(t=>t.group))].length,
 };
 
-// ── By status (for kanban + chart) ───────────────────────────────────────────
 const statusGroups = {};
 for (const t of tasks) {
   if (!statusGroups[t.status]) statusGroups[t.status] = [];
   statusGroups[t.status].push(t);
 }
 
-// ── Groups ────────────────────────────────────────────────────────────────────
 const groups = {};
 for (const t of tasks) {
   if (!groups[t.group]) groups[t.group] = [];
   groups[t.group].push(t);
 }
 
-// ── Sorted tasks ──────────────────────────────────────────────────────────────
-const sortedByPriority = [...tasks].sort((a,b) =>
-  (STATUS_ORDER[a.status]||99) - (STATUS_ORDER[b.status]||99) ||
-  b.blocked_days - a.blocked_days
-);
-
 const sortedByBlocked = [...tasks]
   .filter(t => t.blocked_days > 0 || t.isBlocked)
   .sort((a,b) => b.blocked_pct - a.blocked_pct);
 
-const sortedByGroup = [...tasks].sort((a,b) =>
-  a.group.localeCompare(b.group) || (STATUS_ORDER[a.status]||99) - (STATUS_ORDER[b.status]||99)
-);
-
-// ── D4: Phase breakdown for tasks with data ───────────────────────────────────
 const withPhases = tasks.filter(t => t.total_days > 0 && (t.phases.preparacao + t.phases.produto + t.phases.pedido + t.phases.teste > 0));
-
 const phaseStats = ["preparacao", "produto", "pedido", "teste"].map(ph => {
   const vals = withPhases.map(t=>t.phases[ph]).filter(v=>v>0);
   if (!vals.length) return { phase: ph, avg: 0, min: 0, max: 0, count: 0 };
@@ -164,7 +143,113 @@ const phaseStats = ["preparacao", "produto", "pedido", "teste"].map(ph => {
   };
 });
 
-// ── Implantadores data ────────────────────────────────────────────────────────
+// ── Completed tasks — historical analysis ─────────────────────────────────────
+const completedTasks = raw.tasks
+  .filter(t =>
+    t.status === 'implantado'
+    && t.total_days > 0
+    && t.name.startsWith('[INTEGRACAO]')
+    && !t.name.toLowerCase().includes('paradas')
+    && t.date_done
+  )
+  .map(t => ({
+    id: t.id,
+    name: cleanName(t.name),
+    erp: normalizeERP(t.tags),
+    total_days: Math.round(t.total_days),
+    blocked_pct: t.blocked_pct || 0,
+    date_done: t.date_done,
+    assignees: t.assignees || [],
+    month_done: new Date(t.date_done).toISOString().substring(0, 7),
+  }));
+
+console.log(`Completed tasks: ${completedTasks.length}`);
+
+// ERP performance (>= 3 completions)
+const erpStatsMap = {};
+completedTasks.forEach(t => {
+  const e = t.erp;
+  if (!erpStatsMap[e]) erpStatsMap[e] = { count: 0, days: [], blockedPcts: [] };
+  erpStatsMap[e].count++;
+  erpStatsMap[e].days.push(t.total_days);
+  erpStatsMap[e].blockedPcts.push(t.blocked_pct);
+});
+const erpStats = Object.entries(erpStatsMap)
+  .filter(([e, v]) => v.count >= 3 && e !== 'N/A')
+  .map(([erp, v]) => {
+    v.days.sort((a,b) => a-b);
+    const median = Math.round(v.days[Math.floor(v.days.length/2)]);
+    const avg = Math.round(v.days.reduce((s,x) => s+x, 0) / v.days.length);
+    const blockedAvg = Math.round(v.blockedPcts.reduce((s,x) => s+x, 0) / v.blockedPcts.length);
+    return { erp, count: v.count, avg, median, blockedAvg, min: Math.round(v.days[0]), max: Math.round(v.days[v.days.length-1]) };
+  })
+  .sort((a,b) => a.median - b.median);
+
+// Monthly completion trend (mark Aug-2025 outlier — batch migration)
+const monthlyTrendMap = {};
+completedTasks.forEach(t => {
+  if (!monthlyTrendMap[t.month_done]) monthlyTrendMap[t.month_done] = { count: 0, days: [] };
+  monthlyTrendMap[t.month_done].count++;
+  monthlyTrendMap[t.month_done].days.push(t.total_days);
+});
+const monthlyTrend = Object.entries(monthlyTrendMap).sort().map(([m, v]) => {
+  v.days.sort((a,b) => a-b);
+  return {
+    month: m,
+    count: v.count,
+    avg: Math.round(v.days.reduce((s,x) => s+x, 0) / v.days.length),
+    median: Math.round(v.days[Math.floor(v.days.length/2)]),
+    isOutlier: m === '2025-08',
+  };
+});
+
+// Per-implantador historical stats (>= 3 completions)
+const impCompMap = {};
+completedTasks.forEach(t => {
+  (t.assignees||[]).forEach(a => {
+    if (!impCompMap[a]) impCompMap[a] = { count: 0, days: [] };
+    impCompMap[a].count++;
+    impCompMap[a].days.push(t.total_days);
+  });
+});
+const impStatsComp = Object.entries(impCompMap)
+  .filter(([,v]) => v.count >= 3)
+  .map(([name, v]) => {
+    v.days.sort((a,b) => a-b);
+    return {
+      name,
+      count: v.count,
+      avg: Math.round(v.days.reduce((s,x) => s+x, 0) / v.days.length),
+      median: Math.round(v.days[Math.floor(v.days.length/2)]),
+      min: Math.round(v.days[0]),
+      max: Math.round(v.days[v.days.length-1]),
+    };
+  })
+  .sort((a,b) => a.median - b.median);
+
+// Cycle time distribution
+const ctBuckets = [
+  { label: '0–30d', min: 0, max: 30 },
+  { label: '31–60d', min: 31, max: 60 },
+  { label: '61–90d', min: 61, max: 90 },
+  { label: '91–120d', min: 91, max: 120 },
+  { label: '121–180d', min: 121, max: 180 },
+  { label: '181–270d', min: 181, max: 270 },
+  { label: '271–365d', min: 271, max: 365 },
+  { label: '365+d', min: 366, max: Infinity },
+].map(b => ({
+  label: b.label,
+  count: completedTasks.filter(t => t.total_days >= b.min && t.total_days <= b.max).length,
+}));
+
+const allDaysSorted = completedTasks.map(t => t.total_days).sort((a,b) => a-b);
+const ct_p50 = allDaysSorted[Math.floor(allDaysSorted.length * 0.50)];
+const ct_p75 = allDaysSorted[Math.floor(allDaysSorted.length * 0.75)];
+const ct_p85 = allDaysSorted[Math.floor(allDaysSorted.length * 0.85)];
+const ct_p90 = allDaysSorted[Math.floor(allDaysSorted.length * 0.90)];
+const ct_avg = Math.round(allDaysSorted.reduce((s,x) => s+x, 0) / allDaysSorted.length);
+
+// ── Implantadores (active) ────────────────────────────────────────────────────
 const IMP_COLORS = { "Derik": "#8b5cf6", "Laissa": "#10b981", "Ana Débora": "#f59e0b" };
 const IMP_INITIALS = { "Derik": "DL", "Laissa": "LO", "Ana Débora": "AD" };
 
@@ -205,42 +290,32 @@ const implantadoresData = {
   total: implantadoresRaw.tasks.length,
 };
 
-// ── Serialize to embed in HTML ────────────────────────────────────────────────
+// ── DATA for HTML embedding ───────────────────────────────────────────────────
 const DATA = {
   kpis,
-  tasks: sortedByPriority.map(t => ({
-    id: t.id, name: t.name, status: t.status, color: t.color,
-    isBlocked: t.isBlocked, isBacklog: t.isBacklog, erp: t.erp, group: t.group,
-    total_days: t.total_days, active_days: t.active_days, blocked_days: t.blocked_days,
-    blocked_pct: t.blocked_pct, url: t.url, created_label: t.created_label,
-    days_since_created: t.days_since_created,
-    phases: t.phases,
-    status_breakdown: t.status_breakdown,
-  })),
+  tasks: [...tasks].sort((a,b) => (STATUS_ORDER[a.status]||99)-(STATUS_ORDER[b.status]||99) || b.blocked_days-a.blocked_days)
+    .map(t => ({
+      id: t.id, name: t.name, status: t.status, color: t.color,
+      isBlocked: t.isBlocked, isBacklog: t.isBacklog, erp: t.erp, group: t.group,
+      total_days: t.total_days, active_days: t.active_days, blocked_days: t.blocked_days,
+      blocked_pct: t.blocked_pct, url: t.url, created_label: t.created_label,
+      days_since_created: t.days_since_created, phases: t.phases, status_breakdown: t.status_breakdown,
+    })),
   statusGroups: Object.entries(statusGroups)
     .sort((a,b) => (STATUS_ORDER[a[0]]||99) - (STATUS_ORDER[b[0]]||99))
-    .map(([status, tasks]) => ({
+    .map(([status, ts]) => ({
       status, color: STATUS_COLORS[status]||"#475569",
-      count: tasks.length,
+      count: ts.length,
       blocked: BLOCKED_STATUSES.includes(status),
-      tasks: tasks.map(t => ({ id:t.id, name:t.name, group:t.group, erp:t.erp, total_days:t.total_days, blocked_days:t.blocked_days, blocked_pct:t.blocked_pct, url:t.url }))
-    })),
-  groups: Object.entries(groups)
-    .sort((a,b) => b[1].length - a[1].length)
-    .map(([group, tasks]) => ({
-      group,
-      count: tasks.length,
-      blocked: tasks.filter(t=>t.isBlocked).length,
-      inProgress: tasks.filter(t=>t.isInProgress).length,
-      backlog: tasks.filter(t=>t.isBacklog).length,
-      statuses: [...new Set(tasks.map(t=>t.status))],
-      avgDays: (() => {
-        const w = tasks.filter(t=>t.total_days>0);
-        return w.length ? Math.round(w.reduce((a,t)=>a+t.total_days,0)/w.length*10)/10 : 0;
-      })(),
+      tasks: ts.map(t => ({ id:t.id, name:t.name, group:t.group, erp:t.erp, total_days:t.total_days, blocked_days:t.blocked_days, blocked_pct:t.blocked_pct, url:t.url })),
     })),
   phaseStats,
-  sortedByBlocked: sortedByBlocked.map(t => ({ name:t.name, status:t.status, color:t.color, blocked_days:t.blocked_days, blocked_pct:t.blocked_pct, total_days:t.total_days, url:t.url, group:t.group })),
+  sortedByBlocked: sortedByBlocked.map(t => ({ name:t.name, status:t.status, color:t.color, blocked_days:t.blocked_days, blocked_pct:t.blocked_pct, total_days:t.total_days, url:t.url })),
+  erpStats,
+  monthlyTrend,
+  impStatsComp,
+  ctBuckets,
+  ct: { p50: ct_p50, p75: ct_p75, p85: ct_p85, p90: ct_p90, avg: ct_avg, total: completedTasks.length },
 };
 
 const generatedAt = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
@@ -254,7 +329,6 @@ function daysColor(d) {
 }
 
 const implantadoresTabHTML = (() => {
-  // Cards
   const cardsHTML = implantadoresData.implantadores.map(imp => {
     const statusEntries = Object.entries(imp.byStatus).sort((a,b) => b[1]-a[1]);
     const alertHTML = imp.maxDays > 90
@@ -301,7 +375,6 @@ const implantadoresTabHTML = (() => {
       + '</div>';
   }).join('');
 
-  // Balance bars
   const total = implantadoresData.total;
   const noImpLen = implantadoresData.noImplantador.length;
   const balanceRows = implantadoresData.implantadores.map(imp => {
@@ -319,7 +392,6 @@ const implantadoresTabHTML = (() => {
       + '</div>';
   }).join('');
 
-  // Filter buttons
   const filterBtns = implantadoresData.implantadores.map(imp =>
     '<button class="imp-filter-btn text-xs px-3 py-1 rounded-full border transition-all text-slate-400"'
     + ' style="border-color:' + imp.color + '44"'
@@ -328,7 +400,6 @@ const implantadoresTabHTML = (() => {
     + ' onclick="setImpFilter(\'' + imp.name + '\',this)">' + imp.name + '</button>'
   ).join('');
 
-  // No implantador alert
   const noImpChips = implantadoresData.noImplantador.map(t => {
     const label = t.name.length > 28 ? t.name.substring(0,28)+'…' : t.name;
     return '<a href="https://app.clickup.com/t/' + t.id + '" target="_blank"'
@@ -409,7 +480,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Integrações Ativas</title>
+<title>Dashboard Integrações</title>
 <script src="https://cdn.tailwindcss.com"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>
 <style>
@@ -435,11 +506,8 @@ const html = `<!DOCTYPE html>
   .bar-fill { height:6px; border-radius:4px; }
   input[type=text] { background:#1e293b; border:1px solid #334155; color:#e2e8f0; }
   input[type=text]:focus { outline:none; border-color:#3b82f6; }
-  .kanban-col { background:#162032; border:1px solid #293548; border-radius:10px; min-width:180px; }
-  .kanban-card { background:#1e293b; border:1px solid #334155; border-radius:8px; }
-  .kanban-card:hover { border-color:#3b82f6; }
-  .progress-bar { height:4px; background:#0f172a; border-radius:2px; }
-  .progress-fill { height:4px; border-radius:2px; transition:width .3s; }
+  .erp-bar { height:10px; border-radius:5px; transition:width .3s; }
+  .rank-medal { width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
 </style>
 </head>
 <body>
@@ -447,14 +515,14 @@ const html = `<!DOCTYPE html>
 <!-- Header -->
 <div class="border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 bg-slate-900 z-50 backdrop-blur">
   <div>
-    <h1 class="text-lg font-bold text-white">⚡ Integrações Ativas</h1>
+    <h1 class="text-lg font-bold text-white">⚡ Integrações</h1>
     <p class="text-slate-500 text-xs mt-0.5">Atualizado ${generatedAt}</p>
   </div>
   <div class="flex gap-2 flex-wrap justify-end">
-    <span class="badge bg-slate-700/60 text-slate-300">${kpis.total} lojas</span>
+    <span class="badge bg-slate-700/60 text-slate-300">${kpis.total} ativas</span>
     <span class="badge bg-blue-900/40 text-blue-300 border border-blue-700/30">${kpis.inProgress} em andamento</span>
     <span class="badge bg-orange-900/40 text-orange-300 border border-orange-700/30">⚠ ${kpis.blocked} bloqueadas</span>
-    <span class="badge bg-slate-700/40 text-slate-400">${kpis.backlog} backlog</span>
+    <span class="badge bg-purple-900/40 text-purple-300 border border-purple-700/30">📦 ${DATA.ct.total} concluídas</span>
   </div>
 </div>
 
@@ -476,182 +544,32 @@ const html = `<!DOCTYPE html>
     <p class="text-slate-500 text-xs mt-1">${kpis.blockedPct}% das ativas</p>
   </div>
   <div class="kpi p-4 text-center">
-    <p class="text-slate-400 text-xs mb-1">Backlog</p>
-    <p class="text-3xl font-bold text-slate-400">${kpis.backlog}</p>
-    <p class="text-slate-500 text-xs mt-1">aguardando início</p>
+    <p class="text-slate-400 text-xs mb-1">Ciclo mediano (hist.)</p>
+    <p class="text-3xl font-bold text-green-400">${ct_p50}d</p>
+    <p class="text-slate-500 text-xs mt-1">P50 — ${DATA.ct.total} lojas</p>
   </div>
   <div class="kpi p-4 text-center">
-    <p class="text-slate-400 text-xs mb-1">Tempo médio</p>
-    <p class="text-3xl font-bold text-purple-400">${kpis.avgDays}d</p>
-    <p class="text-slate-500 text-xs mt-1">no pipeline</p>
+    <p class="text-slate-400 text-xs mb-1">SLE 85%</p>
+    <p class="text-3xl font-bold text-purple-400">${ct_p85}d</p>
+    <p class="text-slate-500 text-xs mt-1">85% entregues até</p>
   </div>
 </div>
 
 <!-- Tabs -->
 <div class="px-6 pt-5 flex gap-0 border-b border-slate-700 overflow-x-auto">
-  <button class="tab-btn active px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('kanban',this)">🗂 Kanban</button>
-  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('table',this)">📋 Tabela</button>
-  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('groups',this)">🏢 Por Rede</button>
-  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('blocked',this)">🔴 Bloqueios</button>
-  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('phases',this)">⏱ Fases</button>
+  <button class="tab-btn active px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('phases',this)">⏱ Fases</button>
   <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('charts',this)">📊 Gráficos</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('ciclo',this)">📈 Ciclo Histórico</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('evolucao',this)">📉 Evolução</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('erps',this)">🔧 ERPs</button>
+  <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('performance',this)">🏆 Performance</button>
   <button class="tab-btn px-5 py-2.5 text-sm font-medium whitespace-nowrap" onclick="showTab('implantadores',this)">👷 Implantadores</button>
 </div>
 
 <div class="p-6">
 
-<!-- ═══════════════════ KANBAN ════════════════════════════════════════════ -->
-<div id="tab-kanban" class="tab-content active">
-  <div class="flex gap-3 overflow-x-auto pb-4">
-    ${DATA.statusGroups.map(sg => `
-    <div class="kanban-col flex-shrink-0 w-52 p-3">
-      <div class="flex items-center gap-2 mb-3">
-        <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:${sg.color}"></div>
-        <p class="text-xs font-semibold text-slate-300 leading-tight">${sg.status}</p>
-        <span class="ml-auto text-xs font-bold" style="color:${sg.color}">${sg.count}</span>
-      </div>
-      <div class="flex flex-col gap-2">
-        ${sg.tasks.map(t => `
-        <a href="${t.url}" target="_blank" class="kanban-card block p-2.5 cursor-pointer">
-          <p class="text-xs text-slate-300 font-medium leading-snug mb-1">${t.name.substring(0,40)}</p>
-          <div class="flex items-center justify-between">
-            <span class="text-slate-500 text-xs">${t.group !== "Individual" ? t.group.substring(0,15) : t.erp.substring(0,15)}</span>
-            ${t.total_days > 0 ? `<span class="text-xs ${t.blocked_pct>30?'text-red-400':t.blocked_pct>0?'text-orange-400':'text-slate-400'}">${t.total_days}d${t.blocked_pct>0?' ⚠':''}</span>` : ''}
-          </div>
-        </a>`).join("")}
-      </div>
-    </div>`).join("")}
-  </div>
-</div>
-
-<!-- ═══════════════════ TABLE ════════════════════════════════════════════ -->
-<div id="tab-table" class="tab-content">
-  <div class="card p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-semibold text-white text-sm">Todas as integrações ativas</h2>
-      <div class="flex gap-3 items-center">
-        <input type="text" id="tbl-search" placeholder="Filtrar..." class="text-sm px-3 py-1.5 rounded-lg w-52"
-          oninput="renderTable()">
-        <select id="tbl-status" class="bg-slate-700 text-slate-300 text-xs px-2 py-1.5 rounded-lg border border-slate-600"
-          onchange="renderTable()">
-          <option value="">Todos os status</option>
-          ${Object.entries(STATUS_COLORS).map(([s])=>`<option value="${s}">${s}</option>`).join("")}
-        </select>
-      </div>
-    </div>
-    <div class="scrollable-tall">
-      <table class="w-full text-xs">
-        <thead>
-          <tr class="text-left text-slate-400 border-b border-slate-700/50 text-xs">
-            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('name')">Loja</th>
-            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('group')">Rede</th>
-            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('erp')">ERP</th>
-            <th class="pr-3 cursor-pointer hover:text-white" onclick="sortTable('status')">Status</th>
-            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('total_days')">Total</th>
-            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('blocked_days')">Bloq.</th>
-            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('blocked_pct')">% Bloq</th>
-            <th class="pr-3 text-right cursor-pointer hover:text-white" onclick="sortTable('days_since_created')">No board</th>
-          </tr>
-        </thead>
-        <tbody id="tbl-body" class="divide-y divide-slate-700/30"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════ GROUPS ════════════════════════════════════════════ -->
-<div id="tab-groups" class="tab-content">
-  <div class="grid grid-cols-1 gap-4">
-    ${DATA.groups.map(g => `
-    <div class="card p-4">
-      <div class="flex items-start justify-between mb-3">
-        <div>
-          <h3 class="font-semibold text-white">${g.group}</h3>
-          <p class="text-slate-400 text-xs mt-0.5">${g.count} loja${g.count>1?'s':''} · ${g.inProgress} em andamento · ${g.blocked > 0 ? `<span class="text-orange-400">${g.blocked} bloqueada${g.blocked>1?'s':''}</span>` : '0 bloqueadas'} · ${g.backlog} backlog</p>
-        </div>
-        <div class="flex gap-2 flex-wrap justify-end">
-          ${g.statuses.slice(0,3).map(s => `<span class="badge text-xs" style="background:${STATUS_COLORS[s]||'#475569'}22;color:${STATUS_COLORS[s]||'#475569'};border:1px solid ${STATUS_COLORS[s]||'#475569'}33">${s}</span>`).join("")}
-          ${g.statuses.length > 3 ? `<span class="text-slate-500 text-xs">+${g.statuses.length-3}</span>` : ''}
-        </div>
-      </div>
-      <div class="flex gap-2 flex-wrap">
-        ${DATA.tasks.filter(t=>t.group===g.group).map(t => `
-        <a href="${t.url}" target="_blank" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-blue-500 rounded-lg px-3 py-2 text-xs transition-all inline-flex flex-col gap-0.5">
-          <span class="text-slate-300 font-medium">${t.name.replace(g.group,'').replace('- ','').trim().substring(0,30)||t.name.substring(0,30)}</span>
-          <span class="badge mt-0.5" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}33">${t.status}</span>
-          ${t.total_days > 0 ? `<span class="text-slate-500">${t.total_days}d ${t.blocked_pct>0?'· <span class="text-orange-400">'+t.blocked_pct+'% bloq</span>':''}</span>` : ''}
-        </a>`).join("")}
-      </div>
-    </div>`).join("")}
-  </div>
-</div>
-
-<!-- ═══════════════════ BLOCKED ════════════════════════════════════════════ -->
-<div id="tab-blocked" class="tab-content">
-  <div class="grid grid-cols-3 gap-3 mb-5">
-    <div class="kpi p-4">
-      <p class="text-slate-400 text-xs">Bloqueadas agora</p>
-      <p class="text-3xl font-bold text-orange-400 mt-1">${kpis.blocked}</p>
-    </div>
-    <div class="kpi p-4">
-      <p class="text-slate-400 text-xs">Pedido bloqueado</p>
-      <p class="text-3xl font-bold text-red-400 mt-1">${tasks.filter(t=>t.status==='bloqueado pedido').length}</p>
-    </div>
-    <div class="kpi p-4">
-      <p class="text-slate-400 text-xs">Aguardando cliente</p>
-      <p class="text-3xl font-bold text-yellow-400 mt-1">${tasks.filter(t=>t.status==='aguardando cliente').length}</p>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 gap-4">
-    <div class="card p-5">
-      <h2 class="font-semibold text-white text-sm mb-4">Lojas com maior % bloqueado</h2>
-      <div class="scrollable">
-        ${DATA.sortedByBlocked.map(t => `
-        <div class="mb-4">
-          <div class="flex items-center justify-between mb-1.5">
-            <div>
-              <a href="${t.url}" target="_blank" class="text-xs text-slate-300 hover:text-blue-400 font-medium">${t.name.substring(0,38)}</a>
-              <span class="badge ml-2 text-xs" style="background:${t.color}22;color:${t.color}">${t.status}</span>
-            </div>
-            <span class="text-xs text-red-400 font-bold ml-2">${t.blocked_pct}%</span>
-          </div>
-          <div class="relative">
-            <div class="bar-bg w-full">
-              <div class="bar-fill" style="width:${t.blocked_pct}%;background:${t.blocked_pct>50?'#ef4444':t.blocked_pct>25?'#f97316':'#f59e0b'}"></div>
-            </div>
-          </div>
-          <p class="text-slate-600 text-xs mt-1">${t.blocked_days}d bloqueado de ${t.total_days}d total</p>
-        </div>`).join("")}
-      </div>
-    </div>
-
-    <div class="card p-5">
-      <h2 class="font-semibold text-white text-sm mb-4">Status bloqueantes</h2>
-      ${["bloqueado pedido","bloqueado produto","aguardando cliente"].map(s => {
-        const sT = tasks.filter(t=>t.status===s);
-        return sT.length ? `
-        <div class="mb-5">
-          <p class="text-xs font-semibold mb-2" style="color:${STATUS_COLORS[s]}">${s.toUpperCase()} (${sT.length})</p>
-          ${sT.map(t => `
-          <a href="${t.url}" target="_blank" class="flex items-center justify-between py-2 border-b border-slate-700/40 hover:bg-slate-700/20 px-2 rounded group">
-            <div>
-              <p class="text-xs text-slate-300 group-hover:text-white">${t.name.substring(0,40)}</p>
-              <p class="text-slate-600 text-xs">${t.group !== 'Individual' ? t.group : t.erp}</p>
-            </div>
-            <div class="text-right ml-2">
-              <p class="text-xs text-red-400">${t.blocked_days}d bloq</p>
-              <p class="text-slate-600 text-xs">${t.total_days}d total</p>
-            </div>
-          </a>`).join("")}
-        </div>` : '';
-      }).join("")}
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════════ PHASES ════════════════════════════════════════════ -->
-<div id="tab-phases" class="tab-content">
+<div id="tab-phases" class="tab-content active">
   <div class="grid grid-cols-4 gap-3 mb-5">
     ${DATA.phaseStats.map(p => `
     <div class="kpi p-4 text-center">
@@ -660,7 +578,6 @@ const html = `<!DOCTYPE html>
       <p class="text-slate-500 text-xs mt-1">mediana ${p.median||0}d · n=${p.count}</p>
     </div>`).join("")}
   </div>
-
   <div class="grid grid-cols-2 gap-4">
     <div class="card p-5">
       <h2 class="font-semibold text-white text-sm mb-4">Tempo médio por fase</h2>
@@ -683,7 +600,7 @@ const html = `<!DOCTYPE html>
       <canvas id="statusDonutChart" height="200"></canvas>
     </div>
     <div class="card p-5">
-      <h2 class="font-semibold text-white text-sm mb-4">Lojas por rede</h2>
+      <h2 class="font-semibold text-white text-sm mb-4">Lojas por rede/grupo</h2>
       <canvas id="groupBarChart" height="200"></canvas>
     </div>
     <div class="card p-5 col-span-2">
@@ -692,6 +609,291 @@ const html = `<!DOCTYPE html>
         <canvas id="activeBlockedChart" height="100"></canvas>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CICLO HISTÓRICO ══════════════════════════════════ -->
+<div id="tab-ciclo" class="tab-content">
+  <div class="grid grid-cols-4 gap-3 mb-5">
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">P50 — Mediana</p>
+      <p class="text-3xl font-bold text-green-400">${ct_p50}d</p>
+      <p class="text-slate-500 text-xs mt-1">50% entregues até</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">P75</p>
+      <p class="text-3xl font-bold text-yellow-400">${ct_p75}d</p>
+      <p class="text-slate-500 text-xs mt-1">75% entregues até</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">P85 — SLE</p>
+      <p class="text-3xl font-bold text-orange-400">${ct_p85}d</p>
+      <p class="text-slate-500 text-xs mt-1">85% entregues até</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">P90</p>
+      <p class="text-3xl font-bold text-red-400">${ct_p90}d</p>
+      <p class="text-slate-500 text-xs mt-1">90% entregues até</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-white text-sm">Distribuição de ciclo (${DATA.ct.total} lojas)</h2>
+        <span class="text-slate-500 text-xs">Média geral: ${ct_avg}d</span>
+      </div>
+      <canvas id="ctHistChart" height="220"></canvas>
+    </div>
+    <div class="card p-5">
+      <h2 class="font-semibold text-white text-sm mb-1">Interpretação dos percentis</h2>
+      <p class="text-slate-500 text-xs mb-4">Baseado em ${DATA.ct.total} integrações concluídas</p>
+      <div class="space-y-3">
+        ${[
+          { label: 'P50 — Comprometimento confiante', days: ct_p50, color: '#22c55e', desc: 'Metade das lojas entregam até este prazo. Use para estimativas "provável".' },
+          { label: 'P75 — Comprometimento seguro', days: ct_p75, color: '#f59e0b', desc: '3 de 4 lojas entregam até este prazo. Bom para comunicação com cliente.' },
+          { label: 'P85 — SLE (Service Level)', days: ct_p85, color: '#f97316', desc: 'Nível de serviço: 85% das lojas entregam até aqui. Padrão de mercado.' },
+          { label: 'P90 — Caso pessimista', days: ct_p90, color: '#ef4444', desc: 'Apenas 10% ultrapassam este prazo. Use para contratos de SLA.' },
+        ].map(p => `
+        <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-800/60">
+          <span class="text-lg font-bold mt-0.5" style="color:${p.color}">${p.days}d</span>
+          <div>
+            <p class="text-xs font-semibold text-slate-200">${p.label}</p>
+            <p class="text-xs text-slate-500 mt-0.5">${p.desc}</p>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ EVOLUÇÃO ══════════════════════════════════════════ -->
+<div id="tab-evolucao" class="tab-content">
+  <div class="grid grid-cols-3 gap-3 mb-5">
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">Ciclo inicial (2022)</p>
+      <p class="text-3xl font-bold text-red-400">${monthlyTrend.find(m => m.month === '2022-10')?.median || '—'}d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana out/2022</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">Ciclo atual (2026)</p>
+      <p class="text-3xl font-bold text-green-400">${monthlyTrend.filter(m => m.month.startsWith('2026') && !m.isOutlier).slice(-1)[0]?.median || '—'}d</p>
+      <p class="text-slate-500 text-xs mt-1">mediana recente</p>
+    </div>
+    <div class="kpi p-4 text-center">
+      <p class="text-slate-400 text-xs mb-1">Melhoria acumulada</p>
+      <p class="text-3xl font-bold text-blue-400">${Math.round((1 - (monthlyTrend.filter(m => m.month.startsWith('2026') && !m.isOutlier).slice(-1)[0]?.median || 1) / (monthlyTrend.find(m => m.month === '2022-10')?.median || 1)) * 100)}%</p>
+      <p class="text-slate-500 text-xs mt-1">redução no ciclo</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 gap-4">
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold text-white text-sm">Evolução do ciclo de integração (mediana mensal)</h2>
+        <span class="badge bg-yellow-900/40 text-yellow-300 text-xs border border-yellow-700/30">⚠ ago/25 = migração em lote</span>
+      </div>
+      <p class="text-slate-500 text-xs mb-4">Tempo mediano de integração por mês de conclusão — excluindo migrações em lote</p>
+      <canvas id="evolucaoChart" height="140"></canvas>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold text-white text-sm">Entregas e ciclo por mês</h2>
+        <span class="text-slate-500 text-xs">${DATA.ct.total} lojas · ${monthlyTrend.length} meses</span>
+      </div>
+      <div class="scrollable">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="text-slate-400 border-b border-slate-700/50">
+              <th class="pr-3 pb-2 text-left">Mês</th>
+              <th class="pr-3 pb-2 text-right">Entregas</th>
+              <th class="pr-3 pb-2 text-right">Mediana</th>
+              <th class="pb-2 text-right">Média</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[...monthlyTrend].reverse().map(m => `
+            <tr class="border-b border-slate-700/30 ${m.isOutlier ? 'opacity-50' : ''}">
+              <td class="pr-3 py-2 font-mono text-slate-300">${m.month} ${m.isOutlier ? '<span class="text-yellow-500 ml-1 text-xs">⚠ migração</span>' : ''}</td>
+              <td class="pr-3 py-2 text-right text-slate-300">${m.count}</td>
+              <td class="pr-3 py-2 text-right font-bold ${m.median < 100 ? 'text-green-400' : m.median < 300 ? 'text-yellow-400' : m.median < 600 ? 'text-orange-400' : 'text-red-400'}">${m.median}d</td>
+              <td class="py-2 text-right text-slate-500">${m.avg}d</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ERPs ══════════════════════════════════════════════ -->
+<div id="tab-erps" class="tab-content">
+  <div class="mb-5">
+    <p class="text-slate-400 text-sm">Ranking de performance por ERP — baseado em <strong class="text-white">${DATA.ct.total}</strong> integrações concluídas. Apenas ERPs com ≥ 3 integrações.</p>
+  </div>
+
+  <!-- Top 5 fastest + Top 5 slowest -->
+  <div class="grid grid-cols-2 gap-4 mb-5">
+    <div class="card p-5">
+      <h2 class="font-semibold text-green-400 text-sm mb-3">🚀 ERPs mais performáticos</h2>
+      <div class="space-y-3">
+        ${erpStats.slice(0, 5).map((e, i) => `
+        <div class="flex items-center gap-3">
+          <span class="rank-medal text-white font-bold" style="background:${['#ffd700','#c0c0c0','#cd7f32','#475569','#334155'][i]}">${i+1}</span>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-semibold text-slate-200 capitalize">${e.erp}</span>
+              <span class="text-green-400 font-bold text-sm">${e.median}d</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 bar-bg h-2">
+                <div class="bar-fill bg-green-500" style="width:${Math.min(100, Math.round(e.median / (erpStats[erpStats.length-1]?.median||1) * 100))}%"></div>
+              </div>
+              <span class="text-slate-500 text-xs">${e.count} lojas</span>
+            </div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card p-5">
+      <h2 class="font-semibold text-red-400 text-sm mb-3">🐢 ERPs mais lentos</h2>
+      <div class="space-y-3">
+        ${erpStats.slice(-5).reverse().map((e, i) => `
+        <div class="flex items-center gap-3">
+          <span class="rank-medal text-white font-bold" style="background:${['#7f1d1d','#991b1b','#b91c1c','#dc2626','#ef4444'][i]}">${erpStats.length - i}</span>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-semibold text-slate-200 capitalize">${e.erp}</span>
+              <span class="text-red-400 font-bold text-sm">${e.median}d</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 bar-bg h-2">
+                <div class="bar-fill" style="background:#ef4444;width:${Math.min(100, Math.round(e.median / (erpStats[erpStats.length-1]?.median||1) * 100))}%"></div>
+              </div>
+              <span class="text-slate-500 text-xs">${e.count} lojas</span>
+            </div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Full ranking table -->
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-semibold text-white text-sm">Ranking completo — ${erpStats.length} ERPs (≥ 3 integrações)</h2>
+      <div class="flex gap-3 text-xs text-slate-500">
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-green-400 inline-block"></span> ≤ 200d (rápido)</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-yellow-400 inline-block"></span> 200–400d</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-400 inline-block"></span> > 400d (lento)</span>
+      </div>
+    </div>
+    <div class="scrollable-tall">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="text-slate-400 border-b border-slate-700/50">
+            <th class="pr-3 pb-2 text-left">#</th>
+            <th class="pr-3 pb-2 text-left">ERP</th>
+            <th class="pr-3 pb-2 text-right">Lojas</th>
+            <th class="pr-3 pb-2 text-right">Mediana</th>
+            <th class="pr-3 pb-2 text-right">Média</th>
+            <th class="pr-3 pb-2 text-right">Mín</th>
+            <th class="pb-2 text-right">Máx</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${erpStats.map((e, i) => {
+            const col = e.median <= 200 ? '#22c55e' : e.median <= 400 ? '#f59e0b' : '#ef4444';
+            return `
+          <tr class="border-b border-slate-700/30">
+            <td class="pr-3 py-2 text-slate-600 font-mono">${i+1}</td>
+            <td class="pr-3 py-2">
+              <div class="flex items-center gap-2">
+                <div class="w-1.5 h-4 rounded-full" style="background:${col}"></div>
+                <span class="text-slate-200 font-medium capitalize">${e.erp}</span>
+              </div>
+            </td>
+            <td class="pr-3 py-2 text-right text-slate-400">${e.count}</td>
+            <td class="pr-3 py-2 text-right font-bold font-mono" style="color:${col}">${e.median}d</td>
+            <td class="pr-3 py-2 text-right font-mono text-slate-400">${e.avg}d</td>
+            <td class="pr-3 py-2 text-right font-mono text-green-600">${e.min}d</td>
+            <td class="py-2 text-right font-mono text-red-600">${e.max}d</td>
+          </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PERFORMANCE ══════════════════════════════════════ -->
+<div id="tab-performance" class="tab-content">
+  <div class="mb-4">
+    <p class="text-slate-400 text-sm">Performance histórica por implantador — baseado em integrações concluídas. Ciclo = tempo de criação até entrega.</p>
+    <p class="text-slate-600 text-xs mt-1">Contexto: implantadores mais antigos trabalharam com ERPs mais complexos e processos menos maduros.</p>
+  </div>
+
+  <!-- Ranking visual cards -->
+  <div class="grid grid-cols-4 gap-3 mb-5">
+    ${impStatsComp.map((imp, i) => {
+      const shortName = imp.name.split(' ').slice(0,2).join(' ');
+      const col = imp.median <= 200 ? '#22c55e' : imp.median <= 500 ? '#f59e0b' : '#ef4444';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+      return `
+    <div class="card p-4">
+      <div class="flex items-start justify-between mb-2">
+        <span class="text-lg">${medal}</span>
+        <span class="text-xs font-bold font-mono" style="color:${col}">${imp.median}d</span>
+      </div>
+      <p class="text-sm font-semibold text-slate-200 leading-tight">${shortName}</p>
+      <p class="text-xs text-slate-500 mt-0.5">${imp.count} integrações</p>
+      <div class="mt-2 space-y-1 text-xs text-slate-500">
+        <div class="flex justify-between"><span>Média</span><span class="text-slate-300">${imp.avg}d</span></div>
+        <div class="flex justify-between"><span>Mín/Máx</span><span class="text-slate-300">${imp.min}d / ${imp.max}d</span></div>
+      </div>
+      <div class="mt-2 bar-bg">
+        <div class="bar-fill" style="background:${col};width:${Math.min(100,Math.round(imp.median/impStatsComp[impStatsComp.length-1].median*100))}%"></div>
+      </div>
+    </div>`;
+    }).join('')}
+  </div>
+
+  <!-- Full table -->
+  <div class="card p-5 mb-5">
+    <h2 class="font-semibold text-white text-sm mb-4">Tabela completa de performance</h2>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-slate-400 border-b border-slate-700/50 text-xs">
+          <th class="pr-4 pb-2 text-left">#</th>
+          <th class="pr-4 pb-2 text-left">Implantador</th>
+          <th class="pr-4 pb-2 text-right">Integrações</th>
+          <th class="pr-4 pb-2 text-right">Mediana</th>
+          <th class="pr-4 pb-2 text-right">Média</th>
+          <th class="pr-4 pb-2 text-right">Mínimo</th>
+          <th class="pb-2 text-right">Máximo</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${impStatsComp.map((imp, i) => {
+          const col = imp.median <= 200 ? '#22c55e' : imp.median <= 500 ? '#f59e0b' : '#ef4444';
+          const shortName = imp.name.split(' ').slice(0,3).join(' ');
+          return `
+        <tr class="border-b border-slate-700/30">
+          <td class="pr-4 py-3 text-slate-600 font-mono text-xs">${i+1}</td>
+          <td class="pr-4 py-3 text-slate-200 font-medium">${shortName}</td>
+          <td class="pr-4 py-3 text-right text-slate-400 font-mono">${imp.count}</td>
+          <td class="pr-4 py-3 text-right font-bold font-mono" style="color:${col}">${imp.median}d</td>
+          <td class="pr-4 py-3 text-right font-mono text-slate-400">${imp.avg}d</td>
+          <td class="pr-4 py-3 text-right font-mono text-green-600 text-xs">${imp.min}d</td>
+          <td class="py-3 text-right font-mono text-red-600 text-xs">${imp.max}d</td>
+        </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Chart -->
+  <div class="card p-5">
+    <h2 class="font-semibold text-white text-sm mb-4">Ciclo mediano por implantador</h2>
+    <canvas id="perfChart" height="160"></canvas>
   </div>
 </div>
 
@@ -716,65 +918,33 @@ function showTab(id, btn) {
   if (!chartsInited[id]) { initTabContent(id); chartsInited[id] = true; }
 }
 
-// ── Table ─────────────────────────────────────────────────────────────────────
-let tblSort = 'blocked_pct', tblAsc = false;
-function sortTable(key) {
-  if(tblSort===key) tblAsc=!tblAsc; else {tblSort=key;tblAsc=false;}
-  renderTable();
-}
-function renderTable() {
-  const q = (document.getElementById('tbl-search')?.value||'').toLowerCase();
-  const sf = document.getElementById('tbl-status')?.value||'';
-  let rows = DATA.tasks;
-  if(q) rows = rows.filter(r=>r.name.toLowerCase().includes(q)||r.group.toLowerCase().includes(q)||r.erp.toLowerCase().includes(q)||r.status.toLowerCase().includes(q));
-  if(sf) rows = rows.filter(r=>r.status===sf);
-  rows = [...rows].sort((a,b)=>{
-    const va=a[tblSort],vb=b[tblSort];
-    if(typeof va==='string') return tblAsc?va.localeCompare(vb):vb.localeCompare(va);
-    return tblAsc?(va||0)-(vb||0):(vb||0)-(va||0);
-  });
-  const tbody = document.getElementById('tbl-body');
-  tbody.innerHTML = rows.map(r=>\`
-    <tr class="border-b border-slate-700/30">
-      <td class="pr-3 py-2"><a href="\${r.url}" target="_blank" class="text-blue-400 hover:underline text-xs">\${r.name.substring(0,40)}</a></td>
-      <td class="pr-3 text-slate-400 text-xs">\${r.group!=='Individual'?r.group:'—'}</td>
-      <td class="pr-3 text-slate-500 text-xs">\${r.erp}</td>
-      <td class="pr-3"><span class="badge" style="background:\${r.color}22;color:\${r.color};border:1px solid \${r.color}33">\${r.status}</span></td>
-      <td class="pr-3 text-right font-mono text-xs text-white">\${r.total_days||'—'}d</td>
-      <td class="pr-3 text-right text-xs \${r.blocked_days>0?'text-red-400':'text-slate-600'}">\${r.blocked_days>0?r.blocked_days+'d':'—'}</td>
-      <td class="pr-3 text-right text-xs">
-        \${r.blocked_pct>0?\`<span class="\${r.blocked_pct>50?'text-red-400':r.blocked_pct>25?'text-orange-400':'text-yellow-400'}">\${r.blocked_pct}%</span>\`:'<span class="text-green-600">0%</span>'}
-      </td>
-      <td class="text-right text-xs text-slate-500">\${r.days_since_created!=null?r.days_since_created+'d':'—'}</td>
-    </tr>\`).join('');
-}
-
-// ── Charts ────────────────────────────────────────────────────────────────────
 function initTabContent(id) {
-  if(id === 'table') { renderTable(); return; }
-  if(id === 'phases') { initPhaseCharts(); return; }
-  if(id === 'charts') { initAllCharts(); return; }
+  if (id === 'phases')      { initPhaseCharts(); return; }
+  if (id === 'charts')      { initAllCharts(); return; }
+  if (id === 'ciclo')       { initCicloChart(); return; }
+  if (id === 'evolucao')    { initEvolucaoChart(); return; }
+  if (id === 'performance') { initPerfChart(); return; }
+  if (id === 'implantadores') { renderImplantadores(); return; }
 }
 
+// ── Phases charts ─────────────────────────────────────────────────────────────
 function initPhaseCharts() {
   const ps = DATA.phaseStats;
   const labels = ['Preparação','Produto','Pedido','Revisão'];
   const colors = ['#6366f1','#3b82f6','#10b981','#a855f7'];
-
   new Chart(document.getElementById('phasesBarChart').getContext('2d'), {
     type:'bar',
     data:{
       labels,
       datasets:[
         {label:'Média',data:ps.map(p=>p.avg),backgroundColor:colors.map(c=>c+'80'),borderColor:colors,borderWidth:1,borderRadius:4},
-        {label:'Mediana',data:ps.map(p=>p.median||0),backgroundColor:'#94a3b820',borderColor:'#94a3b8',borderWidth:1,borderRadius:4,borderDash:[4,2]},
+        {label:'Mediana',data:ps.map(p=>p.median||0),backgroundColor:'#94a3b820',borderColor:'#94a3b8',borderWidth:1,borderRadius:4},
       ]
     },
     options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'#1e293b'}},y:{ticks:{color:'#64748b',callback:v=>v+'d'},grid:{color:'#334155'}}}}
   });
-
   const storeData = DATA.tasks.filter(t=>!t.isBacklog && (t.phases.preparacao+t.phases.produto+t.phases.pedido+t.phases.teste)>0).slice(0,20);
-  if(storeData.length) {
+  if (storeData.length) {
     new Chart(document.getElementById('phasesStoreChart').getContext('2d'),{
       type:'bar',
       data:{
@@ -791,40 +961,38 @@ function initPhaseCharts() {
   }
 }
 
+// ── Charts tab ────────────────────────────────────────────────────────────────
 function initAllCharts() {
-  // Donut
   const sg = DATA.statusGroups.filter(s=>s.count>0);
   new Chart(document.getElementById('statusDonutChart').getContext('2d'),{
     type:'doughnut',
     data:{labels:sg.map(s=>s.status),datasets:[{data:sg.map(s=>s.count),backgroundColor:sg.map(s=>s.color+'cc'),borderColor:sg.map(s=>s.color),borderWidth:1}]},
     options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:10},padding:6}},tooltip:{callbacks:{label:c=>\` \${c.label}: \${c.raw}\`}}}}
   });
-
-  // Groups bar
-  const gr = DATA.groups.filter(g=>g.count>0);
+  const gr = DATA.statusGroups.filter(g=>g.count>0);
+  const groupsAgg = {};
+  DATA.tasks.forEach(t => { if(!groupsAgg[t.group]) groupsAgg[t.group]={total:0,blocked:0}; groupsAgg[t.group].total++; if(t.isBlocked) groupsAgg[t.group].blocked++; });
+  const grArr = Object.entries(groupsAgg).sort((a,b)=>b[1].total-a[1].total).slice(0,15);
   new Chart(document.getElementById('groupBarChart').getContext('2d'),{
     type:'bar',
     data:{
-      labels:gr.map(g=>g.group.substring(0,20)),
+      labels:grArr.map(([g])=>g.substring(0,20)),
       datasets:[
-        {label:'Em andamento',data:gr.map(g=>g.inProgress),backgroundColor:'#3b82f680',borderColor:'#3b82f6',borderWidth:1,borderRadius:3},
-        {label:'Bloqueadas',data:gr.map(g=>g.blocked),backgroundColor:'#f9731680',borderColor:'#f97316',borderWidth:1,borderRadius:3},
-        {label:'Backlog',data:gr.map(g=>g.backlog),backgroundColor:'#47556980',borderColor:'#475569',borderWidth:1,borderRadius:3},
+        {label:'Em andamento',data:grArr.map(([,v])=>v.total-v.blocked),backgroundColor:'#3b82f680',borderRadius:3},
+        {label:'Bloqueadas',data:grArr.map(([,v])=>v.blocked),backgroundColor:'#ef444480',borderRadius:3},
       ]
     },
-    options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#64748b',font:{size:9},maxRotation:30},grid:{color:'#1e293b'}},y:{stacked:true,ticks:{color:'#64748b'},grid:{color:'#334155'}}}}
+    options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}},y:{stacked:true,ticks:{color:'#64748b'},grid:{color:'#334155'}}}}
   });
-
-  // Active vs Blocked horizontal bars
-  const inProg = DATA.tasks.filter(t=>!t.isBacklog && t.total_days>0);
-  if(inProg.length) {
+  const activeTasks = DATA.tasks.filter(t=>!t.isBacklog && t.total_days>0).slice(0,30);
+  if (activeTasks.length) {
     new Chart(document.getElementById('activeBlockedChart').getContext('2d'),{
       type:'bar',
       data:{
-        labels:inProg.map(t=>t.name.substring(0,30)),
+        labels:activeTasks.map(t=>t.name.substring(0,20)),
         datasets:[
-          {label:'Ativo',data:inProg.map(t=>t.active_days),backgroundColor:'#22c55e60',borderColor:'#22c55e',borderWidth:1,borderRadius:2},
-          {label:'Bloqueado',data:inProg.map(t=>t.blocked_days),backgroundColor:'#ef444460',borderColor:'#ef4444',borderWidth:1,borderRadius:2},
+          {label:'Ativo',data:activeTasks.map(t=>t.active_days||t.total_days-t.blocked_days),backgroundColor:'#3b82f660',borderRadius:2},
+          {label:'Bloqueado',data:activeTasks.map(t=>t.blocked_days),backgroundColor:'#ef444460',borderRadius:2},
         ]
       },
       options:{
@@ -839,8 +1007,146 @@ function initAllCharts() {
   }
 }
 
-// Init table on load (tab-table might be first)
-renderTable();
+// ── Ciclo Histórico chart ─────────────────────────────────────────────────────
+function initCicloChart() {
+  const buckets = DATA.ctBuckets;
+  const maxCount = Math.max(...buckets.map(b=>b.count));
+  const colors = buckets.map(b => {
+    const label = b.label;
+    if (label.startsWith('0') || label.startsWith('31') || label.startsWith('61')) return '#22c55e';
+    if (label.startsWith('91') || label.startsWith('121')) return '#f59e0b';
+    if (label.startsWith('181') || label.startsWith('271')) return '#f97316';
+    return '#ef4444';
+  });
+  new Chart(document.getElementById('ctHistChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: buckets.map(b => b.label),
+      datasets: [{
+        label: 'Integrações concluídas',
+        data: buckets.map(b => b.count),
+        backgroundColor: colors.map(c => c + '99'),
+        borderColor: colors,
+        borderWidth: 1,
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: {
+          label: c => \` \${c.raw} lojas (\${Math.round(c.raw / DATA.ct.total * 100)}%)\`
+        }}
+      },
+      scales: {
+        x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b' }, grid: { color: '#334155' } },
+      }
+    }
+  });
+}
+
+// ── Evolução chart ────────────────────────────────────────────────────────────
+function initEvolucaoChart() {
+  const trend = DATA.monthlyTrend;
+  const labels = trend.map(m => {
+    const [y, mo] = m.month.split('-');
+    return \`\${mo}/\${y.slice(2)}\`;
+  });
+  const medianData = trend.map(m => m.isOutlier ? null : m.median);
+  const countData  = trend.map(m => m.count);
+
+  new Chart(document.getElementById('evolucaoChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Mediana ciclo (dias)',
+          data: medianData,
+          borderColor: '#3b82f6',
+          backgroundColor: '#3b82f620',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: trend.map(m => m.isOutlier ? '#f59e0b' : '#3b82f6'),
+          yAxisID: 'y1',
+          spanGaps: true,
+        },
+        {
+          label: 'Entregas/mês',
+          data: countData,
+          borderColor: '#10b98180',
+          backgroundColor: 'transparent',
+          borderDash: [4, 3],
+          tension: 0.3,
+          pointRadius: 2,
+          yAxisID: 'y2',
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            label: c => {
+              if (c.datasetIndex === 0) return \` Mediana: \${c.raw !== null ? c.raw + 'd' : 'N/A (migração)'}\`;
+              return \` Entregas: \${c.raw}\`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 45 }, grid: { color: '#1e293b' } },
+        y1: { position: 'left',  ticks: { color: '#64748b', callback: v => v + 'd' }, grid: { color: '#334155' } },
+        y2: { position: 'right', ticks: { color: '#475569' }, grid: { display: false } },
+      }
+    }
+  });
+}
+
+// ── Performance chart ─────────────────────────────────────────────────────────
+function initPerfChart() {
+  const imps = DATA.impStatsComp;
+  const colors = imps.map(i => i.median <= 200 ? '#22c55e' : i.median <= 500 ? '#f59e0b' : '#ef4444');
+  new Chart(document.getElementById('perfChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: imps.map(i => i.name.split(' ').slice(0,2).join(' ')),
+      datasets: [
+        {
+          label: 'Mediana (dias)',
+          data: imps.map(i => i.median),
+          backgroundColor: colors.map(c => c + '99'),
+          borderColor: colors,
+          borderWidth: 1,
+          borderRadius: 5,
+        },
+        {
+          label: 'Média (dias)',
+          data: imps.map(i => i.avg),
+          backgroundColor: '#94a3b820',
+          borderColor: '#94a3b8',
+          borderWidth: 1,
+          borderRadius: 3,
+          borderDash: [3,2],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', callback: v => v + 'd' }, grid: { color: '#334155' } },
+      }
+    }
+  });
+}
 
 // ── Implantadores ─────────────────────────────────────────────────────────────
 const IMP_DATA = ${JSON.stringify(implantadoresData)};
@@ -862,7 +1168,7 @@ function renderImplantadores() {
   const tbody = document.getElementById('imp-tbody');
   if(!tbody) return;
   tbody.innerHTML = sorted.map(t => {
-    const sc = STATUS_COLORS_JS[t.status] || '#475569';
+    const sc = STATUS_COLORS[t.status] || '#475569';
     const eng = t.engajamento;
     const engColor = eng==='Alto '||eng==='Alto'?'#22c55e':eng==='Médio'?'#f59e0b':'#ef4444';
     const days = t.daysSinceCreated;
@@ -903,6 +1209,10 @@ function setImpFilter(f, btn) {
 
 const STATUS_COLORS_JS = ${JSON.stringify(STATUS_COLORS)};
 const IMP_COLORS_JS = ${JSON.stringify(IMP_COLORS)};
+
+// Initialize first tab
+initPhaseCharts();
+chartsInited['phases'] = true;
 <\/script>
 </body>
 </html>`;
