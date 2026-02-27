@@ -170,10 +170,11 @@ console.log(`Completed tasks: ${completedTasks.length}`);
 const erpStatsMap = {};
 completedTasks.forEach(t => {
   const e = t.erp;
-  if (!erpStatsMap[e]) erpStatsMap[e] = { count: 0, days: [], blockedPcts: [] };
+  if (!erpStatsMap[e]) erpStatsMap[e] = { count: 0, days: [], blockedPcts: [], tasks: [] };
   erpStatsMap[e].count++;
   erpStatsMap[e].days.push(t.total_days);
   erpStatsMap[e].blockedPcts.push(t.blocked_pct);
+  erpStatsMap[e].tasks.push({ id: t.id, name: t.name, total_days: t.total_days, month_done: t.month_done });
 });
 const erpStats = Object.entries(erpStatsMap)
   .filter(([e, v]) => v.count >= 3 && e !== 'N/A')
@@ -182,7 +183,8 @@ const erpStats = Object.entries(erpStatsMap)
     const median = Math.round(v.days[Math.floor(v.days.length/2)]);
     const avg = Math.round(v.days.reduce((s,x) => s+x, 0) / v.days.length);
     const blockedAvg = Math.round(v.blockedPcts.reduce((s,x) => s+x, 0) / v.blockedPcts.length);
-    return { erp, count: v.count, avg, median, blockedAvg, min: Math.round(v.days[0]), max: Math.round(v.days[v.days.length-1]) };
+    const tasks = v.tasks.slice().sort((a,b) => a.total_days - b.total_days);
+    return { erp, count: v.count, avg, median, blockedAvg, min: Math.round(v.days[0]), max: Math.round(v.days[v.days.length-1]), tasks };
   })
   .sort((a,b) => a.median - b.median);
 
@@ -513,6 +515,35 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
 
+<!-- ERP Modal -->
+<div id="erp-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden" onclick="if(event.target===this)closeErpModal()">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl mx-4 shadow-2xl flex flex-col" style="max-height:85vh">
+    <!-- Modal header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 flex-shrink-0">
+      <div>
+        <h2 id="modal-erp-name" class="text-white font-bold text-base capitalize"></h2>
+        <p id="modal-erp-stats" class="text-slate-500 text-xs mt-0.5"></p>
+      </div>
+      <button onclick="closeErpModal()" class="text-slate-500 hover:text-white transition-colors text-lg leading-none">✕</button>
+    </div>
+    <!-- Modal body -->
+    <div class="overflow-y-auto flex-1 px-6 py-4">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="text-slate-500 border-b border-slate-700/50 text-left">
+            <th class="pb-2 pr-4">#</th>
+            <th class="pb-2 pr-4">Loja</th>
+            <th class="pb-2 pr-4 text-right">Ciclo</th>
+            <th class="pb-2 text-right">Concluído</th>
+          </tr>
+        </thead>
+        <tbody id="modal-erp-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- Header -->
 <div class="border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 bg-slate-900 z-50 backdrop-blur">
   <div>
@@ -803,13 +834,14 @@ const html = `<!DOCTYPE html>
         <tbody>
           ${erpStats.map((e, i) => {
             const col = e.median <= 200 ? '#22c55e' : e.median <= 400 ? '#f59e0b' : '#ef4444';
+            const erpKey = e.erp.replace(/'/g, "\\'");
             return `
-          <tr class="border-b border-slate-700/30">
+          <tr class="border-b border-slate-700/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onclick="openErpModal('${erpKey}')">
             <td class="pr-3 py-2 text-slate-600 font-mono">${i+1}</td>
             <td class="pr-3 py-2">
               <div class="flex items-center gap-2">
                 <div class="w-1.5 h-4 rounded-full" style="background:${col}"></div>
-                <span class="text-slate-200 font-medium capitalize">${e.erp}</span>
+                <span class="text-slate-200 font-medium capitalize hover:text-blue-400">${e.erp}</span>
               </div>
             </td>
             <td class="pr-3 py-2 text-right text-slate-400">${e.count}</td>
@@ -1210,6 +1242,43 @@ function setImpFilter(f, btn) {
 
 const STATUS_COLORS_JS = ${JSON.stringify(STATUS_COLORS)};
 const IMP_COLORS_JS = ${JSON.stringify(IMP_COLORS)};
+
+// ── ERP Modal ─────────────────────────────────────────────────────────────────
+function openErpModal(erpName) {
+  const entry = DATA.erpStats.find(e => e.erp === erpName);
+  if (!entry) return;
+
+  const col = entry.median <= 200 ? '#22c55e' : entry.median <= 400 ? '#f59e0b' : '#ef4444';
+
+  document.getElementById('modal-erp-name').textContent = erpName;
+  document.getElementById('modal-erp-stats').textContent =
+    \`\${entry.count} lojas · mediana \${entry.median}d · média \${entry.avg}d · mín \${entry.min}d · máx \${entry.max}d\`;
+
+  const tbody = document.getElementById('modal-erp-tbody');
+  tbody.innerHTML = entry.tasks.map((t, i) => {
+    const dayCol = t.total_days <= entry.median ? '#22c55e' : t.total_days <= entry.avg ? '#f59e0b' : '#ef4444';
+    const [y, mo] = t.month_done.split('-');
+    return \`<tr class="border-b border-slate-800 hover:bg-slate-800/40">
+      <td class="pr-4 py-2.5 text-slate-600 font-mono text-xs">\${i+1}</td>
+      <td class="pr-4 py-2.5">
+        <a href="https://app.clickup.com/t/\${t.id}" target="_blank"
+           class="text-slate-200 hover:text-blue-400 font-medium text-xs transition-colors">\${t.name}</a>
+      </td>
+      <td class="pr-4 py-2.5 text-right font-bold font-mono text-sm" style="color:\${dayCol}">\${t.total_days}d</td>
+      <td class="py-2.5 text-right text-slate-500 text-xs font-mono">\${mo}/\${y.slice(2)}</td>
+    </tr>\`;
+  }).join('');
+
+  document.getElementById('erp-modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeErpModal() {
+  document.getElementById('erp-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeErpModal(); });
 
 // Initialize first tab
 initPhaseCharts();
