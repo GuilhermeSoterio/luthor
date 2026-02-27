@@ -151,6 +151,7 @@ const completedTasks = raw.tasks
     && t.name.startsWith('[INTEGRACAO]')
     && !t.name.toLowerCase().includes('paradas')
     && t.date_done
+    && new Date(t.date_done).getFullYear() >= 2025
   )
   .map(t => ({
     id: t.id,
