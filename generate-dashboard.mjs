@@ -152,6 +152,7 @@ const completedTasks = raw.tasks
     && !t.name.toLowerCase().includes('paradas')
     && t.date_done
     && new Date(t.date_done).getFullYear() >= 2025
+    && t.total_days <= 200
   )
   .map(t => ({
     id: t.id,
