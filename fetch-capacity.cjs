@@ -41,18 +41,31 @@ async function fetchTimeInStatus(taskId) {
   }
 }
 
-function classifyTask(currentStatus, statusHistory) {
+function classifyTask(currentStatus, statusHistory, dateCreatedMs) {
   // Calcula dias em cada grupo com base no histórico
   let workMin = 0, blockedMin = 0, queueMin = 0, otherMin = 0;
   const phaseMin = { fila: 0, produto: 0, pedido: 0, revisao: 0 };
 
+  // Para análise de bloqueios: coletar entradas de cada status com timestamp
+  const blockEntries = [];   // { status, days, since }
+  const workEntries  = [];   // { status, since }
+
   statusHistory.forEach(s => {
-    const st = (s.status || '').toLowerCase().trim();
-    const min = s.total_time?.by_minute || 0;
-    if (WORK_STATUSES.has(st))       workMin    += min;
-    else if (BLOCK_STATUSES.has(st)) blockedMin += min;
-    else if (QUEUE_STATUSES.has(st)) queueMin   += min;
-    else otherMin += min;
+    const st    = (s.status || '').toLowerCase().trim();
+    const min   = s.total_time?.by_minute || 0;
+    const since = s.total_time?.since ? parseInt(s.total_time.since) : null;
+
+    if (WORK_STATUSES.has(st)) {
+      workMin += min;
+      if (since) workEntries.push({ status: st, since });
+    } else if (BLOCK_STATUSES.has(st)) {
+      blockedMin += min;
+      if (since) blockEntries.push({ status: st, days: Math.round(min / 1440), since });
+    } else if (QUEUE_STATUSES.has(st)) {
+      queueMin += min;
+    } else {
+      otherMin += min;
+    }
     const phase = PHASE_LOOKUP[st];
     if (phase) phaseMin[phase] += min;
   });
@@ -72,6 +85,25 @@ function classifyTask(currentStatus, statusHistory) {
     ? Math.round(workDays / (workDays + blockedDays) * 100)
     : null;
 
+  // ── Métricas de bloqueio ──────────────────────────────────────────────────
+  // Idade ao primeiro bloqueio: dias desde criação até a primeira entrada em blocked
+  const ageAtFirstBlock = blockEntries.length > 0 && dateCreatedMs
+    ? Math.max(0, Math.round((Math.min(...blockEntries.map(e => e.since)) - dateCreatedMs) / 86400000))
+    : null;
+
+  // Idade ao primeiro trabalho real
+  const ageAtFirstWork = workEntries.length > 0 && dateCreatedMs
+    ? Math.max(0, Math.round((Math.min(...workEntries.map(e => e.since)) - dateCreatedMs) / 86400000))
+    : null;
+
+  // Quantidade de episódios de bloqueio (lower bound: distinct statuses com tempo)
+  const blockEpisodeCount = blockEntries.length;
+
+  // Histórico resumido de bloqueios (ordenado por entrada)
+  const blockHistory = blockEntries
+    .sort((a, b) => a.since - b.since)
+    .map(e => ({ status: e.status, days: e.days }));
+
   // Cenário
   const neverWorked = workDays === 0;
   const curSt = (currentStatus || '').toLowerCase();
@@ -86,7 +118,10 @@ function classifyTask(currentStatus, statusHistory) {
     scenario = 'C3'; // iniciou e está ativo agora
   }
 
-  return { scenario, workDays, blockedDays, queueDays, flowEfficiency, phaseDays };
+  return {
+    scenario, workDays, blockedDays, queueDays, flowEfficiency, phaseDays,
+    ageAtFirstBlock, ageAtFirstWork, blockEpisodeCount, blockHistory,
+  };
 }
 
 function fetchJSON(url) {
@@ -181,24 +216,28 @@ async function main() {
                   ?.replace(/^:?erp[:\s]*/i,'').trim() || null;
 
     const { history, currentStatusDays } = await fetchTimeInStatus(t.id);
-    const classify = classifyTask(st, history);
+    const classify = classifyTask(st, history, parseInt(t.date_created));
 
     wipTasks.push({
-      id:               t.id,
-      name:             t.name.replace(/\[INTEGRACAO\]\s*/i,'').replace(/\[MIGRAÇÃO.*?\]/gi,'').replace(/\(Migração.*?\)/gi,'').trim(),
-      status:           st,
-      isBlocked:        BLOCKED_STATUSES.includes(st),
+      id:                t.id,
+      name:              t.name.replace(/\[INTEGRACAO\]\s*/i,'').replace(/\[MIGRAÇÃO.*?\]/gi,'').replace(/\(Migração.*?\)/gi,'').trim(),
+      status:            st,
+      isBlocked:         BLOCKED_STATUSES.includes(st),
       age,
-      daysSinceUpdated: upd,
+      daysSinceUpdated:  upd,
       currentStatusDays,
       erp,
-      url:              'https://app.clickup.com/t/' + t.id,
-      scenario:         classify.scenario,
-      workDays:         classify.workDays,
-      blockedDays:      classify.blockedDays,
-      queueDays:        classify.queueDays,
-      flowEfficiency:   classify.flowEfficiency,
-      phaseDays:        classify.phaseDays,
+      url:               'https://app.clickup.com/t/' + t.id,
+      scenario:          classify.scenario,
+      workDays:          classify.workDays,
+      blockedDays:       classify.blockedDays,
+      queueDays:         classify.queueDays,
+      flowEfficiency:    classify.flowEfficiency,
+      phaseDays:         classify.phaseDays,
+      ageAtFirstBlock:   classify.ageAtFirstBlock,
+      ageAtFirstWork:    classify.ageAtFirstWork,
+      blockEpisodeCount: classify.blockEpisodeCount,
+      blockHistory:      classify.blockHistory,
     });
 
     if ((i + 1) % 10 === 0) console.log('  ' + (i+1) + '/' + activeTasks.length + ' concluídas');

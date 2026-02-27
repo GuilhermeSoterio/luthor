@@ -249,6 +249,60 @@ const sparklinePoints = tpValues.map((v, i) => {
   return `${x},${y}`;
 }).join(' ');
 
+// ── Blocking Analysis ─────────────────────────────────────────────────────────
+const allWipTasks       = cap.wip.tasks;
+const blockedNow        = allWipTasks.filter(t => t.isBlocked).sort((a,b) => b.blockedDays - a.blockedDays);
+const neverWorkedBlocked = blockedNow.filter(t => t.workDays === 0);
+const reblocked         = allWipTasks.filter(t => t.blockEpisodeCount > 1);
+
+// Age at first block: quando o bloqueio ocorreu na vida da task
+const ageAtBlockBuckets = {
+  'Primeiros 10d': blockedNow.filter(t => (t.ageAtFirstBlock ?? 0) <= 10).length,
+  '11–20d':        blockedNow.filter(t => { const a = t.ageAtFirstBlock ?? 0; return a > 10 && a <= 20; }).length,
+  '21–40d':        blockedNow.filter(t => { const a = t.ageAtFirstBlock ?? 0; return a > 20 && a <= 40; }).length,
+  'Após 40d':      blockedNow.filter(t => (t.ageAtFirstBlock ?? 0) > 40).length,
+};
+const blockAgeBucketColors = {
+  'Primeiros 10d': '#22c55e',
+  '11–20d':        '#f59e0b',
+  '21–40d':        '#f97316',
+  'Após 40d':      '#ef4444',
+};
+const maxBlockAgeBucket = Math.max(...Object.values(ageAtBlockBuckets), 1);
+const avgAgeAtFirstBlock = blockedNow.length > 0
+  ? Math.round(blockedNow.reduce((s,t) => s + (t.ageAtFirstBlock ?? 0), 0) / blockedNow.length)
+  : 0;
+
+// ERP × bloqueio
+const erpBlockMap = {};
+allWipTasks.forEach(t => {
+  const e = t.erp || 'N/A';
+  if (!erpBlockMap[e]) erpBlockMap[e] = { total:0, blocked:0, totalBlockedDays:0, neverWorked:0 };
+  erpBlockMap[e].total++;
+  if (t.isBlocked) erpBlockMap[e].blocked++;
+  erpBlockMap[e].totalBlockedDays += t.blockedDays;
+  if (t.blockedDays > 0 && t.workDays === 0) erpBlockMap[e].neverWorked++;
+});
+const erpBlockRanked = Object.entries(erpBlockMap)
+  .map(([erp, v]) => ({
+    erp,
+    ...v,
+    avgBlockedDays: v.blocked > 0 ? Math.round(v.totalBlockedDays / v.blocked) : 0,
+    blockPct: Math.round(v.blocked / v.total * 100),
+  }))
+  .sort((a,b) => b.blocked - a.blocked || b.totalBlockedDays - a.totalBlockedDays);
+const maxErpBlocked = Math.max(...erpBlockRanked.map(e => e.blocked), 1);
+
+// Status breakdown das bloqueadas
+const blockedByStatus = {};
+blockedNow.forEach(t => { blockedByStatus[t.status] = (blockedByStatus[t.status] || 0) + 1; });
+const maxBlockedStatus = Math.max(...Object.values(blockedByStatus), 1);
+const BLOCKED_STATUS_COLORS = {
+  'aguardando cliente': '#f97316',
+  'bloqueado pedido':   '#ef4444',
+  'bloqueado produto':  '#dc2626',
+};
+
 // ── HTML ────────────────────────────────────────────────────────────────────────
 const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -353,6 +407,18 @@ const html = `<!DOCTYPE html>
   .tip-wrap:hover .tip-box{opacity:1}
   .tip-arrow{content:'';position:absolute;border:5px solid transparent;pointer-events:none}
 
+  /* Tabs */
+  .tab-nav{display:flex;gap:2px;border-bottom:2px solid #1e293b;margin-bottom:20px}
+  .tab-btn{padding:10px 20px;font-size:13px;font-weight:600;color:#64748b;background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;border-radius:6px 6px 0 0}
+  .tab-btn.active{color:#f1f5f9;border-bottom-color:#3b82f6;background:#1e293b}
+  .tab-btn:hover:not(.active){color:#94a3b8;background:#1e293b55}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  /* Block age bar */
+  .blk-bar-wrap{flex:1;background:#0f172a;border-radius:4px;height:22px;overflow:hidden}
+  .blk-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;min-width:28px}
+
   @media(max-width:768px){
     .kpi-row{grid-template-columns:repeat(2,1fr)}
     .grid2,.grid3{grid-template-columns:1fr}
@@ -372,6 +438,15 @@ const html = `<!DOCTYPE html>
       ${overallIcon} ${overallLabel}
     </div>
   </div>
+
+  <!-- Tab navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('tab-cap',this)">📊 Capacidade & Fluxo</button>
+    <button class="tab-btn" onclick="switchTab('tab-bloq',this)">🚧 Gestão de Bloqueios <span style="background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">${blockedNow.length}</span></button>
+  </div>
+
+  <!-- Tab: Capacidade & Fluxo -->
+  <div id="tab-cap" class="tab-pane active">
 
   <!-- KPIs -->
   <div class="kpi-row">
@@ -1185,9 +1260,296 @@ const html = `<!DOCTYPE html>
     Instabuy · Setor de Integrações · ${new Date().toLocaleDateString('pt-BR')}
   </div>
 
+  </div><!-- /tab-cap -->
+
+  <!-- Tab: Gestão de Bloqueios -->
+  <div id="tab-bloq" class="tab-pane">
+
+    <!-- KPI row de bloqueios -->
+    <div class="kpi-row" style="margin-bottom:20px">
+      <div class="kpi">
+        <div class="kpi-accent" style="background:#ef4444"></div>
+        <div class="kpi-label">Bloqueadas agora ${tip('Total de integrações em status de bloqueio: <code>aguardando cliente</code>, <code>bloqueado pedido</code> ou <code>bloqueado produto</code>. Cada uma representa receita e tempo de ciclo congelados.')}</div>
+        <div class="kpi-value" style="color:#ef4444">${blockedNow.length}</div>
+        <div class="kpi-sub">${cap.wip.blocked_pct}% do pipeline parado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:#f97316"></div>
+        <div class="kpi-label">Bloqueiam com ${tip('Idade média das tasks no momento em que entraram no primeiro bloqueio. Valores altos (> 30d) indicam que o bloqueio ocorre no meio do processo — trabalho foi iniciado mas dependência externa surgiu tarde.')}</div>
+        <div class="kpi-value" style="color:#f97316">${avgAgeAtFirstBlock}d</div>
+        <div class="kpi-sub">de vida ao primeiro bloqueio</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:#f59e0b"></div>
+        <div class="kpi-label">Nunca trabalharam ${tip('Integrações que estão bloqueadas mas nunca tiveram nenhum dia de trabalho ativo. O bloqueio aconteceu antes mesmo de qualquer progresso — o cliente não estava pronto desde a entrada.')}</div>
+        <div class="kpi-value" style="color:#f59e0b">${neverWorkedBlocked.length}</div>
+        <div class="kpi-sub">${Math.round(neverWorkedBlocked.length / Math.max(blockedNow.length,1)*100)}% das bloqueadas sem 1 dia de trabalho</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:#a855f7"></div>
+        <div class="kpi-label">Multibloqueio ${tip('Tasks que passaram por mais de um episódio de bloqueio distinto — bloquearam, desbloquearam e bloquearam novamente. Sinal de dependências externas não resolvidas ou problema recorrente com o cliente/ERP.')}</div>
+        <div class="kpi-value" style="color:#a855f7">${reblocked.length}</div>
+        <div class="kpi-sub">bloquearam 2+ vezes no histórico</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:#64748b"></div>
+        <div class="kpi-label">Dias congelados ${tip('Soma de todos os dias de bloqueio acumulados em todo o WIP ativo. Representa o tempo total que o pipeline passou parado por fatores externos — equivalente em throughput perdido.')}</div>
+        <div class="kpi-value" style="color:#64748b">${allWipTasks.reduce((s,t)=>s+t.blockedDays,0)}</div>
+        <div class="kpi-sub">dias de bloqueio acumulados no WIP</div>
+      </div>
+    </div>
+
+    <!-- Row 1: Age at Block + Status breakdown -->
+    <div class="grid2" style="margin-bottom:16px">
+
+      <!-- Age at First Block -->
+      <div class="card">
+        <div class="card-title">⏱ Quando o Bloqueio Ocorre ${tip('Distribuição da idade das tasks no momento do primeiro bloqueio. Responde: o problema é na entrada (cliente não estava pronto) ou no meio do processo (surgiu uma dependência após trabalho iniciado)?<br><br>🟢 ≤10d — bloqueio na entrada (cliente impreparado)<br>🟡 11–40d — bloqueio no processo (surgiu dependência)<br>🔴 >40d — bloqueio tardio (problema identificado tarde)')}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+          ${Object.entries(ageAtBlockBuckets).map(([label, count]) => {
+            const barW = count === 0 ? 0 : Math.max(Math.round(count / maxBlockAgeBucket * 100), 10);
+            const color = blockAgeBucketColors[label];
+            return `
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:100px;font-size:11px;color:#94a3b8;flex-shrink:0">${label}</div>
+              <div class="blk-bar-wrap">
+                ${count > 0
+                  ? `<div class="blk-bar" style="width:${barW}%;background:${color}">${count} loja${count>1?'s':''}</div>`
+                  : `<div style="height:100%;background:#0f172a"></div>`}
+              </div>
+              <div style="width:20px;text-align:right;font-size:12px;font-weight:700;color:${count>0?color:'#334155'}">${count}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="background:#0f172a;border-radius:8px;padding:10px 12px;font-size:11px;color:#94a3b8;line-height:1.7">
+          ${ageAtBlockBuckets['21–40d'] >= ageAtBlockBuckets['Primeiros 10d'] + ageAtBlockBuckets['11–20d']
+            ? `<span style="color:#f97316;font-weight:700">⚠ Maioria bloqueia entre 21–40 dias</span> — o trabalho foi iniciado mas surgiu dependência externa no meio do processo. Revisar checklist de pré-requisitos.`
+            : ageAtBlockBuckets['Primeiros 10d'] > blockedNow.length * 0.3
+            ? `<span style="color:#22c55e;font-weight:700">📋 Maioria bloqueia nos primeiros 10 dias</span> — o cliente não estava pronto na entrada. Considerar critério de aceite antes de abrir o card.`
+            : `Bloqueios distribuídos ao longo do ciclo. Média: <strong>${avgAgeAtFirstBlock}d</strong> de vida ao primeiro bloqueio.`}
+        </div>
+      </div>
+
+      <!-- Bloqueios por status -->
+      <div class="card">
+        <div class="card-title">🔒 Bloqueios por Tipo ${tip('Distribuição das integrações bloqueadas por status atual. Cada tipo representa uma causa diferente:<br><br><strong>Aguardando cliente</strong>: cliente sem responder ou dados pendentes do lojista<br><strong>Bloqueado pedido</strong>: módulo de pedidos travado (ERP, API, configuração)<br><strong>Bloqueado produto</strong>: módulo de produtos travado')}</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          ${Object.entries(blockedByStatus).sort((a,b)=>b[1]-a[1]).map(([status, count]) => {
+            const color   = BLOCKED_STATUS_COLORS[status] || '#64748b';
+            const barW    = Math.max(Math.round(count / maxBlockedStatus * 100), 8);
+            const avgBlkD = Math.round(blockedNow.filter(t=>t.status===status).reduce((s,t)=>s+t.blockedDays,0) / count);
+            return `
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <span style="font-size:11px;font-weight:700;color:${color}">${status}</span>
+                <span style="font-size:10px;color:#64748b">avg ${avgBlkD}d bloqueado</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="blk-bar-wrap">
+                  <div class="blk-bar" style="width:${barW}%;background:${color}">${count}</div>
+                </div>
+                <div style="font-size:13px;font-weight:800;color:${color};width:24px;text-align:right">${count}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <!-- Tempo total congelado por tipo -->
+        <div style="border-top:1px solid #334155;padding-top:10px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#475569;margin-bottom:6px">Dias totais congelados por tipo</div>
+          ${Object.entries(blockedByStatus).sort((a,b)=>b[1]-a[1]).map(([status, count]) => {
+            const color    = BLOCKED_STATUS_COLORS[status] || '#64748b';
+            const totalDays = blockedNow.filter(t=>t.status===status).reduce((s,t)=>s+t.blockedDays,0);
+            return `<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+              <span style="color:#94a3b8">${status}</span>
+              <span style="color:${color};font-weight:700">${totalDays}d</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: ERP × Bloqueio -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">🔧 Bloqueios por ERP ${tip('Qual ERP concentra mais bloqueios e mais tempo parado. ERPs com alta % de bloqueio e dias médios altos são os candidatos a investigação técnica ou protocolo específico de integração.')}</div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>ERP</th>
+            <th style="text-align:center">WIP</th>
+            <th style="text-align:center">Bloqueadas</th>
+            <th style="text-align:center">% bloqueio</th>
+            <th style="text-align:center">Dias médios bloq.</th>
+            <th style="text-align:center">Nunca trabalharam</th>
+            <th>Barra</th>
+          </tr></thead>
+          <tbody>
+            ${erpBlockRanked.map(e => {
+              const blkColor  = e.blocked > 0 ? (e.blockPct >= 80 ? '#ef4444' : e.blockPct >= 50 ? '#f97316' : '#f59e0b') : '#10b981';
+              const barW      = Math.round(e.blocked / maxErpBlocked * 100);
+              return `<tr>
+                <td style="font-weight:700;color:#e2e8f0">${e.erp}</td>
+                <td style="text-align:center;color:#94a3b8">${e.total}</td>
+                <td style="text-align:center;font-weight:700;color:${blkColor}">${e.blocked}</td>
+                <td style="text-align:center">
+                  <span class="badge ${e.blockPct>=80?'badge-red':e.blockPct>=50?'badge-amber':'badge-gray'}">${e.blockPct}%</span>
+                </td>
+                <td style="text-align:center;color:${e.avgBlockedDays>30?'#ef4444':e.avgBlockedDays>10?'#f59e0b':'#64748b'};font-weight:700">${e.avgBlockedDays}d</td>
+                <td style="text-align:center;color:${e.neverWorked>0?'#f97316':'#475569'}">${e.neverWorked}</td>
+                <td style="width:120px">
+                  <div style="background:#0f172a;border-radius:3px;height:8px;overflow:hidden">
+                    <div style="height:100%;width:${barW}%;background:${blkColor};border-radius:3px"></div>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${erpBlockMap['N/A']?.blocked > 0
+        ? `<div style="font-size:11px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #1e293b">
+            ⚠ ${erpBlockMap['N/A'].blocked} bloqueadas sem tag de ERP — adicione <code style="background:#0f172a;padding:1px 5px;border-radius:3px">erp: nome</code> para aparecerem na análise acima.
+          </div>`
+        : ''}
+    </div>
+
+    <!-- Row 3: Tabela detalhada de tasks bloqueadas -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">📋 Integrações Bloqueadas Agora ${tip('Lista completa das integrações em status de bloqueio, ordenadas pelo tempo total bloqueado. <strong>Bloqueou com Xd</strong> = quantos dias de vida tinha quando entrou no primeiro bloqueio.')}</div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>Loja</th>
+            <th>ERP</th>
+            <th>Status</th>
+            <th style="text-align:center">Idade</th>
+            <th style="text-align:center">Bloq. há</th>
+            <th style="text-align:center">Bloqueou com</th>
+            <th style="text-align:center">Trabalho feito</th>
+            <th style="text-align:center">Episódios</th>
+          </tr></thead>
+          <tbody>
+            ${blockedNow.map(t => {
+              const ageColor   = t.age > 90 ? '#ef4444' : t.age > 60 ? '#f97316' : t.age > 30 ? '#f59e0b' : '#94a3b8';
+              const blkColor   = BLOCKED_STATUS_COLORS[t.status] || '#64748b';
+              const ageAtBlk   = t.ageAtFirstBlock ?? (t.age - (t.currentStatusDays || 0));
+              const ageAtBlkColor = ageAtBlk <= 10 ? '#22c55e' : ageAtBlk <= 20 ? '#f59e0b' : ageAtBlk <= 40 ? '#f97316' : '#ef4444';
+              const multiBlk   = t.blockEpisodeCount > 1;
+              return `<tr>
+                <td>
+                  <a href="${t.url}" target="_blank" style="color:#e2e8f0;font-weight:600;text-decoration:none;font-size:12px"
+                     onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#e2e8f0'">
+                    ${t.name.substring(0,32)}${t.name.length>32?'…':''}
+                  </a>
+                </td>
+                <td><span style="font-size:10px;color:#64748b">${t.erp || '—'}</span></td>
+                <td><span style="font-size:10px;background:${blkColor}22;color:${blkColor};border:1px solid ${blkColor}33;border-radius:99px;padding:1px 7px;font-weight:600;white-space:nowrap">${t.status}</span></td>
+                <td style="text-align:center"><span class="age-pill" style="background:${ageColor}22;color:${ageColor}">${t.age}d</span></td>
+                <td style="text-align:center;font-weight:700;color:${blkColor}">${t.currentStatusDays ?? t.blockedDays}d</td>
+                <td style="text-align:center;font-weight:700;color:${ageAtBlkColor}">${ageAtBlk}d</td>
+                <td style="text-align:center;color:${t.workDays>0?'#3b82f6':'#475569'}">${t.workDays > 0 ? t.workDays+'d' : '—'}</td>
+                <td style="text-align:center">
+                  ${multiBlk
+                    ? `<span class="badge badge-amber">⚠ ${t.blockEpisodeCount}×</span>`
+                    : `<span style="color:#475569;font-size:11px">1×</span>`}
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Row 4: Multibloqueio + Time to First Work -->
+    <div class="grid2" style="margin-bottom:16px">
+
+      <!-- Multibloqueio -->
+      <div class="card">
+        <div class="card-title">🔁 Reentrada em Bloqueio ${tip('Tasks que bloquearam em mais de um status distinto no histórico — sinal de que o problema não foi resolvido na primeira desbloqueio, ou que surgiram novas dependências ao longo do processo.')}</div>
+        ${reblocked.length === 0
+          ? `<div style="color:#475569;font-size:12px;text-align:center;padding:20px">Nenhuma task com multibloqueio identificada</div>`
+          : `<div style="display:flex;flex-direction:column;gap:6px">
+              ${reblocked.sort((a,b) => b.blockEpisodeCount - a.blockEpisodeCount).map(t => {
+                const ageColor = t.age > 90 ? '#ef4444' : t.age > 60 ? '#f97316' : '#f59e0b';
+                return `
+                <div style="background:#0f172a;border:1px solid #f59e0b33;border-radius:8px;padding:9px 12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                    <a href="${t.url}" target="_blank" style="font-size:12px;font-weight:700;color:#e2e8f0;text-decoration:none"
+                       onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#e2e8f0'">
+                      ${t.name.substring(0,34)}${t.name.length>34?'…':''}
+                    </a>
+                    <span class="badge badge-amber">${t.blockEpisodeCount}× bloqueios</span>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <span style="font-size:10px;color:#64748b">Idade: <strong style="color:${ageColor}">${t.age}d</strong></span>
+                    <span style="font-size:10px;color:#64748b">ERP: <strong style="color:#94a3b8">${t.erp || 'N/A'}</strong></span>
+                    <span style="font-size:10px;color:#64748b">Status: <strong style="color:#f59e0b">${t.status}</strong></span>
+                  </div>
+                  ${t.blockHistory?.length > 0 ? `
+                  <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap">
+                    ${t.blockHistory.map(b => `<span style="font-size:9px;background:#ef444420;color:#ef4444;border:1px solid #ef444430;border-radius:4px;padding:1px 6px">${b.status} ${b.days}d</span>`).join('')}
+                  </div>` : ''}
+                </div>`;
+              }).join('')}
+            </div>`}
+      </div>
+
+      <!-- Time to First Work -->
+      <div class="card">
+        <div class="card-title">⚡ Tempo até Primeiro Trabalho ${tip('Quantos dias após a entrada no pipeline a equipe realizou o primeiro trabalho ativo. Alto tempo indica que lojas ficam na fila sem serem priorizadas. Zero ou próximo de zero é o ideal.')}</div>
+        ${(() => {
+          const tasksWithWork = allWipTasks.filter(t => t.ageAtFirstWork !== null && t.ageAtFirstWork !== undefined);
+          if (tasksWithWork.length === 0) return `<div style="color:#475569;font-size:12px;text-align:center;padding:20px">Dados insuficientes</div>`;
+          const avgFirst = Math.round(tasksWithWork.reduce((s,t) => s + t.ageAtFirstWork, 0) / tasksWithWork.length);
+          const buckets = {
+            '≤3d':  tasksWithWork.filter(t => t.ageAtFirstWork <= 3).length,
+            '4–7d': tasksWithWork.filter(t => t.ageAtFirstWork > 3 && t.ageAtFirstWork <= 7).length,
+            '8–14d':tasksWithWork.filter(t => t.ageAtFirstWork > 7 && t.ageAtFirstWork <= 14).length,
+            '>14d': tasksWithWork.filter(t => t.ageAtFirstWork > 14).length,
+          };
+          const maxB = Math.max(...Object.values(buckets), 1);
+          const bColors = { '≤3d':'#22c55e','4–7d':'#f59e0b','8–14d':'#f97316','>14d':'#ef4444' };
+          return `
+          <div style="text-align:center;margin-bottom:14px">
+            <div style="font-size:2rem;font-weight:800;color:${avgFirst<=7?'#22c55e':avgFirst<=14?'#f59e0b':'#ef4444'};letter-spacing:-1px">${avgFirst}d</div>
+            <div style="font-size:11px;color:#64748b">média até o 1º trabalho (${tasksWithWork.length} tasks)</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            ${Object.entries(buckets).map(([label, count]) => {
+              const barW = count === 0 ? 0 : Math.max(Math.round(count/maxB*100), 8);
+              const color = bColors[label];
+              return `
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:50px;font-size:11px;color:#94a3b8;flex-shrink:0">${label}</div>
+                <div class="blk-bar-wrap">
+                  ${count > 0 ? `<div class="blk-bar" style="width:${barW}%;background:${color}">${count}</div>`
+                               : `<div style="height:100%;background:#0f172a"></div>`}
+                </div>
+                <div style="width:18px;font-size:12px;font-weight:700;color:${count>0?color:'#334155'}">${count}</div>
+              </div>`;
+            }).join('')}
+          </div>`;
+        })()}
+      </div>
+    </div>
+
+    <!-- Footer da aba bloqueios -->
+    <div style="text-align:center;color:#1e293b;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #1e293b">
+      Instabuy · Setor de Integrações · ${new Date().toLocaleDateString('pt-BR')}
+    </div>
+
+  </div><!-- /tab-bloq -->
+
 </div>
 
 <script>
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
 const THROUGHPUT = ${JSON.stringify(throughputMonthly)};
 const TICKETS    = ${JSON.stringify(cap.tickets.monthly)};
 const WIP_SCENARIOS = {

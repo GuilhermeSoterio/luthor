@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-02-22T19:45:27.887Z",
+  "generated_at": "2026-02-27T00:36:38.123Z",
   "wip": {
-    "total": 50,
-    "blocked": 11,
-    "blocked_pct": 22,
-    "avg_age": 45,
-    "oldest_age": 101,
+    "total": 45,
+    "blocked": 31,
+    "blocked_pct": 69,
+    "avg_age": 46,
+    "oldest_age": 105,
     "by_bucket": {
       "0_30": 20,
       "31_60": 12,
-      "61_90": 15,
-      "90_plus": 3
+      "61_90": 5,
+      "90_plus": 8
     },
     "tasks": [
       {
@@ -18,670 +18,785 @@
         "name": "Araripe Supermercado Bom Jardim",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 101,
-        "daysSinceUpdated": 19,
-        "currentStatusDays": 11,
+        "age": 105,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": "rms",
         "url": "https://app.clickup.com/t/86ad839np",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 72,
+        "blockedDays": 76,
         "queueDays": 29,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 40,
+          "fila": 44,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 29,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 2,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 61
+          },
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86ada9m7x",
         "name": "Araripe Supermercado",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 97,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 11,
+        "age": 101,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": "rms",
         "url": "https://app.clickup.com/t/86ada9m7x",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 72,
+        "blockedDays": 76,
         "queueDays": 25,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 36,
+          "fila": 40,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 25,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 2,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 61
+          },
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86ada8dxa",
         "name": "Araripe Supermercado",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 97,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 11,
+        "age": 101,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": "rms",
         "url": "https://app.clickup.com/t/86ada8dxa",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 72,
+        "blockedDays": 76,
         "queueDays": 25,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 36,
+          "fila": 40,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 25,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 2,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 61
+          },
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86adew46b",
         "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 90,
-        "daysSinceUpdated": 40,
-        "currentStatusDays": 11,
+        "age": 94,
+        "daysSinceUpdated": 3,
+        "currentStatusDays": 15,
         "erp": null,
         "url": "https://app.clickup.com/t/86adew46b",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 47,
+        "blockedDays": 51,
         "queueDays": 36,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 47,
+          "fila": 51,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 43,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 2,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 36
+          },
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86adh6989",
         "name": "Ana Risorlange Bernardo Manuel",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 88,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 11,
+        "age": 92,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": null,
         "url": "https://app.clickup.com/t/86adh6989",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 11,
+        "blockedDays": 15,
         "queueDays": 76,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 87,
+          "fila": 91,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 77,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86adh690q",
         "name": "Ana Risorlange Bonsucesso",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 88,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 11,
+        "age": 92,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": null,
         "url": "https://app.clickup.com/t/86adh690q",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 11,
+        "blockedDays": 15,
         "queueDays": 76,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 87,
+          "fila": 91,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 77,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86adh67wb",
         "name": "Ana Risorlange Bom Jardim",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 88,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 11,
+        "age": 92,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 15,
         "erp": null,
         "url": "https://app.clickup.com/t/86adh67wb",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 11,
+        "blockedDays": 15,
         "queueDays": 76,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 87,
+          "fila": 91,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 77,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 15
+          }
+        ]
       },
       {
         "id": "86adhu7rq",
         "name": "Rota da Economia",
-        "status": "revisão",
+        "status": "progresso pedido",
         "isBlocked": false,
-        "age": 87,
-        "daysSinceUpdated": 10,
-        "currentStatusDays": 11,
+        "age": 91,
+        "daysSinceUpdated": 1,
+        "currentStatusDays": 4,
         "erp": "novo erp",
         "url": "https://app.clickup.com/t/86adhu7rq",
         "scenario": "C3",
-        "workDays": 34,
+        "workDays": 38,
         "blockedDays": 0,
         "queueDays": 53,
         "flowEfficiency": 100,
         "phaseDays": {
           "fila": 53,
           "produto": 4,
-          "pedido": 19,
+          "pedido": 23,
           "revisao": 11
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 53,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86adpbfdb",
         "name": "Almeida Supermercado",
         "status": "progresso pedido",
         "isBlocked": false,
-        "age": 81,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "age": 85,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": "vivasistemas",
         "url": "https://app.clickup.com/t/86adpbfdb",
         "scenario": "C3",
-        "workDays": 2,
+        "workDays": 7,
         "blockedDays": 31,
         "queueDays": 48,
-        "flowEfficiency": 6,
+        "flowEfficiency": 18,
         "phaseDays": {
           "fila": 48,
           "produto": 2,
-          "pedido": 31,
+          "pedido": 35,
           "revisao": 0
-        }
-      },
-      {
-        "id": "86adu1pjf",
-        "name": "Emporio Natural Mix - Loja 5",
-        "status": "revisão",
-        "isBlocked": false,
-        "age": 75,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 3,
-        "erp": null,
-        "url": "https://app.clickup.com/t/86adu1pjf",
-        "scenario": "C3",
-        "workDays": 13,
-        "blockedDays": 0,
-        "queueDays": 62,
-        "flowEfficiency": 100,
-        "phaseDays": {
-          "fila": 62,
-          "produto": 10,
-          "pedido": 0,
-          "revisao": 3
-        }
-      },
-      {
-        "id": "86adu1p4y",
-        "name": "Emporio Natural Mix - Loja 4 - Tijucas",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 75,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 3,
-        "erp": null,
-        "url": "https://app.clickup.com/t/86adu1p4y",
-        "scenario": "C3",
-        "workDays": 13,
-        "blockedDays": 0,
-        "queueDays": 62,
-        "flowEfficiency": 100,
-        "phaseDays": {
-          "fila": 62,
-          "produto": 10,
-          "pedido": 3,
-          "revisao": 0
-        }
-      },
-      {
-        "id": "86adu1nwu",
-        "name": "Emporio Natural Mix - Loja 3 - Campo Grande",
-        "status": "revisão",
-        "isBlocked": false,
-        "age": 75,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 3,
-        "erp": null,
-        "url": "https://app.clickup.com/t/86adu1nwu",
-        "scenario": "C3",
-        "workDays": 13,
-        "blockedDays": 0,
-        "queueDays": 62,
-        "flowEfficiency": 100,
-        "phaseDays": {
-          "fila": 62,
-          "produto": 10,
-          "pedido": 0,
-          "revisao": 3
-        }
-      },
-      {
-        "id": "86adu1nfz",
-        "name": "Emporio Natural Mix - Loja 2 - Bangu",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 75,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
-        "erp": null,
-        "url": "https://app.clickup.com/t/86adu1nfz",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 3,
-        "queueDays": 62,
-        "flowEfficiency": 77,
-        "phaseDays": {
-          "fila": 62,
-          "produto": 10,
-          "pedido": 3,
-          "revisao": 0
-        }
-      },
-      {
-        "id": "86adu1mzh",
-        "name": "Emporio Natural Mix - Loja 1 Madureira",
-        "status": "revisão",
-        "isBlocked": false,
-        "age": 75,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 3,
-        "erp": null,
-        "url": "https://app.clickup.com/t/86adu1mzh",
-        "scenario": "C3",
-        "workDays": 13,
-        "blockedDays": 0,
-        "queueDays": 62,
-        "flowEfficiency": 100,
-        "phaseDays": {
-          "fila": 62,
-          "produto": 10,
-          "pedido": 0,
-          "revisao": 3
-        }
+        },
+        "ageAtFirstBlock": 50,
+        "ageAtFirstWork": 48,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 31
+          }
+        ]
       },
       {
         "id": "86advjux5",
         "name": "Empório Pas - Loja 04 - Andradina",
         "status": "backlog",
         "isBlocked": false,
-        "age": 74,
-        "daysSinceUpdated": 13,
-        "currentStatusDays": 13,
+        "age": 78,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 17,
         "erp": null,
         "url": "https://app.clickup.com/t/86advjux5",
         "scenario": "C1",
         "workDays": 0,
         "blockedDays": 3,
-        "queueDays": 71,
+        "queueDays": 75,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 71,
+          "fila": 75,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 58,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 3
+          }
+        ]
       },
       {
         "id": "86advjuq4",
         "name": "Emporio Pas - Loja 2  - Mirandopolis",
         "status": "backlog",
         "isBlocked": false,
-        "age": 74,
-        "daysSinceUpdated": 16,
-        "currentStatusDays": 16,
+        "age": 78,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 20,
         "erp": null,
         "url": "https://app.clickup.com/t/86advjuq4",
         "scenario": "C1",
         "workDays": 0,
         "blockedDays": 0,
-        "queueDays": 74,
+        "queueDays": 78,
         "flowEfficiency": null,
         "phaseDays": {
-          "fila": 74,
+          "fila": 78,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86adx5cb0",
         "name": "Supermercado Batista",
-        "status": "todo/dados coletados",
-        "isBlocked": false,
-        "age": 72,
-        "daysSinceUpdated": 2,
-        "currentStatusDays": 2,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 76,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": "avanço",
         "url": "https://app.clickup.com/t/86adx5cb0",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 43,
-        "queueDays": 29,
+        "blockedDays": 47,
+        "queueDays": 30,
         "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 38,
+          "fila": 42,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 27,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 2,
+        "blockHistory": [
+          {
+            "status": "bloqueado",
+            "days": 34
+          },
+          {
+            "status": "aguardando cliente",
+            "days": 13
+          }
+        ]
       },
       {
         "id": "86ady723m",
         "name": "Atacadão São Roque",
         "status": "produtos integrado",
         "isBlocked": false,
-        "age": 69,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 10,
+        "age": 73,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 14,
         "erp": "winthor",
         "url": "https://app.clickup.com/t/86ady723m",
         "scenario": "C3",
-        "workDays": 11,
+        "workDays": 15,
         "blockedDays": 0,
         "queueDays": 58,
         "flowEfficiency": 100,
         "phaseDays": {
           "fila": 58,
-          "produto": 11,
+          "produto": 15,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 58,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86aeh1jkh",
         "name": "O Mundo das Embalagens",
         "status": "progresso pedido",
         "isBlocked": false,
-        "age": 39,
+        "age": 43,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 6,
         "erp": "hipcom",
         "url": "https://app.clickup.com/t/86aeh1jkh",
         "scenario": "C3",
-        "workDays": 3,
+        "workDays": 7,
         "blockedDays": 0,
         "queueDays": 36,
         "flowEfficiency": 100,
         "phaseDays": {
           "fila": 36,
           "produto": 1,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 36,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86aemer60",
         "name": "RedeMIX - Loja 5",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemer60",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemer0r",
         "name": "RedeMIX - Loja 06",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemer0r",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemepqc",
         "name": "RedeMIX - Loja 7",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemepqc",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemepj1",
         "name": "RedeMIX - Loja 08",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemepj1",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemeped",
         "name": "RedeMIX - Loja 09",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemeped",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemepb6",
         "name": "RedeMIX - Loja 10",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemepb6",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemep6j",
         "name": "RedeMIX - Loja 04",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemep6j",
-        "scenario": "C3",
-        "workDays": 10,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 13,
+        "blockedDays": 1,
         "queueDays": 24,
-        "flowEfficiency": 100,
+        "flowEfficiency": 93,
         "phaseDays": {
           "fila": 24,
           "produto": 8,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 24,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aemen33",
         "name": "RedeMIX - Loja 11",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aemen33",
-        "scenario": "C3",
-        "workDays": 17,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 20,
+        "blockedDays": 1,
         "queueDays": 17,
-        "flowEfficiency": 100,
+        "flowEfficiency": 95,
         "phaseDays": {
           "fila": 17,
           "produto": 15,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 17,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aememzm",
         "name": "RedeMIX - Loja 3",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aememzm",
-        "scenario": "C3",
-        "workDays": 17,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 20,
+        "blockedDays": 1,
         "queueDays": 17,
-        "flowEfficiency": 100,
+        "flowEfficiency": 95,
         "phaseDays": {
           "fila": 17,
           "produto": 15,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 17,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aememwa",
         "name": "RedeMIX - Loja 2",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aememwa",
-        "scenario": "C3",
-        "workDays": 17,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 20,
+        "blockedDays": 1,
         "queueDays": 17,
-        "flowEfficiency": 100,
+        "flowEfficiency": 95,
         "phaseDays": {
           "fila": 17,
           "produto": 15,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 17,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aememrm",
         "name": "RedeMIX - Loja 1",
-        "status": "progresso pedido",
-        "isBlocked": false,
-        "age": 34,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 38,
         "daysSinceUpdated": 0,
-        "currentStatusDays": 2,
+        "currentStatusDays": 1,
         "erp": "socin",
         "url": "https://app.clickup.com/t/86aememrm",
-        "scenario": "C3",
-        "workDays": 13,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 16,
+        "blockedDays": 1,
         "queueDays": 21,
-        "flowEfficiency": 100,
+        "flowEfficiency": 94,
         "phaseDays": {
           "fila": 21,
           "produto": 11,
-          "pedido": 2,
+          "pedido": 6,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 37,
+        "ageAtFirstWork": 21,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86aewxgz2",
         "name": "Supermercado Real - Ceres",
         "status": "backlog",
         "isBlocked": false,
-        "age": 25,
-        "daysSinceUpdated": 25,
+        "age": 29,
+        "daysSinceUpdated": 4,
         "currentStatusDays": null,
-        "erp": null,
+        "erp": "sd sistemas",
         "url": "https://app.clickup.com/t/86aewxgz2",
         "scenario": "C1",
         "workDays": 0,
@@ -693,17 +808,21 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af0dc0j",
         "name": "Supermercado Real - Carmo do Rio Verde",
         "status": "backlog",
         "isBlocked": false,
-        "age": 20,
-        "daysSinceUpdated": 20,
+        "age": 24,
+        "daysSinceUpdated": 4,
         "currentStatusDays": null,
-        "erp": null,
+        "erp": "sd sistemas",
         "url": "https://app.clickup.com/t/86af0dc0j",
         "scenario": "C1",
         "workDays": 0,
@@ -715,17 +834,21 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af0dbaa",
         "name": "Supermercado Real - Ceres",
         "status": "backlog",
         "isBlocked": false,
-        "age": 20,
-        "daysSinceUpdated": 20,
+        "age": 24,
+        "daysSinceUpdated": 4,
         "currentStatusDays": null,
-        "erp": null,
+        "erp": "sd sistemas",
         "url": "https://app.clickup.com/t/86af0dbaa",
         "scenario": "C1",
         "workDays": 0,
@@ -737,148 +860,191 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af28vp4",
         "name": "Super Portugal Sobral",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 19,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "age": 23,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": null,
         "url": "https://app.clickup.com/t/86af28vp4",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 0,
+        "blockedDays": 4,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 0,
+          "fila": 4,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 19,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 4
+          }
+        ]
       },
       {
         "id": "86af28vc2",
         "name": "Super Portugal Cidade dos Funcionários",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 19,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "age": 23,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": null,
         "url": "https://app.clickup.com/t/86af28vc2",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 0,
+        "blockedDays": 4,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 0,
+          "fila": 4,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 19,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 4
+          }
+        ]
       },
       {
         "id": "86af28ubg",
         "name": "Super Portugal Granja Portugal",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 19,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "age": 23,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": null,
         "url": "https://app.clickup.com/t/86af28ubg",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 0,
+        "blockedDays": 4,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 0,
+          "fila": 4,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 19,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 4
+          }
+        ]
       },
       {
         "id": "86af1php0",
         "name": "Telefrango Supermercados João XXIII",
-        "status": "backlog",
+        "status": "produtos integrado",
         "isBlocked": false,
-        "age": 19,
-        "daysSinceUpdated": 19,
-        "currentStatusDays": null,
+        "age": 23,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af1php0",
-        "scenario": "C1",
-        "workDays": 0,
+        "scenario": "C3",
+        "workDays": 3,
         "blockedDays": 0,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 100,
         "phaseDays": {
           "fila": 0,
-          "produto": 0,
+          "produto": 3,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 20,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af1ph3e",
         "name": "Telefrango Supermercados Redenção",
-        "status": "backlog",
+        "status": "produtos integrado",
         "isBlocked": false,
-        "age": 19,
-        "daysSinceUpdated": 19,
-        "currentStatusDays": null,
+        "age": 23,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af1ph3e",
-        "scenario": "C1",
-        "workDays": 0,
+        "scenario": "C3",
+        "workDays": 3,
         "blockedDays": 0,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 100,
         "phaseDays": {
           "fila": 0,
-          "produto": 0,
+          "produto": 3,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 20,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af1hk8h",
         "name": "Supermercado Rodrigues",
-        "status": "backlog",
+        "status": "produtos integrado",
         "isBlocked": false,
-        "age": 19,
-        "daysSinceUpdated": 19,
-        "currentStatusDays": null,
+        "age": 23,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af1hk8h",
-        "scenario": "C1",
-        "workDays": 0,
+        "scenario": "C3",
+        "workDays": 2,
         "blockedDays": 0,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 100,
         "phaseDays": {
           "fila": 0,
-          "produto": 0,
+          "produto": 2,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 21,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af2yxw7",
         "name": "Compre Certo - Guaiuba",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
-        "currentStatusDays": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 22,
+        "daysSinceUpdated": 0,
+        "currentStatusDays": 0,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2yxw7",
         "scenario": "C1",
@@ -891,16 +1057,25 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 22,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 0
+          }
+        ]
       },
       {
         "id": "86af2yx8b",
         "name": "Compre Certo - Maranguape",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
-        "currentStatusDays": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 22,
+        "daysSinceUpdated": 0,
+        "currentStatusDays": 0,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2yx8b",
         "scenario": "C1",
@@ -913,16 +1088,25 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 22,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 0
+          }
+        ]
       },
       {
         "id": "86af2ywtw",
         "name": "Compre Certo - Baturité",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
-        "currentStatusDays": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 22,
+        "daysSinceUpdated": 0,
+        "currentStatusDays": 0,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2ywtw",
         "scenario": "C1",
@@ -935,16 +1119,25 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 22,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 0
+          }
+        ]
       },
       {
         "id": "86af2wu06",
         "name": "Compre Certo - Pacatuba",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
-        "currentStatusDays": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 22,
+        "daysSinceUpdated": 0,
+        "currentStatusDays": 0,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2wu06",
         "scenario": "C1",
@@ -957,16 +1150,25 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 22,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 0
+          }
+        ]
       },
       {
         "id": "86af2w531",
         "name": "Compre Certo - Itaitinga",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
-        "currentStatusDays": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 22,
+        "daysSinceUpdated": 0,
+        "currentStatusDays": 0,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2w531",
         "scenario": "C1",
@@ -979,15 +1181,24 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 22,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 0
+          }
+        ]
       },
       {
         "id": "86af2vp6k",
         "name": "Supermercado Aconchemax",
         "status": "backlog",
         "isBlocked": false,
-        "age": 18,
-        "daysSinceUpdated": 18,
+        "age": 22,
+        "daysSinceUpdated": 4,
         "currentStatusDays": null,
         "erp": null,
         "url": "https://app.clickup.com/t/86af2vp6k",
@@ -1001,117 +1212,161 @@
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af560cg",
         "name": "Brisa Mini Mercado",
-        "status": "backlog",
-        "isBlocked": false,
-        "age": 16,
-        "daysSinceUpdated": 16,
-        "currentStatusDays": null,
-        "erp": null,
+        "status": "aguardando cliente",
+        "isBlocked": true,
+        "age": 20,
+        "daysSinceUpdated": 1,
+        "currentStatusDays": 1,
+        "erp": "novo erp- market automacoes",
         "url": "https://app.clickup.com/t/86af560cg",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 0,
-        "queueDays": 0,
-        "flowEfficiency": null,
+        "blockedDays": 1,
+        "queueDays": 1,
+        "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 0,
+          "fila": 2,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 19,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 1
+          }
+        ]
       },
       {
         "id": "86af77qd3",
         "name": "Telefrango Supermercados Passaré",
-        "status": "backlog",
+        "status": "produtos integrado",
         "isBlocked": false,
-        "age": 13,
-        "daysSinceUpdated": 13,
-        "currentStatusDays": null,
+        "age": 17,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af77qd3",
-        "scenario": "C1",
-        "workDays": 0,
+        "scenario": "C3",
+        "workDays": 3,
         "blockedDays": 0,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 100,
         "phaseDays": {
           "fila": 0,
-          "produto": 0,
+          "produto": 3,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": null,
+        "ageAtFirstWork": 14,
+        "blockEpisodeCount": 0,
+        "blockHistory": []
       },
       {
         "id": "86af908mn",
         "name": "R Center - Parque Santa Rosa",
-        "status": "todo/dados coletados",
-        "isBlocked": false,
-        "age": 12,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 16,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af908mn",
-        "scenario": "C1",
-        "workDays": 0,
-        "blockedDays": 0,
-        "queueDays": 0,
-        "flowEfficiency": null,
+        "scenario": "C2",
+        "workDays": 1,
+        "blockedDays": 2,
+        "queueDays": 1,
+        "flowEfficiency": 33,
         "phaseDays": {
-          "fila": 0,
-          "produto": 0,
-          "pedido": 0,
+          "fila": 1,
+          "produto": 1,
+          "pedido": 2,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 14,
+        "ageAtFirstWork": 13,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 2
+          }
+        ]
       },
       {
         "id": "86af8yurq",
         "name": "R Center - Messejana",
-        "status": "produtos integrado",
-        "isBlocked": false,
-        "age": 12,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "status": "bloqueado pedido",
+        "isBlocked": true,
+        "age": 16,
+        "daysSinceUpdated": 2,
+        "currentStatusDays": 2,
         "erp": null,
         "url": "https://app.clickup.com/t/86af8yurq",
-        "scenario": "C1",
-        "workDays": 0,
-        "blockedDays": 0,
+        "scenario": "C2",
+        "workDays": 2,
+        "blockedDays": 2,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 50,
         "phaseDays": {
           "fila": 0,
-          "produto": 0,
-          "pedido": 0,
+          "produto": 2,
+          "pedido": 2,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 14,
+        "ageAtFirstWork": 12,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "bloqueado pedido",
+            "days": 2
+          }
+        ]
       },
       {
         "id": "86afcp5zd",
         "name": "Supermercado Aguiar",
         "status": "aguardando cliente",
         "isBlocked": true,
-        "age": 9,
-        "daysSinceUpdated": 0,
-        "currentStatusDays": 0,
+        "age": 13,
+        "daysSinceUpdated": 4,
+        "currentStatusDays": 4,
         "erp": null,
         "url": "https://app.clickup.com/t/86afcp5zd",
         "scenario": "C1",
         "workDays": 0,
-        "blockedDays": 0,
+        "blockedDays": 4,
         "queueDays": 0,
-        "flowEfficiency": null,
+        "flowEfficiency": 0,
         "phaseDays": {
-          "fila": 0,
+          "fila": 4,
           "produto": 0,
           "pedido": 0,
           "revisao": 0
-        }
+        },
+        "ageAtFirstBlock": 9,
+        "ageAtFirstWork": null,
+        "blockEpisodeCount": 1,
+        "blockHistory": [
+          {
+            "status": "aguardando cliente",
+            "days": 4
+          }
+        ]
       }
     ],
     "tasks_by_bucket": {
@@ -1121,10 +1376,10 @@
           "name": "Supermercado Real - Ceres",
           "status": "backlog",
           "isBlocked": false,
-          "age": 25,
-          "daysSinceUpdated": 25,
+          "age": 29,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86aewxgz2",
           "scenario": "C1",
           "workDays": 0,
@@ -1136,17 +1391,21 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af0dc0j",
           "name": "Supermercado Real - Carmo do Rio Verde",
           "status": "backlog",
           "isBlocked": false,
-          "age": 20,
-          "daysSinceUpdated": 20,
+          "age": 24,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86af0dc0j",
           "scenario": "C1",
           "workDays": 0,
@@ -1158,17 +1417,21 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af0dbaa",
           "name": "Supermercado Real - Ceres",
           "status": "backlog",
           "isBlocked": false,
-          "age": 20,
-          "daysSinceUpdated": 20,
+          "age": 24,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86af0dbaa",
           "scenario": "C1",
           "workDays": 0,
@@ -1180,148 +1443,191 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af28vp4",
           "name": "Super Portugal Sobral",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28vp4",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af28vc2",
           "name": "Super Portugal Cidade dos Funcionários",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28vc2",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af28ubg",
           "name": "Super Portugal Granja Portugal",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28ubg",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af1php0",
           "name": "Telefrango Supermercados João XXIII",
-          "status": "backlog",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
+          "age": 23,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af1php0",
-          "scenario": "C1",
-          "workDays": 0,
+          "scenario": "C3",
+          "workDays": 3,
           "blockedDays": 0,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 100,
           "phaseDays": {
             "fila": 0,
-            "produto": 0,
+            "produto": 3,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 20,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af1ph3e",
           "name": "Telefrango Supermercados Redenção",
-          "status": "backlog",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
+          "age": 23,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af1ph3e",
-          "scenario": "C1",
-          "workDays": 0,
+          "scenario": "C3",
+          "workDays": 3,
           "blockedDays": 0,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 100,
           "phaseDays": {
             "fila": 0,
-            "produto": 0,
+            "produto": 3,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 20,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af1hk8h",
           "name": "Supermercado Rodrigues",
-          "status": "backlog",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
+          "age": 23,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af1hk8h",
-          "scenario": "C1",
-          "workDays": 0,
+          "scenario": "C3",
+          "workDays": 2,
           "blockedDays": 0,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 100,
           "phaseDays": {
             "fila": 0,
-            "produto": 0,
+            "produto": 2,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 21,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af2yxw7",
           "name": "Compre Certo - Guaiuba",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2yxw7",
           "scenario": "C1",
@@ -1334,16 +1640,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2yx8b",
           "name": "Compre Certo - Maranguape",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2yx8b",
           "scenario": "C1",
@@ -1356,16 +1671,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2ywtw",
           "name": "Compre Certo - Baturité",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2ywtw",
           "scenario": "C1",
@@ -1378,16 +1702,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2wu06",
           "name": "Compre Certo - Pacatuba",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2wu06",
           "scenario": "C1",
@@ -1400,16 +1733,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2w531",
           "name": "Compre Certo - Itaitinga",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2w531",
           "scenario": "C1",
@@ -1422,15 +1764,24 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2vp6k",
           "name": "Supermercado Aconchemax",
           "status": "backlog",
           "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
+          "age": 22,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2vp6k",
@@ -1444,117 +1795,161 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af560cg",
           "name": "Brisa Mini Mercado",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 16,
-          "daysSinceUpdated": 16,
-          "currentStatusDays": null,
-          "erp": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 20,
+          "daysSinceUpdated": 1,
+          "currentStatusDays": 1,
+          "erp": "novo erp- market automacoes",
           "url": "https://app.clickup.com/t/86af560cg",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
+          "blockedDays": 1,
+          "queueDays": 1,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 2,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86af77qd3",
           "name": "Telefrango Supermercados Passaré",
-          "status": "backlog",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 13,
-          "daysSinceUpdated": 13,
-          "currentStatusDays": null,
+          "age": 17,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af77qd3",
-          "scenario": "C1",
-          "workDays": 0,
+          "scenario": "C3",
+          "workDays": 3,
           "blockedDays": 0,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 100,
           "phaseDays": {
             "fila": 0,
-            "produto": 0,
+            "produto": 3,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 14,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af908mn",
           "name": "R Center - Parque Santa Rosa",
-          "status": "todo/dados coletados",
-          "isBlocked": false,
-          "age": 12,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 16,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af908mn",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
+          "scenario": "C2",
+          "workDays": 1,
+          "blockedDays": 2,
+          "queueDays": 1,
+          "flowEfficiency": 33,
           "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
+            "fila": 1,
+            "produto": 1,
+            "pedido": 2,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 14,
+          "ageAtFirstWork": 13,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 2
+            }
+          ]
         },
         {
           "id": "86af8yurq",
           "name": "R Center - Messejana",
-          "status": "produtos integrado",
-          "isBlocked": false,
-          "age": 12,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 16,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
           "erp": null,
           "url": "https://app.clickup.com/t/86af8yurq",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 2,
+          "blockedDays": 2,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 50,
           "phaseDays": {
             "fila": 0,
-            "produto": 0,
-            "pedido": 0,
+            "produto": 2,
+            "pedido": 2,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 14,
+          "ageAtFirstWork": 12,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 2
+            }
+          ]
         },
         {
           "id": "86afcp5zd",
           "name": "Supermercado Aguiar",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 9,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 13,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86afcp5zd",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 9,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         }
       ],
       "31_60": [
@@ -1563,596 +1958,518 @@
           "name": "O Mundo das Embalagens",
           "status": "progresso pedido",
           "isBlocked": false,
-          "age": 39,
+          "age": 43,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 6,
           "erp": "hipcom",
           "url": "https://app.clickup.com/t/86aeh1jkh",
           "scenario": "C3",
-          "workDays": 3,
+          "workDays": 7,
           "blockedDays": 0,
           "queueDays": 36,
           "flowEfficiency": 100,
           "phaseDays": {
             "fila": 36,
             "produto": 1,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 36,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86aemer60",
           "name": "RedeMIX - Loja 5",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemer60",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemer0r",
           "name": "RedeMIX - Loja 06",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemer0r",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemepqc",
           "name": "RedeMIX - Loja 7",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemepqc",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemepj1",
           "name": "RedeMIX - Loja 08",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemepj1",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemeped",
           "name": "RedeMIX - Loja 09",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemeped",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemepb6",
           "name": "RedeMIX - Loja 10",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemepb6",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemep6j",
           "name": "RedeMIX - Loja 04",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemep6j",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
           "queueDays": 24,
-          "flowEfficiency": 100,
+          "flowEfficiency": 93,
           "phaseDays": {
             "fila": 24,
             "produto": 8,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aemen33",
           "name": "RedeMIX - Loja 11",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aemen33",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
           "queueDays": 17,
-          "flowEfficiency": 100,
+          "flowEfficiency": 95,
           "phaseDays": {
             "fila": 17,
             "produto": 15,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aememzm",
           "name": "RedeMIX - Loja 3",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aememzm",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
           "queueDays": 17,
-          "flowEfficiency": 100,
+          "flowEfficiency": 95,
           "phaseDays": {
             "fila": 17,
             "produto": 15,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aememwa",
           "name": "RedeMIX - Loja 2",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aememwa",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
           "queueDays": 17,
-          "flowEfficiency": 100,
+          "flowEfficiency": 95,
           "phaseDays": {
             "fila": 17,
             "produto": 15,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86aememrm",
           "name": "RedeMIX - Loja 1",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 1,
           "erp": "socin",
           "url": "https://app.clickup.com/t/86aememrm",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
+          "scenario": "C2",
+          "workDays": 16,
+          "blockedDays": 1,
           "queueDays": 21,
-          "flowEfficiency": 100,
+          "flowEfficiency": 94,
           "phaseDays": {
             "fila": 21,
             "produto": 11,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 21,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
         }
       ],
       "61_90": [
-        {
-          "id": "86adew46b",
-          "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
-          "status": "aguardando cliente",
-          "isBlocked": true,
-          "age": 90,
-          "daysSinceUpdated": 40,
-          "currentStatusDays": 11,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adew46b",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 47,
-          "queueDays": 36,
-          "flowEfficiency": 0,
-          "phaseDays": {
-            "fila": 47,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adh6989",
-          "name": "Ana Risorlange Bernardo Manuel",
-          "status": "aguardando cliente",
-          "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adh6989",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 11,
-          "queueDays": 76,
-          "flowEfficiency": 0,
-          "phaseDays": {
-            "fila": 87,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adh690q",
-          "name": "Ana Risorlange Bonsucesso",
-          "status": "aguardando cliente",
-          "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adh690q",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 11,
-          "queueDays": 76,
-          "flowEfficiency": 0,
-          "phaseDays": {
-            "fila": 87,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adh67wb",
-          "name": "Ana Risorlange Bom Jardim",
-          "status": "aguardando cliente",
-          "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adh67wb",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 11,
-          "queueDays": 76,
-          "flowEfficiency": 0,
-          "phaseDays": {
-            "fila": 87,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adhu7rq",
-          "name": "Rota da Economia",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 87,
-          "daysSinceUpdated": 10,
-          "currentStatusDays": 11,
-          "erp": "novo erp",
-          "url": "https://app.clickup.com/t/86adhu7rq",
-          "scenario": "C3",
-          "workDays": 34,
-          "blockedDays": 0,
-          "queueDays": 53,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 53,
-            "produto": 4,
-            "pedido": 19,
-            "revisao": 11
-          }
-        },
         {
           "id": "86adpbfdb",
           "name": "Almeida Supermercado",
           "status": "progresso pedido",
           "isBlocked": false,
-          "age": 81,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 85,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": "vivasistemas",
           "url": "https://app.clickup.com/t/86adpbfdb",
           "scenario": "C3",
-          "workDays": 2,
+          "workDays": 7,
           "blockedDays": 31,
           "queueDays": 48,
-          "flowEfficiency": 6,
+          "flowEfficiency": 18,
           "phaseDays": {
             "fila": 48,
             "produto": 2,
-            "pedido": 31,
+            "pedido": 35,
             "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1pjf",
-          "name": "Emporio Natural Mix - Loja 5",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1pjf",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
-        },
-        {
-          "id": "86adu1p4y",
-          "name": "Emporio Natural Mix - Loja 4 - Tijucas",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1p4y",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 3,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1nwu",
-          "name": "Emporio Natural Mix - Loja 3 - Campo Grande",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1nwu",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
-        },
-        {
-          "id": "86adu1nfz",
-          "name": "Emporio Natural Mix - Loja 2 - Bangu",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1nfz",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 3,
-          "queueDays": 62,
-          "flowEfficiency": 77,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 3,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1mzh",
-          "name": "Emporio Natural Mix - Loja 1 Madureira",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1mzh",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
+          },
+          "ageAtFirstBlock": 50,
+          "ageAtFirstWork": 48,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 31
+            }
+          ]
         },
         {
           "id": "86advjux5",
           "name": "Empório Pas - Loja 04 - Andradina",
           "status": "backlog",
           "isBlocked": false,
-          "age": 74,
-          "daysSinceUpdated": 13,
-          "currentStatusDays": 13,
+          "age": 78,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 17,
           "erp": null,
           "url": "https://app.clickup.com/t/86advjux5",
           "scenario": "C1",
           "workDays": 0,
           "blockedDays": 3,
-          "queueDays": 71,
+          "queueDays": 75,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 71,
+            "fila": 75,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 58,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 3
+            }
+          ]
         },
         {
           "id": "86advjuq4",
           "name": "Emporio Pas - Loja 2  - Mirandopolis",
           "status": "backlog",
           "isBlocked": false,
-          "age": 74,
-          "daysSinceUpdated": 16,
-          "currentStatusDays": 16,
+          "age": 78,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 20,
           "erp": null,
           "url": "https://app.clickup.com/t/86advjuq4",
           "scenario": "C1",
           "workDays": 0,
           "blockedDays": 0,
-          "queueDays": 74,
+          "queueDays": 78,
           "flowEfficiency": null,
           "phaseDays": {
-            "fila": 74,
+            "fila": 78,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86adx5cb0",
           "name": "Supermercado Batista",
-          "status": "todo/dados coletados",
-          "isBlocked": false,
-          "age": 72,
-          "daysSinceUpdated": 2,
-          "currentStatusDays": 2,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 76,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": "avanço",
           "url": "https://app.clickup.com/t/86adx5cb0",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 43,
-          "queueDays": 29,
+          "blockedDays": 47,
+          "queueDays": 30,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 38,
+            "fila": 42,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 27,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 34
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 13
+            }
+          ]
         },
         {
           "id": "86ady723m",
           "name": "Atacadão São Roque",
           "status": "produtos integrado",
           "isBlocked": false,
-          "age": 69,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 10,
+          "age": 73,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 14,
           "erp": "winthor",
           "url": "https://app.clickup.com/t/86ady723m",
           "scenario": "C3",
-          "workDays": 11,
+          "workDays": 15,
           "blockedDays": 0,
           "queueDays": 58,
           "flowEfficiency": 100,
           "phaseDays": {
             "fila": 58,
-            "produto": 11,
+            "produto": 15,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 58,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         }
       ],
       "90_plus": [
@@ -2161,75 +2478,268 @@
           "name": "Araripe Supermercado Bom Jardim",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 101,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": 11,
+          "age": 105,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ad839np",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 29,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 40,
+            "fila": 44,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 29,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86ada9m7x",
           "name": "Araripe Supermercado",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 97,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 101,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ada9m7x",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 25,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 36,
+            "fila": 40,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 25,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86ada8dxa",
           "name": "Araripe Supermercado",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 97,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 101,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ada8dxa",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 25,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 36,
+            "fila": 40,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 25,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
+        },
+        {
+          "id": "86adew46b",
+          "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 94,
+          "daysSinceUpdated": 3,
+          "currentStatusDays": 15,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86adew46b",
+          "scenario": "C1",
+          "workDays": 0,
+          "blockedDays": 51,
+          "queueDays": 36,
+          "flowEfficiency": 0,
+          "phaseDays": {
+            "fila": 51,
+            "produto": 0,
+            "pedido": 0,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 43,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 36
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
+        },
+        {
+          "id": "86adh6989",
+          "name": "Ana Risorlange Bernardo Manuel",
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86adh6989",
+          "scenario": "C1",
+          "workDays": 0,
+          "blockedDays": 15,
+          "queueDays": 76,
+          "flowEfficiency": 0,
+          "phaseDays": {
+            "fila": 91,
+            "produto": 0,
+            "pedido": 0,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
+        },
+        {
+          "id": "86adh690q",
+          "name": "Ana Risorlange Bonsucesso",
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86adh690q",
+          "scenario": "C1",
+          "workDays": 0,
+          "blockedDays": 15,
+          "queueDays": 76,
+          "flowEfficiency": 0,
+          "phaseDays": {
+            "fila": 91,
+            "produto": 0,
+            "pedido": 0,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
+        },
+        {
+          "id": "86adh67wb",
+          "name": "Ana Risorlange Bom Jardim",
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86adh67wb",
+          "scenario": "C1",
+          "workDays": 0,
+          "blockedDays": 15,
+          "queueDays": 76,
+          "flowEfficiency": 0,
+          "phaseDays": {
+            "fila": 91,
+            "produto": 0,
+            "pedido": 0,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
+        },
+        {
+          "id": "86adhu7rq",
+          "name": "Rota da Economia",
+          "status": "progresso pedido",
+          "isBlocked": false,
+          "age": 91,
+          "daysSinceUpdated": 1,
+          "currentStatusDays": 4,
+          "erp": "novo erp",
+          "url": "https://app.clickup.com/t/86adhu7rq",
+          "scenario": "C3",
+          "workDays": 38,
+          "blockedDays": 0,
+          "queueDays": 53,
+          "flowEfficiency": 100,
+          "phaseDays": {
+            "fila": 53,
+            "produto": 4,
+            "pedido": 23,
+            "revisao": 11
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 53,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         }
       ]
     }
   },
   "throughput": {
-    "avg_monthly_completions": 11,
-    "avg_cycle_time_days": 44,
+    "avg_monthly_completions": 12,
+    "avg_cycle_time_days": 46,
     "median_cycle_time_days": 42,
-    "total_completed": 446,
+    "total_completed": 451,
     "monthly": [
       {
         "month": "2025-03",
@@ -2312,8 +2822,8 @@
         "month": "2026-02",
         "label": "Fev/26",
         "started": 20,
-        "completed": 11,
-        "net": -9
+        "completed": 16,
+        "net": -4
       }
     ]
   },
@@ -2383,7 +2893,7 @@
   },
   "scenarios": {
     "c1": {
-      "count": 30,
+      "count": 24,
       "label": "Aguardando início",
       "tasks": [
         {
@@ -2391,230 +2901,335 @@
           "name": "Araripe Supermercado Bom Jardim",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 101,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": 11,
+          "age": 105,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ad839np",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 29,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 40,
+            "fila": 44,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 29,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86ada9m7x",
           "name": "Araripe Supermercado",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 97,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 101,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ada9m7x",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 25,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 36,
+            "fila": 40,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 25,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86ada8dxa",
           "name": "Araripe Supermercado",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 97,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 101,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": "rms",
           "url": "https://app.clickup.com/t/86ada8dxa",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 72,
+          "blockedDays": 76,
           "queueDays": 25,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 36,
+            "fila": 40,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 25,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 61
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86adew46b",
           "name": "[BOA COMPRA ATACAREJO] Desenvolvimento de uma Nova integração",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 90,
-          "daysSinceUpdated": 40,
-          "currentStatusDays": 11,
+          "age": 94,
+          "daysSinceUpdated": 3,
+          "currentStatusDays": 15,
           "erp": null,
           "url": "https://app.clickup.com/t/86adew46b",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 47,
+          "blockedDays": 51,
           "queueDays": 36,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 47,
+            "fila": 51,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 43,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 36
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86adh6989",
           "name": "Ana Risorlange Bernardo Manuel",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": null,
           "url": "https://app.clickup.com/t/86adh6989",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 11,
+          "blockedDays": 15,
           "queueDays": 76,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 87,
+            "fila": 91,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86adh690q",
           "name": "Ana Risorlange Bonsucesso",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": null,
           "url": "https://app.clickup.com/t/86adh690q",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 11,
+          "blockedDays": 15,
           "queueDays": 76,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 87,
+            "fila": 91,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86adh67wb",
           "name": "Ana Risorlange Bom Jardim",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 88,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 11,
+          "age": 92,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 15,
           "erp": null,
           "url": "https://app.clickup.com/t/86adh67wb",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 11,
+          "blockedDays": 15,
           "queueDays": 76,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 87,
+            "fila": 91,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 77,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 15
+            }
+          ]
         },
         {
           "id": "86advjux5",
           "name": "Empório Pas - Loja 04 - Andradina",
           "status": "backlog",
           "isBlocked": false,
-          "age": 74,
-          "daysSinceUpdated": 13,
-          "currentStatusDays": 13,
+          "age": 78,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 17,
           "erp": null,
           "url": "https://app.clickup.com/t/86advjux5",
           "scenario": "C1",
           "workDays": 0,
           "blockedDays": 3,
-          "queueDays": 71,
+          "queueDays": 75,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 71,
+            "fila": 75,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 58,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 3
+            }
+          ]
         },
         {
           "id": "86advjuq4",
           "name": "Emporio Pas - Loja 2  - Mirandopolis",
           "status": "backlog",
           "isBlocked": false,
-          "age": 74,
-          "daysSinceUpdated": 16,
-          "currentStatusDays": 16,
+          "age": 78,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 20,
           "erp": null,
           "url": "https://app.clickup.com/t/86advjuq4",
           "scenario": "C1",
           "workDays": 0,
           "blockedDays": 0,
-          "queueDays": 74,
+          "queueDays": 78,
           "flowEfficiency": null,
           "phaseDays": {
-            "fila": 74,
+            "fila": 78,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86adx5cb0",
           "name": "Supermercado Batista",
-          "status": "todo/dados coletados",
-          "isBlocked": false,
-          "age": 72,
-          "daysSinceUpdated": 2,
-          "currentStatusDays": 2,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 76,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": "avanço",
           "url": "https://app.clickup.com/t/86adx5cb0",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 43,
-          "queueDays": 29,
+          "blockedDays": 47,
+          "queueDays": 30,
           "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 38,
+            "fila": 42,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 27,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 2,
+          "blockHistory": [
+            {
+              "status": "bloqueado",
+              "days": 34
+            },
+            {
+              "status": "aguardando cliente",
+              "days": 13
+            }
+          ]
         },
         {
           "id": "86aewxgz2",
           "name": "Supermercado Real - Ceres",
           "status": "backlog",
           "isBlocked": false,
-          "age": 25,
-          "daysSinceUpdated": 25,
+          "age": 29,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86aewxgz2",
           "scenario": "C1",
           "workDays": 0,
@@ -2626,17 +3241,21 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af0dc0j",
           "name": "Supermercado Real - Carmo do Rio Verde",
           "status": "backlog",
           "isBlocked": false,
-          "age": 20,
-          "daysSinceUpdated": 20,
+          "age": 24,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86af0dc0j",
           "scenario": "C1",
           "workDays": 0,
@@ -2648,17 +3267,21 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af0dbaa",
           "name": "Supermercado Real - Ceres",
           "status": "backlog",
           "isBlocked": false,
-          "age": 20,
-          "daysSinceUpdated": 20,
+          "age": 24,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
-          "erp": null,
+          "erp": "sd sistemas",
           "url": "https://app.clickup.com/t/86af0dbaa",
           "scenario": "C1",
           "workDays": 0,
@@ -2670,148 +3293,113 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af28vp4",
           "name": "Super Portugal Sobral",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28vp4",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af28vc2",
           "name": "Super Portugal Cidade dos Funcionários",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28vc2",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af28ubg",
           "name": "Super Portugal Granja Portugal",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 19,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 23,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86af28ubg",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
-        },
-        {
-          "id": "86af1php0",
-          "name": "Telefrango Supermercados João XXIII",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af1php0",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86af1ph3e",
-          "name": "Telefrango Supermercados Redenção",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af1ph3e",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86af1hk8h",
-          "name": "Supermercado Rodrigues",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 19,
-          "daysSinceUpdated": 19,
-          "currentStatusDays": null,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af1hk8h",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         },
         {
           "id": "86af2yxw7",
           "name": "Compre Certo - Guaiuba",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2yxw7",
           "scenario": "C1",
@@ -2824,16 +3412,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2yx8b",
           "name": "Compre Certo - Maranguape",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2yx8b",
           "scenario": "C1",
@@ -2846,16 +3443,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2ywtw",
           "name": "Compre Certo - Baturité",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2ywtw",
           "scenario": "C1",
@@ -2868,16 +3474,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2wu06",
           "name": "Compre Certo - Pacatuba",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2wu06",
           "scenario": "C1",
@@ -2890,16 +3505,25 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2w531",
           "name": "Compre Certo - Itaitinga",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
-          "currentStatusDays": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 22,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 0,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2w531",
           "scenario": "C1",
@@ -2912,15 +3536,24 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 22,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 0
+            }
+          ]
         },
         {
           "id": "86af2vp6k",
           "name": "Supermercado Aconchemax",
           "status": "backlog",
           "isBlocked": false,
-          "age": 18,
-          "daysSinceUpdated": 18,
+          "age": 22,
+          "daysSinceUpdated": 4,
           "currentStatusDays": null,
           "erp": null,
           "url": "https://app.clickup.com/t/86af2vp6k",
@@ -2934,650 +3567,795 @@
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86af560cg",
           "name": "Brisa Mini Mercado",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 16,
-          "daysSinceUpdated": 16,
-          "currentStatusDays": null,
-          "erp": null,
+          "status": "aguardando cliente",
+          "isBlocked": true,
+          "age": 20,
+          "daysSinceUpdated": 1,
+          "currentStatusDays": 1,
+          "erp": "novo erp- market automacoes",
           "url": "https://app.clickup.com/t/86af560cg",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
+          "blockedDays": 1,
+          "queueDays": 1,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 2,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
-        },
-        {
-          "id": "86af77qd3",
-          "name": "Telefrango Supermercados Passaré",
-          "status": "backlog",
-          "isBlocked": false,
-          "age": 13,
-          "daysSinceUpdated": 13,
-          "currentStatusDays": null,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af77qd3",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86af908mn",
-          "name": "R Center - Parque Santa Rosa",
-          "status": "todo/dados coletados",
-          "isBlocked": false,
-          "age": 12,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af908mn",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86af8yurq",
-          "name": "R Center - Messejana",
-          "status": "produtos integrado",
-          "isBlocked": false,
-          "age": 12,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86af8yurq",
-          "scenario": "C1",
-          "workDays": 0,
-          "blockedDays": 0,
-          "queueDays": 0,
-          "flowEfficiency": null,
-          "phaseDays": {
-            "fila": 0,
-            "produto": 0,
-            "pedido": 0,
-            "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 19,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 1
+            }
+          ]
         },
         {
           "id": "86afcp5zd",
           "name": "Supermercado Aguiar",
           "status": "aguardando cliente",
           "isBlocked": true,
-          "age": 9,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 13,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": null,
           "url": "https://app.clickup.com/t/86afcp5zd",
           "scenario": "C1",
           "workDays": 0,
-          "blockedDays": 0,
+          "blockedDays": 4,
           "queueDays": 0,
-          "flowEfficiency": null,
+          "flowEfficiency": 0,
           "phaseDays": {
-            "fila": 0,
+            "fila": 4,
             "produto": 0,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": 9,
+          "ageAtFirstWork": null,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "aguardando cliente",
+              "days": 4
+            }
+          ]
         }
       ]
     },
     "c2": {
-      "count": 0,
+      "count": 13,
       "label": "Em integração — bloqueada",
-      "tasks": [],
-      "avg_flow_efficiency": null
+      "tasks": [
+        {
+          "id": "86aemer60",
+          "name": "RedeMIX - Loja 5",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemer60",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemer0r",
+          "name": "RedeMIX - Loja 06",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemer0r",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemepqc",
+          "name": "RedeMIX - Loja 7",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemepqc",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemepj1",
+          "name": "RedeMIX - Loja 08",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemepj1",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemeped",
+          "name": "RedeMIX - Loja 09",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemeped",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemepb6",
+          "name": "RedeMIX - Loja 10",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemepb6",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemep6j",
+          "name": "RedeMIX - Loja 04",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemep6j",
+          "scenario": "C2",
+          "workDays": 13,
+          "blockedDays": 1,
+          "queueDays": 24,
+          "flowEfficiency": 93,
+          "phaseDays": {
+            "fila": 24,
+            "produto": 8,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 24,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aemen33",
+          "name": "RedeMIX - Loja 11",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aemen33",
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
+          "queueDays": 17,
+          "flowEfficiency": 95,
+          "phaseDays": {
+            "fila": 17,
+            "produto": 15,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aememzm",
+          "name": "RedeMIX - Loja 3",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aememzm",
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
+          "queueDays": 17,
+          "flowEfficiency": 95,
+          "phaseDays": {
+            "fila": 17,
+            "produto": 15,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aememwa",
+          "name": "RedeMIX - Loja 2",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aememwa",
+          "scenario": "C2",
+          "workDays": 20,
+          "blockedDays": 1,
+          "queueDays": 17,
+          "flowEfficiency": 95,
+          "phaseDays": {
+            "fila": 17,
+            "produto": 15,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 17,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86aememrm",
+          "name": "RedeMIX - Loja 1",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 38,
+          "daysSinceUpdated": 0,
+          "currentStatusDays": 1,
+          "erp": "socin",
+          "url": "https://app.clickup.com/t/86aememrm",
+          "scenario": "C2",
+          "workDays": 16,
+          "blockedDays": 1,
+          "queueDays": 21,
+          "flowEfficiency": 94,
+          "phaseDays": {
+            "fila": 21,
+            "produto": 11,
+            "pedido": 6,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 37,
+          "ageAtFirstWork": 21,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "id": "86af908mn",
+          "name": "R Center - Parque Santa Rosa",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 16,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af908mn",
+          "scenario": "C2",
+          "workDays": 1,
+          "blockedDays": 2,
+          "queueDays": 1,
+          "flowEfficiency": 33,
+          "phaseDays": {
+            "fila": 1,
+            "produto": 1,
+            "pedido": 2,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 14,
+          "ageAtFirstWork": 13,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 2
+            }
+          ]
+        },
+        {
+          "id": "86af8yurq",
+          "name": "R Center - Messejana",
+          "status": "bloqueado pedido",
+          "isBlocked": true,
+          "age": 16,
+          "daysSinceUpdated": 2,
+          "currentStatusDays": 2,
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af8yurq",
+          "scenario": "C2",
+          "workDays": 2,
+          "blockedDays": 2,
+          "queueDays": 0,
+          "flowEfficiency": 50,
+          "phaseDays": {
+            "fila": 0,
+            "produto": 2,
+            "pedido": 2,
+            "revisao": 0
+          },
+          "ageAtFirstBlock": 14,
+          "ageAtFirstWork": 12,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 2
+            }
+          ]
+        }
+      ],
+      "avg_flow_efficiency": 86
     },
     "c3": {
-      "count": 20,
+      "count": 8,
       "label": "Em integração — ativa",
       "tasks": [
         {
           "id": "86adhu7rq",
           "name": "Rota da Economia",
-          "status": "revisão",
+          "status": "progresso pedido",
           "isBlocked": false,
-          "age": 87,
-          "daysSinceUpdated": 10,
-          "currentStatusDays": 11,
+          "age": 91,
+          "daysSinceUpdated": 1,
+          "currentStatusDays": 4,
           "erp": "novo erp",
           "url": "https://app.clickup.com/t/86adhu7rq",
           "scenario": "C3",
-          "workDays": 34,
+          "workDays": 38,
           "blockedDays": 0,
           "queueDays": 53,
           "flowEfficiency": 100,
           "phaseDays": {
             "fila": 53,
             "produto": 4,
-            "pedido": 19,
+            "pedido": 23,
             "revisao": 11
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 53,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86adpbfdb",
           "name": "Almeida Supermercado",
           "status": "progresso pedido",
           "isBlocked": false,
-          "age": 81,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
+          "age": 85,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 4,
           "erp": "vivasistemas",
           "url": "https://app.clickup.com/t/86adpbfdb",
           "scenario": "C3",
-          "workDays": 2,
+          "workDays": 7,
           "blockedDays": 31,
           "queueDays": 48,
-          "flowEfficiency": 6,
+          "flowEfficiency": 18,
           "phaseDays": {
             "fila": 48,
             "produto": 2,
-            "pedido": 31,
+            "pedido": 35,
             "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1pjf",
-          "name": "Emporio Natural Mix - Loja 5",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1pjf",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
-        },
-        {
-          "id": "86adu1p4y",
-          "name": "Emporio Natural Mix - Loja 4 - Tijucas",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1p4y",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 3,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1nwu",
-          "name": "Emporio Natural Mix - Loja 3 - Campo Grande",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1nwu",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
-        },
-        {
-          "id": "86adu1nfz",
-          "name": "Emporio Natural Mix - Loja 2 - Bangu",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 0,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1nfz",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 3,
-          "queueDays": 62,
-          "flowEfficiency": 77,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 3,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86adu1mzh",
-          "name": "Emporio Natural Mix - Loja 1 Madureira",
-          "status": "revisão",
-          "isBlocked": false,
-          "age": 75,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 3,
-          "erp": null,
-          "url": "https://app.clickup.com/t/86adu1mzh",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 62,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 62,
-            "produto": 10,
-            "pedido": 0,
-            "revisao": 3
-          }
+          },
+          "ageAtFirstBlock": 50,
+          "ageAtFirstWork": 48,
+          "blockEpisodeCount": 1,
+          "blockHistory": [
+            {
+              "status": "bloqueado pedido",
+              "days": 31
+            }
+          ]
         },
         {
           "id": "86ady723m",
           "name": "Atacadão São Roque",
           "status": "produtos integrado",
           "isBlocked": false,
-          "age": 69,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 10,
+          "age": 73,
+          "daysSinceUpdated": 4,
+          "currentStatusDays": 14,
           "erp": "winthor",
           "url": "https://app.clickup.com/t/86ady723m",
           "scenario": "C3",
-          "workDays": 11,
+          "workDays": 15,
           "blockedDays": 0,
           "queueDays": 58,
           "flowEfficiency": 100,
           "phaseDays": {
             "fila": 58,
-            "produto": 11,
+            "produto": 15,
             "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 58,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
           "id": "86aeh1jkh",
           "name": "O Mundo das Embalagens",
           "status": "progresso pedido",
           "isBlocked": false,
-          "age": 39,
+          "age": 43,
           "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
+          "currentStatusDays": 6,
           "erp": "hipcom",
           "url": "https://app.clickup.com/t/86aeh1jkh",
           "scenario": "C3",
-          "workDays": 3,
+          "workDays": 7,
           "blockedDays": 0,
           "queueDays": 36,
           "flowEfficiency": 100,
           "phaseDays": {
             "fila": 36,
             "produto": 1,
-            "pedido": 2,
+            "pedido": 6,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 36,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
-          "id": "86aemer60",
-          "name": "RedeMIX - Loja 5",
-          "status": "progresso pedido",
+          "id": "86af1php0",
+          "name": "Telefrango Supermercados João XXIII",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
+          "age": 23,
+          "daysSinceUpdated": 2,
           "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemer60",
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af1php0",
           "scenario": "C3",
-          "workDays": 10,
+          "workDays": 3,
           "blockedDays": 0,
-          "queueDays": 24,
+          "queueDays": 0,
           "flowEfficiency": 100,
           "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
+            "fila": 0,
+            "produto": 3,
+            "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 20,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
-          "id": "86aemer0r",
-          "name": "RedeMIX - Loja 06",
-          "status": "progresso pedido",
+          "id": "86af1ph3e",
+          "name": "Telefrango Supermercados Redenção",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
+          "age": 23,
+          "daysSinceUpdated": 2,
           "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemer0r",
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af1ph3e",
           "scenario": "C3",
-          "workDays": 10,
+          "workDays": 3,
           "blockedDays": 0,
-          "queueDays": 24,
+          "queueDays": 0,
           "flowEfficiency": 100,
           "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
+            "fila": 0,
+            "produto": 3,
+            "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 20,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
-          "id": "86aemepqc",
-          "name": "RedeMIX - Loja 7",
-          "status": "progresso pedido",
+          "id": "86af1hk8h",
+          "name": "Supermercado Rodrigues",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
+          "age": 23,
+          "daysSinceUpdated": 2,
           "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemepqc",
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af1hk8h",
           "scenario": "C3",
-          "workDays": 10,
+          "workDays": 2,
           "blockedDays": 0,
-          "queueDays": 24,
+          "queueDays": 0,
           "flowEfficiency": 100,
           "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
+            "fila": 0,
+            "produto": 2,
+            "pedido": 0,
             "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 21,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         },
         {
-          "id": "86aemepj1",
-          "name": "RedeMIX - Loja 08",
-          "status": "progresso pedido",
+          "id": "86af77qd3",
+          "name": "Telefrango Supermercados Passaré",
+          "status": "produtos integrado",
           "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
+          "age": 17,
+          "daysSinceUpdated": 2,
           "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemepj1",
+          "erp": null,
+          "url": "https://app.clickup.com/t/86af77qd3",
           "scenario": "C3",
-          "workDays": 10,
+          "workDays": 3,
           "blockedDays": 0,
-          "queueDays": 24,
+          "queueDays": 0,
           "flowEfficiency": 100,
           "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
+            "fila": 0,
+            "produto": 3,
+            "pedido": 0,
             "revisao": 0
-          }
-        },
-        {
-          "id": "86aemeped",
-          "name": "RedeMIX - Loja 09",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemeped",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
-          "queueDays": 24,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aemepb6",
-          "name": "RedeMIX - Loja 10",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemepb6",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
-          "queueDays": 24,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aemep6j",
-          "name": "RedeMIX - Loja 04",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemep6j",
-          "scenario": "C3",
-          "workDays": 10,
-          "blockedDays": 0,
-          "queueDays": 24,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 24,
-            "produto": 8,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aemen33",
-          "name": "RedeMIX - Loja 11",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aemen33",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
-          "queueDays": 17,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 17,
-            "produto": 15,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aememzm",
-          "name": "RedeMIX - Loja 3",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aememzm",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
-          "queueDays": 17,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 17,
-            "produto": 15,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aememwa",
-          "name": "RedeMIX - Loja 2",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aememwa",
-          "scenario": "C3",
-          "workDays": 17,
-          "blockedDays": 0,
-          "queueDays": 17,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 17,
-            "produto": 15,
-            "pedido": 2,
-            "revisao": 0
-          }
-        },
-        {
-          "id": "86aememrm",
-          "name": "RedeMIX - Loja 1",
-          "status": "progresso pedido",
-          "isBlocked": false,
-          "age": 34,
-          "daysSinceUpdated": 0,
-          "currentStatusDays": 2,
-          "erp": "socin",
-          "url": "https://app.clickup.com/t/86aememrm",
-          "scenario": "C3",
-          "workDays": 13,
-          "blockedDays": 0,
-          "queueDays": 21,
-          "flowEfficiency": 100,
-          "phaseDays": {
-            "fila": 21,
-            "produto": 11,
-            "pedido": 2,
-            "revisao": 0
-          }
+          },
+          "ageAtFirstBlock": null,
+          "ageAtFirstWork": 14,
+          "blockEpisodeCount": 0,
+          "blockHistory": []
         }
       ],
-      "avg_flow_efficiency": 94
+      "avg_flow_efficiency": 90
     }
   },
   "wip_limit": {
     "ideal": 15,
     "max": 22,
-    "current": 50,
-    "over_by": 28,
-    "current_vs_max_pct": 227
+    "current": 45,
+    "over_by": 23,
+    "current_vs_max_pct": 205
   },
   "indicators": {
     "flow": {
       "avg_in": 23,
-      "avg_out": 11,
-      "ratio": 209,
+      "avg_out": 12,
+      "ratio": 192,
       "status": "crítico"
     },
     "wip_critical": {
-      "count": 18,
-      "total": 50,
-      "pct": 36,
-      "status": "crítico"
+      "count": 13,
+      "total": 45,
+      "pct": 29,
+      "status": "atenção"
     },
     "overall_status": "crítico"
   },
   "erp_breakdown": [
     {
       "erp": "N/A",
-      "total": 31,
-      "blocked": 8,
-      "avgAge": 40
+      "total": 22,
+      "blocked": 15,
+      "avgAge": 39
     },
     {
       "erp": "socin",
       "total": 11,
-      "blocked": 0,
-      "avgAge": 34
+      "blocked": 11,
+      "avgAge": 38
     },
     {
       "erp": "rms",
       "total": 3,
       "blocked": 3,
-      "avgAge": 98
+      "avgAge": 102
+    },
+    {
+      "erp": "sd sistemas",
+      "total": 3,
+      "blocked": 0,
+      "avgAge": 26
     },
     {
       "erp": "novo erp",
       "total": 1,
       "blocked": 0,
-      "avgAge": 87
+      "avgAge": 91
     },
     {
       "erp": "vivasistemas",
       "total": 1,
       "blocked": 0,
-      "avgAge": 81
+      "avgAge": 85
     },
     {
       "erp": "avanço",
       "total": 1,
-      "blocked": 0,
-      "avgAge": 72
+      "blocked": 1,
+      "avgAge": 76
     },
     {
       "erp": "winthor",
       "total": 1,
       "blocked": 0,
-      "avgAge": 69
+      "avgAge": 73
     },
     {
       "erp": "hipcom",
       "total": 1,
       "blocked": 0,
-      "avgAge": 39
+      "avgAge": 43
+    },
+    {
+      "erp": "novo erp- market automacoes",
+      "total": 1,
+      "blocked": 1,
+      "avgAge": 20
     }
   ],
   "phase_benchmarks": {
-    "fila": 37,
-    "produto": 9,
-    "pedido": 5,
-    "revisao": 5
+    "fila": 21,
+    "produto": 8,
+    "pedido": 23,
+    "revisao": 14
   }
 }
